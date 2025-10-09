@@ -53,10 +53,21 @@ const createSendToken = (user, statusCode, req, res) => {
     path: '/',
   };
 
-  // Only set cookie domain in production. For localhost, omit the domain attribute
-  // to allow the browser to treat it as a host-only cookie for 127.0.0.1/localhost
+  // Only set cookie domain in production and only if it matches the current hostname
+  // Otherwise, skip domain to set a host-only cookie which is more reliable
   if (process.env.NODE_ENV === 'production' && process.env.COOKIE_DOMAIN) {
-    cookieOptions.domain = process.env.COOKIE_DOMAIN;
+    try {
+      const reqHost = (req.hostname || '').toLowerCase();
+      const cfgDomain = String(process.env.COOKIE_DOMAIN).toLowerCase().replace(/^\.+/, '');
+      if (reqHost === cfgDomain || reqHost.endsWith(`.${cfgDomain}`)) {
+        cookieOptions.domain = cfgDomain;
+      } else {
+        // Domain mismatch; do not set domain
+        if (process.env.DEBUG_COOKIES === 'true') {
+          console.warn(`[AUTH] Skipping cookie domain. Host: ${reqHost} vs Domain: ${cfgDomain}`);
+        }
+      }
+    } catch {}
   }
 
   // Remove sensitive data from output

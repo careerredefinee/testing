@@ -180,6 +180,9 @@ const PORT = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Behind a proxy (e.g., Render/Onrender) enable trust proxy so secure cookies work
+app.set('trust proxy', 1);
+
 // Set security HTTP headers with Vite HMR compatibility
 app.use(helmet({
   contentSecurityPolicy: false, // Disable CSP as it can interfere with Vite's HMR
