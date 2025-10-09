@@ -78,7 +78,7 @@ const CoursesSection = () => {
               <div
                 id="courses-scroll"
                 ref={scrollRef}
-                className="flex space-x-6 overflow-x-auto scrollbar-hide pb-2 pl-24 pr-24"
+                className="flex space-x-6 overflow-x-auto scrollbar-hide pb-2 -ml-4 pr-4 md:ml-0 md:pl-24 md:pr-24"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
                 {courses.map((course, index) => (

@@ -248,6 +248,8 @@ const allowedOrigins = [
   'https://testing.careerredefine.com',
   'https://www.testing.careerredefine.com',
 
+  // Second testing domain
+  'https://test5-x7xt.onrender.com',
 
   'https://test.career-redefine.vercel.app',
   'https://test.career-redefine.com'
