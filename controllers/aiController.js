@@ -1,28 +1,53 @@
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// Lazy-initialize client so env can be loaded later (e.g., from config.env)
+// Initialize client lazily so env can be loaded first
 const getClient = () => {
   const key = process.env.GEMINI_API_KEY;
-  if (!key) {
-    return null;
-  }
-  return new GoogleGenAI({ apiKey: key });
+  if (!key) return null;
+  return new GoogleGenerativeAI(key);
 };
 
-const getTextModelName = () => process.env.GEMINI_TEXT_MODEL || process.env.GEMINI_MODEL || 'gemini-2.0-flash';
-const getImageModelName = () => process.env.GEMINI_IMAGE_MODEL || 'gemini-2.5-flash-image';
+// Attempt a generate call with a specific model; if model is not found (404), return null to allow fallback
+const tryGenerate = async (modelId, text) => {
+  const client = getClient();
+  if (!client) return { error: 'AI service not configured' };
+  try {
+    const model = client.getGenerativeModel({ model: modelId });
+    const result = await model.generateContent(text);
+    return { result };
+  } catch (e) {
+    // SDK throws GoogleGenerativeAIFetchError with status
+    if (e?.status === 404) return { notFound: true };
+    // other errors should bubble up
+    return { exception: e };
+  }
+};
+
+// Generate with fallback model sequence
+const generateWithFallback = async (prompt) => {
+  const preferred = (process.env.GEMINI_MODEL || 'gemini-1.5-flash').trim();
+  const candidates = [preferred, 'gemini-1.5-flash-8b', 'gemini-1.5-pro', 'gemini-pro'];
+
+  for (const modelId of candidates) {
+    const { result, notFound, exception, error } = await tryGenerate(modelId, prompt);
+    if (result) return { modelId, result };
+    if (error) return { error };
+    if (exception && !notFound) return { exception };
+    // if notFound, continue to try next candidate
+  }
+  return { error: 'No supported Gemini model found for your API key/project. Set GEMINI_MODEL to a supported model.' };
+};
 
 export const health = async (req, res) => {
   const ready = !!getClient();
-  res.status(200).json({ status: 'ok', model: getTextModelName(), imageModel: getImageModelName(), ready });
+  const configuredModel = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+  return res.status(200).json({ status: 'success', ready, model: configuredModel });
 };
 
 export const chat = async (req, res) => {
   try {
-    const { message, tool, context } = req.body;
+    const { message, tool, context } = req.body || {};
     if (!message) return res.status(400).json({ status: 'fail', message: 'message is required' });
-    const client = getClient();
-    if (!client) return res.status(503).json({ status: 'error', message: 'AI service not configured' });
 
     const prompt = [
       context ? `Context: ${context}` : null,
@@ -30,49 +55,44 @@ export const chat = async (req, res) => {
       `User: ${message}`
     ].filter(Boolean).join('\n');
 
-    const result = await client.models.generateContent({
-      model: getTextModelName(),
-      contents: prompt,
-    });
-    const cand = result?.candidates?.[0];
-    let text = '';
-    if (cand?.content?.parts) {
-      text = cand.content.parts.map(p => p.text || '').join('').trim();
+    const out = await generateWithFallback(prompt);
+    if (out.error) return res.status(503).json({ status: 'error', message: out.error });
+    if (out.exception) {
+      console.error('AI chat error:', out.exception);
+      return res.status(500).json({ status: 'error', message: 'AI chat failed' });
     }
-    return res.status(200).json({ status: 'success', data: { reply: text } });
+    const text = out.result?.response?.text?.() || out.result?.response?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    return res.status(200).json({ status: 'success', data: { reply: text, model: out.modelId } });
   } catch (err) {
     console.error('AI chat error:', err);
-    res.status(500).json({ status: 'error', message: 'AI chat failed' });
+    return res.status(500).json({ status: 'error', message: 'AI chat failed' });
   }
 };
 
 export const generateCode = async (req, res) => {
   try {
-    const { prompt, language = 'javascript' } = req.body;
+    const { prompt, language = 'javascript' } = req.body || {};
     if (!prompt) return res.status(400).json({ status: 'fail', message: 'prompt is required' });
-    const client = getClient();
-    if (!client) return res.status(503).json({ status: 'error', message: 'AI service not configured' });
 
     const system = `You are a helpful coding assistant. Generate only ${language} code unless explicitly asked otherwise. Provide concise, production-quality code with comments where helpful.`;
-    const result = await client.models.generateContent({
-      model: getTextModelName(),
-      contents: `${system}\n\nTask: ${prompt}`,
-    });
-    const parts = result?.candidates?.[0]?.content?.parts || [];
-    const code = parts.map(p => p.text || '').join('').trim();
-    return res.status(200).json({ status: 'success', data: { code, language } });
+    const out = await generateWithFallback(`${system}\n\nTask: ${prompt}`);
+    if (out.error) return res.status(503).json({ status: 'error', message: out.error });
+    if (out.exception) {
+      console.error('AI code error:', out.exception);
+      return res.status(500).json({ status: 'error', message: 'AI code generation failed' });
+    }
+    const code = out.result?.response?.text?.() || '';
+    return res.status(200).json({ status: 'success', data: { code, language, model: out.modelId } });
   } catch (err) {
     console.error('AI code error:', err);
-    res.status(500).json({ status: 'error', message: 'AI code generation failed' });
+    return res.status(500).json({ status: 'error', message: 'AI code generation failed' });
   }
 };
 
 export const analyzeDocument = async (req, res) => {
   try {
-    const { content, analysisType = 'summary' } = req.body;
+    const { content, analysisType = 'summary' } = req.body || {};
     if (!content) return res.status(400).json({ status: 'fail', message: 'content is required' });
-    const client = getClient();
-    if (!client) return res.status(503).json({ status: 'error', message: 'AI service not configured' });
 
     const instructionMap = {
       summary: 'Provide a concise summary (5-7 sentences).',
@@ -83,51 +103,22 @@ export const analyzeDocument = async (req, res) => {
     };
 
     const instruction = instructionMap[analysisType] || instructionMap.summary;
-    const result = await client.models.generateContent({
-      model: getTextModelName(),
-      contents: `Analyze the following content. ${instruction}\n\nCONTENT:\n${content}`,
-    });
-    const parts = result?.candidates?.[0]?.content?.parts || [];
-    const text = parts.map(p => p.text || '').join('').trim();
-    return res.status(200).json({ status: 'success', data: { result: text, analysisType } });
+    const out = await generateWithFallback(`Analyze the following content. ${instruction}\n\nCONTENT:\n${content}`);
+    if (out.error) return res.status(503).json({ status: 'error', message: out.error });
+    if (out.exception) {
+      console.error('AI document analysis error:', out.exception);
+      return res.status(500).json({ status: 'error', message: 'AI document analysis failed' });
+    }
+    const text = out.result?.response?.text?.() || '';
+    return res.status(200).json({ status: 'success', data: { result: text, analysisType, model: out.modelId } });
   } catch (err) {
     console.error('AI document analysis error:', err);
-    res.status(500).json({ status: 'error', message: 'AI document analysis failed' });
+    return res.status(500).json({ status: 'error', message: 'AI document analysis failed' });
   }
 };
 
 export const generateImage = async (req, res) => {
-  try {
-    const { prompt, style = 'realistic' } = req.body || {};
-    if (!prompt) return res.status(400).json({ status: 'fail', message: 'prompt is required' });
-    const client = getClient();
-    if (!client) return res.status(503).json({ status: 'error', message: 'AI service not configured' });
-
-    const finalPrompt = `${prompt}\n\nStyle: ${style}`;
-    const response = await client.models.generateContent({
-      model: getImageModelName(),
-      contents: finalPrompt,
-    });
-
-    const parts = response?.candidates?.[0]?.content?.parts || [];
-    let imageDataBase64 = '';
-    for (const part of parts) {
-      if (part.inlineData?.data) {
-        imageDataBase64 = part.inlineData.data;
-        break;
-      }
-    }
-    if (!imageDataBase64) {
-      // Some models may return a text part with a URL; try text fallback
-      const textOut = parts.map(p => p.text || '').join('').trim();
-      return res.status(200).json({ status: 'success', data: { imageDataUrl: textOut || null } });
-    }
-    const dataUrl = `data:image/png;base64,${imageDataBase64}`;
-    return res.status(200).json({ status: 'success', data: { imageDataUrl: dataUrl } });
-  } catch (err) {
-    console.error('AI image error:', err);
-    res.status(500).json({ status: 'error', message: 'AI image generation failed' });
-  }
+  return res.status(501).json({ status: 'error', message: 'Image generation not implemented yet' });
 };
 
 export const generateMusic = async (req, res) => {

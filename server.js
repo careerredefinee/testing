@@ -5,13 +5,18 @@ if (process.env.NODE_ENV !== 'production') {
   dotenv.config({ path: './.env' });
 }
 
+// Also merge variables from config.env in all environments so production/test get keys
+// Do not override already-set platform env vars
+dotenv.config({ path: './config.env', override: false });
+
+
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import path from 'path';
-import fs from 'fs';
+import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
 import { v2 as cloudinary } from 'cloudinary';
 import mongoSanitize from 'express-mongo-sanitize';
@@ -175,6 +180,9 @@ const PORT = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Behind a proxy (e.g., Render/Onrender) enable trust proxy so secure cookies work
+app.set('trust proxy', 1);
+
 // Set security HTTP headers with Vite HMR compatibility
 app.use(helmet({
   contentSecurityPolicy: false, // Disable CSP as it can interfere with Vite's HMR
@@ -188,8 +196,9 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Body parser, reading data from body into req.body
-app.use(express.json({ limit: '10kb' }));
-app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+// Increased limit to support large HTML pastes from admin Optional page
+app.use(express.json({ limit: '2mb' }));
+app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 app.use(cookieParser());
 
 // Session configuration
@@ -225,6 +234,11 @@ const allowedOrigins = [
   /^https?:\/\/([a-z0-9-]+\.)*career-redefine\.com$/, 
   // New primary domain (Hostinger): allow both www and non-www
   /^https?:\/\/([a-z0-9-]+\.)*careerredefine\.com$/,
+
+  // Testing subdomain(s)
+  /^https?:\/\/([a-z0-9-]+\.)*testing\.careerredefine\.com$/,
+
+
   // Test subdomain (and nested) - allow both http/https (for local proxy testing) and www
   /^https?:\/\/([a-z0-9-]+\.)*test\.careerredefine\.com$/,
   /^https?:\/\/([a-z0-9-]+\.)*career-redefine\.vercel\.app$/,
@@ -233,6 +247,13 @@ const allowedOrigins = [
   // Specific production URLs
   'https://test.careerredefine.com',
   'https://www.test.careerredefine.com',
+
+  'https://testing.careerredefine.com',
+  'https://www.testing.careerredefine.com',
+
+  // Second testing domain
+  'https://test5-x7xt.onrender.com',
+
   'https://test.career-redefine.vercel.app',
   'https://test.career-redefine.com'
 ];
@@ -761,6 +782,42 @@ app.post('/book-interview', (req, res, next) => {
   }
 });
 
+// ----- Legacy PHP compatibility for static course pages -----
+// Many static course pages post to relative action="course.php" which resolves to
+// /courses/course.php or /courses/courses/course.php. Provide handlers that
+// normalize to our Node controllers so forms work without PHP.
+app.post(['/courses/course.php', '/courses/courses/course.php'], (req, res, next) => {
+  try {
+    const { form_type } = req.body || {};
+    // Enquiry form
+    if (!form_type || String(form_type).toLowerCase() === 'enquiry') {
+      const { name, email, phone, message, qualification, subject, page } = req.body || {};
+      const derivedSubject = subject || `${page || 'Course'} Enquiry`;
+      const composedMessage = message || `User enquiry submitted.${qualification ? ` Qualification: ${qualification}.` : ''}`;
+      req.body = { name, email, phone, subject: derivedSubject, message: composedMessage };
+      return queryController.createQuery(req, res, next);
+    }
+
+    // Interview/booking form
+    if (String(form_type).toLowerCase() === 'interview') {
+      const { name, email, phone, message, interview_date, interview_time, date, time, timeSlot } = req.body || {};
+      const normalizedDate = interview_date || date;
+      const normalizedTime = interview_time || time || timeSlot;
+      req.body = { name, email, phone, message, date: normalizedDate, timeSlot: normalizedTime, type: 'consultation' };
+      return bookingController.createBooking(req, res, next);
+    }
+
+    // Default to enquiry if unknown type
+    const { name, email, phone, message, qualification, subject, page } = req.body || {};
+    const derivedSubject = subject || `${page || 'Course'} Enquiry`;
+    const composedMessage = message || `User enquiry submitted.${qualification ? ` Qualification: ${qualification}.` : ''}`;
+    req.body = { name, email, phone, subject: derivedSubject, message: composedMessage };
+    return queryController.createQuery(req, res, next);
+  } catch (e) {
+    return res.status(400).json({ status: 'fail', message: e.message });
+  }
+});
+
 // ----- Queries -----
 // Public submit
 app.post('/api/v1/queries', queryController.createQuery);
@@ -805,58 +862,6 @@ app.delete('/api/v1/admin/users/bulk-delete', protect, restrictTo('admin'), admi
 app.get('/api/v1/admin/premium-users', protect, restrictTo('admin'), adminController.listPremiumUsers);
 app.post('/api/v1/admin/premium-users', protect, restrictTo('admin'), adminController.createPremiumUser);
 app.patch('/api/v1/admin/premium-users/:id', protect, restrictTo('admin'), adminController.setPremiumStatus);
-
-// ----- Admin: Static HTML upload/paste to public -----
-import multer from 'multer';
-const htmlUpload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024, fieldSize: 2 * 1024 * 1024 }, // 5MB file, 2MB fields (~thousands of lines)
-});
-
-const sanitizeFilename = (name) => {
-  // Remove path separators and allow simple safe chars
-  const cleaned = String(name || '')
-    .replace(/\\|\//g, '')
-    .replace(/[^a-zA-Z0-9._-]/g, '_');
-  return cleaned || `page_${Date.now()}.html`;
-};
-
-app.post(
-  '/api/v1/admin/static-html',
-  protect,
-  restrictTo('admin'),
-  htmlUpload.single('file'),
-  async (req, res) => {
-    try {
-      const { location, filename, content } = req.body || {};
-      const folder = location === 'articles' ? 'articles' : location === 'courses' ? 'courses' : null;
-      if (!folder) return res.status(400).json({ status: 'fail', message: "location must be 'courses' or 'articles'" });
-      let fname = sanitizeFilename(filename);
-      if (!/\.html?$/i.test(fname)) fname += '.html';
-
-      const targetDir = path.join(__dirname, 'public', folder);
-      const targetPath = path.join(targetDir, fname);
-
-      // Ensure dir exists
-      fs.mkdirSync(targetDir, { recursive: true });
-
-      if (req.file && req.file.buffer && req.file.size > 0) {
-        // Uploaded file wins over content
-        fs.writeFileSync(targetPath, req.file.buffer);
-      } else if (typeof content === 'string' && content.trim().length > 0) {
-        fs.writeFileSync(targetPath, content, 'utf8');
-      } else {
-        return res.status(400).json({ status: 'fail', message: 'Provide a file or non-empty content' });
-      }
-
-      const publicUrl = `/${folder}/${fname}`;
-      return res.status(200).json({ status: 'success', data: { path: publicUrl, filename: fname } });
-    } catch (e) {
-      console.error('Static HTML upload error:', e);
-      return res.status(500).json({ status: 'error', message: 'Failed to save HTML file' });
-    }
-  }
-);
 
 // ----- Materials -----
 // Premium-only access helper
@@ -1091,6 +1096,21 @@ app.post('/api/v1/ai/document', protect, aiController.analyzeDocument);
 app.post('/api/v1/ai/image', protect, aiController.generateImage);
 app.post('/api/v1/ai/music', protect, aiController.generateMusic);
 app.post('/api/v1/ai/video', protect, aiController.generateVideo);
+
+// ----- Tools (aliases for AI) -----
+// Public health
+app.get('/api/v1/tools/health', aiController.health);
+// Non-premium tools (require login but not premium)
+app.post('/api/v1/tools/chat', protect, aiController.chat);
+app.post('/api/v1/tools/code', protect, aiController.generateCode);
+app.post('/api/v1/tools/document', protect, aiController.analyzeDocument);
+// Premium tools require premium or admin
+app.post('/api/v1/premium-tools/chat', protect, requirePremium, aiController.chat);
+app.post('/api/v1/premium-tools/code', protect, requirePremium, aiController.generateCode);
+app.post('/api/v1/premium-tools/document', protect, requirePremium, aiController.analyzeDocument);
+app.post('/api/v1/premium-tools/image', protect, requirePremium, aiController.generateImage);
+app.post('/api/v1/premium-tools/music', protect, requirePremium, aiController.generateMusic);
+app.post('/api/v1/premium-tools/video', protect, requirePremium, aiController.generateVideo);
 
 // ----- Resume (Upload + Analysis) -----
 app.post(

@@ -122,12 +122,12 @@ function App() {
                   <Route path="/admin/jobs" element={<AdminJobsPage />} />
                   <Route path="/admin/materials" element={<MaterialsPage />} />
                   <Route path="/admin/assessments" element={<AssessmentsPage />} />
+                  <Route path="/admin/optional" element={<OptionalPage />} />
                   <Route path="/admin/groups" element={<AdminGroupsPage />} />
                   <Route path="/admin/premium-users" element={<PremiumUsersPage />} />
                   <Route path="/admin/meetings" element={<AdminMeetingsPage />} />
                   <Route path="/admin/pmeetings" element={<AdminPMeetingsPage />} />
                   <Route path="/admin/calls" element={<CallsPage />} />
-                  <Route path="/admin/optional" element={<OptionalPage />} />
                 </Route>
               </Route>
               {/* Groups List (Premium) */}

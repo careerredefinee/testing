@@ -582,8 +582,13 @@ if (queryForm) {
     // Determine the endpoint based on form type
 const isInterviewForm = this.querySelector('input[name="interview_date"]') !== null;
 const endpoint = isInterviewForm 
-  ? 'http://test5-x7xt.onrender.com/api/book-interview' 
-  : 'http://test5-x7xt.onrender.com/api/enquiry';
+
+  ? '/api/book-interview' 
+  : '/api/enquiry';
+
+  ? 'https://test5-x7xt.onrender.com/api/book-interview' 
+  : 'https://test5-x7xt.onrender.com/api/enquiry';
+
 
     // Submit to Node.js backend
     fetch(endpoint, {
@@ -1102,7 +1107,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData(form);
         const formObject = Object.fromEntries(formData.entries());
         
-        const response = await fetch('http://test5-x7xt.onrender.com/api/book-interview', {
+        const response = await fetch('/api/book-interview', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

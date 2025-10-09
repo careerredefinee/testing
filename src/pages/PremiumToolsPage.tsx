@@ -60,13 +60,7 @@ const PremiumToolsPage: React.FC = () => {
   const [debugLoading, setDebugLoading] = useState<boolean>(false);
   const [debugError, setDebugError] = useState<string | null>(null);
   // Page-level tool selection
-  const [activeTool, setActiveTool] = useState<null | 'debug' | 'quiz' | 'interview' | 'jobs' | 'image'>(null);
-  // Image generation state
-  const [imgPrompt, setImgPrompt] = useState<string>('');
-  const [imgStyle, setImgStyle] = useState<string>('realistic');
-  const [imgUrl, setImgUrl] = useState<string>('');
-  const [imgLoading, setImgLoading] = useState<boolean>(false);
-  const [imgError, setImgError] = useState<string | null>(null);
+  const [activeTool, setActiveTool] = useState<null | 'debug' | 'quiz' | 'interview' | 'jobs'>(null);
 
   const canLoadMore = (s: ToolState) => s.items.length > s.shown && s.shown < 20;
 
@@ -289,20 +283,6 @@ Rules:
           </div>
           <div className="text-sm text-gray-600">Suggest 5 suitable roles based on listed skills.</div>
         </button>
-
-        {/* Image Generation */}
-        <button
-          onClick={() => setActiveTool('image')}
-          className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 text-left hover:shadow-md transition"
-        >
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-600 text-white flex items-center justify-center">
-              <span className="font-bold">IMG</span>
-            </div>
-            <div className="font-semibold text-gray-900">Image Generation</div>
-          </div>
-          <div className="text-sm text-gray-600">Create images with Gemini from your prompts and styles.</div>
-        </button>
       </div>
     </div>
   );
@@ -474,7 +454,7 @@ Rules:
                 <div className="flex flex-col md:flex-row gap-3 mb-4">
                   <input
                     value={sec.state!.input}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => sec.setState!((s) => ({ ...s, input: e.target.value }))}
+                    onChange={(e) => sec.setState!((s) => ({ ...s, input: e.target.value }))}
                     placeholder={sec.placeholder!}
                     className="flex-1 rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                   />
@@ -521,74 +501,9 @@ Rules:
             </>
           );
         })()}
-
-        {activeTool === 'image' && (
-          <>
-            <div className="max-w-5xl mx-auto mb-4">
-              <button onClick={() => setActiveTool(null)} className="inline-flex items-center justify-center px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50">Back</button>
-            </div>
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">Image Generation (Gemini)</h2>
-              <div className="flex flex-col md:flex-row gap-3 mb-3">
-                <input
-                  value={imgPrompt}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setImgPrompt(e.target.value)}
-                  placeholder="Describe the image (e.g., nano banana dish in a Gemini theme)"
-                  className="flex-1 rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                />
-                <select
-                  value={imgStyle}
-                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setImgStyle(e.target.value)}
-                  className="rounded-md border border-gray-300 px-3 py-2"
-                >
-                  {['realistic','digital art','pixel art','3D render','watercolor','oil painting','anime','cyberpunk','minimalist','surreal'].map(s => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </select>
-                <button
-                  onClick={async () => {
-                    if (!imgPrompt.trim()) { setImgError('Please enter a prompt'); return; }
-                    setImgLoading(true); setImgError(null); setImgUrl('');
-                    try {
-                      const resp = await aiService.generateImage(imgPrompt, imgStyle);
-                      const url = (resp as any)?.data?.imageDataUrl || (resp as any)?.imageDataUrl || '';
-                      if (!url) setImgError('No image returned');
-                      setImgUrl(url);
-                    } catch (e: any) {
-                      setImgError(e?.response?.data?.message || e?.message || 'Failed to generate image');
-                    } finally {
-                      setImgLoading(false);
-                    }
-                  }}
-                  disabled={imgLoading}
-                  className="inline-flex items-center justify-center px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-60"
-                >
-                  {imgLoading ? 'Generating…' : 'Generate'}
-                </button>
-                {imgUrl && (
-                  <button
-                    onClick={() => { setImgPrompt(''); setImgUrl(''); setImgError(null); }}
-                    className="inline-flex items-center justify-center px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50"
-                  >
-                    Clear
-                  </button>
-                )}
-              </div>
-              {imgError && <div className="text-sm text-red-600 mb-2">{imgError}</div>}
-              <div className="mt-3">
-                {imgLoading && <div className="text-sm text-gray-600">Generating image…</div>}
-                {imgUrl && (
-                  <div className="border rounded-md overflow-hidden max-w-md">
-                    {/* eslint-disable-next-line jsx-a11y/img-redundant-alt */}
-                    <img src={imgUrl} alt="Generated image" className="w-full h-auto" />
-                  </div>
-                )}
-              </div>
-            </div>
-          </>
-        )}
-
       </div>
     </div>
   );
 };
+
+export default PremiumToolsPage;

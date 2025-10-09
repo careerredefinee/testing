@@ -28,13 +28,15 @@ const ImageTool: React.FC<ImageToolProps> = ({ onClose }) => {
     setError('');
 
     try {
-      const response = await aiService.generateImage(prompt, style);
-      const url = (response as any)?.data?.imageDataUrl || (response as any)?.imageDataUrl || '';
-      if (!url) {
-        setError('Image generation returned no data.');
-      }
-      setGeneratedImage(url);
-      setIsLoading(false);
+      // In a real implementation, you would call the AI service
+      // const response = await aiService.generateImage(prompt, style);
+      // setGeneratedImage(response.imageUrl);
+      
+      // For demo purposes, we'll simulate a response
+      setTimeout(() => {
+        setGeneratedImage(`https://source.unsplash.com/random/512x512/?${encodeURIComponent(prompt)}`);
+        setIsLoading(false);
+      }, 1500);
     } catch (err) {
       console.error('Error generating image:', err);
       setError('Failed to generate image. Please try again.');

@@ -18,9 +18,7 @@ export const aiService = {
         tool,
         context,
       });
-      // Server returns { status, data: { reply } }
-      // Normalize to { data: { reply } } so callers can use resp.data.reply
-      return { data: response.data?.data } as any;
+      return response.data;
     } catch (error) {
       console.error('AI Service Error:', error);
       throw error;
@@ -46,8 +44,7 @@ export const aiService = {
         prompt,
         style,
       });
-      // Server returns { status, data: { imageDataUrl } }
-      return { data: response.data?.data } as any;
+      return response.data;
     } catch (error) {
       console.error('Image Generation Error:', error);
       throw error;
