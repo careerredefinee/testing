@@ -383,7 +383,7 @@ window.addEventListener('load', () => {
         <i class="bi bi-chat-dots-fill" style="font-size:2rem; color:#ff9800;"></i>
       </div>
       <h4 style="margin-bottom:20px; text-align:center; font-weight:700; color:#ff9800;">Enquiry Now</h4>
-      <form id="enquiryForm" action="course.php" method="POST" style="display:flex; flex-direction:column; gap:15px;">
+      <form id="enquiryForm" style="display:flex; flex-direction:column; gap:15px;">
         <input type="hidden" name="form_type" value="enquiry">
         <input type="text" name="name" placeholder="Name" required style="padding:14px; border-radius:8px; border:none; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
         <input type="email" name="email" placeholder="Email" required style="padding:14px; border-radius:8px; border:none; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
@@ -549,63 +549,94 @@ document.getElementById('notificationOverlay').addEventListener('click', functio
   }
 });
 
-// Query Form Submission
-const queryForm = document.querySelector('form[action="course.php"]');
-if (queryForm) {
-  queryForm.addEventListener('submit', function(e) {
+// Enquiry Form Submission
+const enquiryForm = document.getElementById('enquiryForm');
+if (enquiryForm) {
+  enquiryForm.addEventListener('submit', async function(e) {
     e.preventDefault();
     
-    // Show loading state
     const submitBtn = this.querySelector('button[type="submit"]');
     const originalBtnText = submitBtn.innerHTML;
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="bi bi-arrow-repeat"></i> Sending...';
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
     
-    // Get form data
-    const formData = new FormData(this);
-    const formObject = {};
-    formData.forEach((value, key) => {
-      formObject[key] = value;
-    });
-    
-    // Determine the endpoint based on form type
-    // Determine the endpoint based on form type
-const isInterviewForm = this.querySelector('input[name="interview_date"]') !== null;
-const endpoint = isInterviewForm 
-  ? '/api/book-interview' 
-  : '/api/enquiry';
-
-    // Submit to Node.js backend
-    fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formObject)
-    })
-    .then(async (response) => {
-      const contentType = response.headers.get('content-type') || '';
-      let data = null;
-      if (contentType.includes('application/json')) {
-        try { data = await response.json(); } catch (_) { data = null; }
+    try {
+      const formData = new FormData(this);
+      const formDataObj = Object.fromEntries(formData.entries());
+      
+      // Add course information
+      formDataObj.course = 'Web Development';
+      
+      const response = await fetch('/api/v1/enquiries', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formDataObj),
+        credentials: 'include' // Important for cookies if using sessions
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        showNotification('success', 'Your enquiry has been submitted successfully!');
+        this.reset();
+      } else {
+        throw new Error(data.message || 'Failed to submit enquiry');
       }
-      return { data, status: response.status, ok: response.ok };
-    })
-    .then(({data, status, ok}) => {
-      if (!(status === 200 || status === 201)) {
-  let msg = `Request failed with status ${status}`;
-  if (data && (data.message || data.error)) {
-    msg = data.message || data.error;
-  }
-  console.error('Server error:', msg);
-  throw new Error(msg);
-}
-
-      return data;
-    })
-    .then(data => {
+    } catch (error) {
+      console.error('Error submitting enquiry:', error);
+      showNotification('error', error.message || 'Failed to submit enquiry. Please try again.');
+    } finally {
       submitBtn.disabled = false;
       submitBtn.innerHTML = originalBtnText;
+    }
+  });
+}
+
+// Interview form handling
+const interviewForm = document.getElementById('interviewForm');
+if (interviewForm) {
+  interviewForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Booking...';
+    
+    try {
+      const formData = new FormData(this);
+      const formDataObj = Object.fromEntries(formData.entries());
+      
+      const response = await fetch('/api/v1/interviews', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formDataObj),
+        credentials: 'include'
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        showNotification('success', 'Your interview has been scheduled successfully!');
+        this.reset();
+      } else {
+        throw new Error(data.message || 'Failed to schedule interview');
+      }
+    } catch (error) {
+      console.error('Error scheduling interview:', error);
+      showNotification('error', error.message || 'Failed to schedule interview. Please try again.');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnText;
+    }
+  });
+}
+// Form submission handling is now complete
+// All JavaScript code has been properly closed
       
       // Show success message in the appropriate card
       if (isInterviewForm) {
