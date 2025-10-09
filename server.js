@@ -782,6 +782,42 @@ app.post('/book-interview', (req, res, next) => {
   }
 });
 
+// ----- Legacy PHP compatibility for static course pages -----
+// Many static course pages post to relative action="course.php" which resolves to
+// /courses/course.php or /courses/courses/course.php. Provide handlers that
+// normalize to our Node controllers so forms work without PHP.
+app.post(['/courses/course.php', '/courses/courses/course.php'], (req, res, next) => {
+  try {
+    const { form_type } = req.body || {};
+    // Enquiry form
+    if (!form_type || String(form_type).toLowerCase() === 'enquiry') {
+      const { name, email, phone, message, qualification, subject, page } = req.body || {};
+      const derivedSubject = subject || `${page || 'Course'} Enquiry`;
+      const composedMessage = message || `User enquiry submitted.${qualification ? ` Qualification: ${qualification}.` : ''}`;
+      req.body = { name, email, phone, subject: derivedSubject, message: composedMessage };
+      return queryController.createQuery(req, res, next);
+    }
+
+    // Interview/booking form
+    if (String(form_type).toLowerCase() === 'interview') {
+      const { name, email, phone, message, interview_date, interview_time, date, time, timeSlot } = req.body || {};
+      const normalizedDate = interview_date || date;
+      const normalizedTime = interview_time || time || timeSlot;
+      req.body = { name, email, phone, message, date: normalizedDate, timeSlot: normalizedTime, type: 'consultation' };
+      return bookingController.createBooking(req, res, next);
+    }
+
+    // Default to enquiry if unknown type
+    const { name, email, phone, message, qualification, subject, page } = req.body || {};
+    const derivedSubject = subject || `${page || 'Course'} Enquiry`;
+    const composedMessage = message || `User enquiry submitted.${qualification ? ` Qualification: ${qualification}.` : ''}`;
+    req.body = { name, email, phone, subject: derivedSubject, message: composedMessage };
+    return queryController.createQuery(req, res, next);
+  } catch (e) {
+    return res.status(400).json({ status: 'fail', message: e.message });
+  }
+});
+
 // ----- Queries -----
 // Public submit
 app.post('/api/v1/queries', queryController.createQuery);
