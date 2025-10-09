@@ -538,13 +538,8 @@ if (queryForm) {
     // Determine the endpoint based on form type
     const isInterviewForm = this.querySelector('input[name="interview_date"]') !== null;
     const endpoint = isInterviewForm 
-<<<<<<< HEAD
-      ? '/api/book-interview' 
-      : '/api/enquiry';
-=======
       ? 'http://localhost:3000/api/book-interview' 
       : 'http://localhost:3000/api/enquiry';
->>>>>>> 39402ae21f89a00bd223bd8c9bdf02ea6aabd474
 
     // Submit to Node.js backend (robust handling like datascience.html)
     fetch(endpoint, {
@@ -1059,11 +1054,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const formObject = Object.fromEntries(formData.entries());
 
         // Submit to Node.js backend with robust 2xx handling
-<<<<<<< HEAD
-        const response = await fetch('/api/book-interview', {
-=======
         const response = await fetch('http://localhost:3000/api/book-interview', {
->>>>>>> 39402ae21f89a00bd223bd8c9bdf02ea6aabd474
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -1639,9 +1630,9 @@ document.querySelectorAll(".course-buttons button").forEach(btn=>{
       Your Mentor
     </h2>
     <p style="font-size:20px; margin-bottom:40px; color:#444;">
-      Learn <b>AI & Machine Learning</b> from an 
-      <span style="color:#2563eb;font-weight:600;">IIT Kanpur Alumni</span> & 
-      <span style="color:#16a34a;font-weight:600;">Ex-Scaler Instructor</span>
+      Learn <b>Data Science with AI</b> from an 
+      <span style="color:#2563eb;font-weight:600;">IIT Alumni</span> & 
+      <span style="color:#16a34a;font-weight:600;">Ex-Scaler</span>
     </p>
 
     <!-- Responsive Container -->
@@ -1655,8 +1646,8 @@ document.querySelectorAll(".course-buttons button").forEach(btn=>{
 
       <!-- Mentor Image -->
       <div style="flex-shrink:0; text-align:center; width:100%; max-width:250px;">
-        <img src="shivam.png" 
-             alt="Shivam Yadav Profile"
+        <img src="https://randomuser.me/api/portraits/men/32.jpg" 
+             alt="Mentor Profile"
              style="width:100%; max-width:220px; height:220px; border-radius:50%; object-fit:cover; 
                     border:6px solid #e2e8f0; background:#fff; 
                     box-shadow:0 10px 25px rgba(0,0,0,0.15); margin:auto;">
@@ -1665,22 +1656,21 @@ document.querySelectorAll(".course-buttons button").forEach(btn=>{
       <!-- Mentor Info -->
       <div style="flex:1; min-width:280px; text-align:left;">
         <h3 style="margin:0 0 15px; font-size:28px; color:#111; font-weight:700; text-align:center;">
-          Shivam Yadav
+          Dr. Arjun Mehta
         </h3>
         <p style="margin:0 0 20px; font-size:17px; color:#555; line-height:1.6; text-align:center;">
-          <span style="font-weight:900; font-size:19px; color:white; background:#2563eb; padding:3px 10px; border-radius:12px;">
-            🎓 IIT Kanpur
-          </span> 
-          | <b>AI-ML Instructor–Mentor</b> | <b>Ex-Scaler Instructor</b>
-        </p>
+  <span style="font-weight:900; font-size:19px; color:white; background:#e53935; padding:3px 10px; border-radius:12px;">
+    🎓 IIT Alumni
+  </span> 
+  | <b>Ex-Scaler</b> | <b>12+ Years of Industry Experience</b>
+</p>
 
         <p style="font-size:16px; color:#333; line-height:1.7; margin:0; text-align:justify;">
-          Shivam has seen countless careers transform when professionals stop chasing tools 
-          and start mastering <b>real analytics, AI workflows, and product thinking</b>.  
-          His mission is simple: to help learners unlock that transformation and lead in the 
-          <span style="color:#2563eb;font-weight:600;">AI-driven future</span> without 
-          burning lakhs on overpriced programs.  
-          He strongly believes that <b>learning should be premium, but never expensive</b>.
+          Dr. Mehta has guided <b>5000+ students</b> in their journey through 
+          <b>Data Science, Artificial Intelligence, and Machine Learning</b>.  
+          With a career spanning over a decade, he specializes in transforming learners into 
+          <span style="color:#2563eb;font-weight:600;">job-ready professionals</span> by 
+          blending <b>theory</b> with <b>hands-on project expertise</b>.
         </p>
       </div>
     </div>
