@@ -1,0 +1,393 @@
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { Camera, MessageSquare, Clock, Plus } from 'lucide-react';
+import { toast } from 'react-toastify';
+import api from '../utils/api';
+
+interface UserProfile {
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  dob: string;
+  avatar?: string;
+  role?: string;
+}
+
+const ProfilePage: React.FC = () => {
+  const { user, updateUser } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedUser, setEditedUser] = useState<UserProfile>({
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+    dob: ''
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'profile' | 'queries' | 'appointments'>('profile');
+  const [queries] = useState<Array<{id: string; title: string; status: string; date: string}>>([]);
+  const [appointments] = useState<Array<{id: string; title: string; date: string; time: string; status: string}>>([]);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (user) {
+      setEditedUser({
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        address: user.address || '',
+        dob: user.dob || '',
+        avatar: user.avatar
+      });
+    }
+  }, [user]);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        updateUser({ ...user, avatar: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      setIsLoading(true);
+      await api.put('/api/users/me', editedUser);
+      updateUser(editedUser);
+      setIsEditing(false);
+      toast.success('Profile updated successfully');
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast.error('Failed to update profile');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Render profile section
+  const renderProfileSection = () => (
+    <div className="profile-section">
+      <div className="px-4 py-5 sm:px-6 flex justify-between items-center border-b border-gray-200">
+        <h2 className="text-xl font-semibold text-gray-900">Profile Information</h2>
+        <button
+          onClick={() => setIsEditing(!isEditing)}
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          {isEditing ? 'Cancel' : 'Edit Profile'}
+        </button>
+      </div>
+      <div className="px-4 py-5 sm:p-6">
+        <div className="flex flex-col sm:flex-row gap-8">
+          <div className="flex-shrink-0">
+            <div className="relative group">
+              <img
+                className="h-32 w-32 rounded-full object-cover"
+                src={user?.avatar || '/default-avatar.png'}
+                alt={user?.name || 'User'}
+              />
+              {isEditing && (
+                <>
+                  <label
+                    htmlFor="avatar-upload"
+                    className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                  >
+                    <Camera className="w-6 h-6 text-white" />
+                  </label>
+                  <input
+                    id="avatar-upload"
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    ref={fileInputRef}
+                  />
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className="flex-1">
+            <dl className="space-y-4">
+              <div className="sm:grid sm:grid-cols-3 sm:gap-4">
+                <dt className="text-sm font-medium text-gray-500">Full name</dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={editedUser.name}
+                      onChange={(e) => setEditedUser({ ...editedUser, name: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  ) : (
+                    user?.name || 'Not provided'
+                  )}
+                </dd>
+              </div>
+
+              <div className="sm:grid sm:grid-cols-3 sm:gap-4">
+                <dt className="text-sm font-medium text-gray-500">Email address</dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {isEditing ? (
+                    <input
+                      type="email"
+                      value={editedUser.email}
+                      onChange={(e) => setEditedUser({ ...editedUser, email: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  ) : (
+                    user?.email || 'Not provided'
+                  )}
+                </dd>
+              </div>
+
+              <div className="sm:grid sm:grid-cols-3 sm:gap-4">
+                <dt className="text-sm font-medium text-gray-500">Phone</dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {isEditing ? (
+                    <input
+                      type="tel"
+                      value={editedUser.phone}
+                      onChange={(e) => setEditedUser({ ...editedUser, phone: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  ) : (
+                    user?.phone || 'Not provided'
+                  )}
+                </dd>
+              </div>
+
+              <div className="sm:grid sm:grid-cols-3 sm:gap-4">
+                <dt className="text-sm font-medium text-gray-500">Address</dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {isEditing ? (
+                    <textarea
+                      rows={3}
+                      value={editedUser.address}
+                      onChange={(e) => setEditedUser({ ...editedUser, address: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  ) : (
+                    user?.address || 'Not provided'
+                  )}
+                </dd>
+              </div>
+
+              <div className="sm:grid sm:grid-cols-3 sm:gap-4">
+                <dt className="text-sm font-medium text-gray-500">Date of Birth</dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {isEditing ? (
+                    <input
+                      type="date"
+                      value={editedUser.dob}
+                      onChange={(e) => setEditedUser({ ...editedUser, dob: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  ) : (
+                    user?.dob || 'Not provided'
+                  )}
+                </dd>
+              </div>
+            </dl>
+
+            {isEditing && (
+              <div className="mt-6 flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={isLoading}
+                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Render queries section
+  const renderQueriesSection = () => (
+    <div className="px-4 py-5 sm:px-6">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-semibold text-gray-900">My Queries</h2>
+        <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          <Plus className="-ml-1 mr-2 h-5 w-5" />
+          New Query
+        </button>
+      </div>
+      
+      {queries.length === 0 ? (
+        <div className="text-center py-12 bg-gray-50 rounded-lg">
+          <MessageSquare className="mx-auto h-12 w-12 text-gray-400" />
+          <h3 className="mt-2 text-sm font-medium text-gray-900">No queries yet</h3>
+          <p className="mt-1 text-sm text-gray-500">Get started by asking a new question.</p>
+          <div className="mt-6">
+            <button
+              type="button"
+              className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              <Plus className="-ml-1 mr-2 h-5 w-5" />
+              New Query
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-white shadow overflow-hidden sm:rounded-md">
+          <ul className="divide-y divide-gray-200">
+            {queries.map((query) => (
+              <li key={query.id}>
+                <div className="px-4 py-4 sm:px-6">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium text-blue-600 truncate">{query.title}</p>
+                    <div className="ml-2 flex-shrink-0 flex">
+                      <p className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        query.status === 'Open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {query.status}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-2 sm:flex sm:justify-between">
+                    <div className="sm:flex">
+                      <p className="flex items-center text-sm text-gray-500">
+                        <Clock className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" />
+                        {query.date}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+
+  // Render appointments section
+  const renderAppointmentsSection = () => (
+    <div className="px-4 py-5 sm:px-6">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-semibold text-gray-900">My Appointments</h2>
+        <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          <Plus className="-ml-1 mr-2 h-5 w-5" />
+          Schedule Appointment
+        </button>
+      </div>
+      
+      {appointments.length === 0 ? (
+        <div className="text-center py-12 bg-gray-50 rounded-lg">
+          <Clock className="mx-auto h-12 w-12 text-gray-400" />
+          <h3 className="mt-2 text-sm font-medium text-gray-900">No appointments scheduled</h3>
+          <p className="mt-1 text-sm text-gray-500">Schedule your first appointment to get started.</p>
+          <div className="mt-6">
+            <button
+              type="button"
+              className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              <Plus className="-ml-1 mr-2 h-5 w-5" />
+              Schedule Appointment
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-white shadow overflow-hidden sm:rounded-md">
+          <ul className="divide-y divide-gray-200">
+            {appointments.map((appointment) => (
+              <li key={appointment.id}>
+                <div className="px-4 py-4 sm:px-6">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium text-blue-600 truncate">{appointment.title}</p>
+                    <div className="ml-2 flex-shrink-0 flex">
+                      <p className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        appointment.status === 'Upcoming' ? 'bg-blue-100 text-blue-800' : 
+                        appointment.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {appointment.status}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-2 sm:flex sm:justify-between">
+                    <div className="sm:flex">
+                      <p className="flex items-center text-sm text-gray-500">
+                        <Clock className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" />
+                        {appointment.date} at {appointment.time}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+
+  if (!user) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-4xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+        <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+          <div className="border-b border-gray-200">
+            <nav className="flex -mb-px">
+              <button
+                onClick={() => setActiveTab('profile')}
+                className={`${
+                  activeTab === 'profile'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+              >
+                Profile
+              </button>
+              <button
+                onClick={() => setActiveTab('queries')}
+                className={`${
+                  activeTab === 'queries'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ml-8`}
+              >
+                My Queries
+              </button>
+              <button
+                onClick={() => setActiveTab('appointments')}
+                className={`${
+                  activeTab === 'appointments'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ml-8`}
+              >
+                Appointments
+              </button>
+            </nav>
+          </div>
+          
+          {activeTab === 'profile' && renderProfileSection()}
+          {activeTab === 'queries' && renderQueriesSection()}
+          {activeTab === 'appointments' && renderAppointmentsSection()}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ProfilePage;

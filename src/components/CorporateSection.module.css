@@ -1,0 +1,32 @@
+.borderAnimation {
+  position: relative;
+  overflow: hidden;
+}
+
+.borderAnimation::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, transparent),
+              linear-gradient(transparent, transparent),
+              linear-gradient(90deg, #3b82f6, #8b5cf6),
+              linear-gradient(0deg, #3b82f6, #8b5cf6);
+  background-size: 200% 100%, 100% 200%, 200% 100%, 100% 200%;
+  background-position: 0 0, 0 100%, 0 0, 100% 0;
+  background-repeat: no-repeat;
+  animation: borderAnimation 2s linear infinite;
+  border-radius: 1rem;
+  z-index: -1;
+}
+
+@keyframes borderAnimation {
+  0% {
+    background-position: 0 0, 0 100%, 0 0, 100% 0;
+  }
+  100% {
+    background-position: 200% 0, 0 100%, 0 0, 100% 0;
+  }
+}

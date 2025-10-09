@@ -1,0 +1,24 @@
+extends baseEmail
+
+block content
+  tr
+    td(style="padding: 40px 20px; text-align: center;")
+      h1(style="color: #2563eb; margin-bottom: 20px; font-size: 28px;") Callback Request Received!
+      
+      p(style="font-size: 16px; color: #374151; margin-bottom: 20px;")
+        | Hi #{firstName},
+      
+      p(style="font-size: 16px; color: #374151; margin-bottom: 30px;")
+        | Thank you for your callback request! We have received your information and our team will contact you soon.
+      
+      div(style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;")
+        p(style="font-size: 14px; color: #6b7280; margin: 0;")
+          | We typically respond within 24 hours during business days.
+      
+      p(style="font-size: 16px; color: #374151; margin-bottom: 30px;")
+        | If you have any urgent questions, feel free to reach out to us directly.
+      
+      p(style="font-size: 14px; color: #6b7280;")
+        | Best regards,
+        br
+        | The Career Redefine Team

@@ -1,0 +1,9 @@
+extends baseEmail
+
+block content
+  p Hi #{firstName},
+  p Your OTP for #{purpose || 'verification'} is:
+  h2(style='font-size: 36px; font-weight: bold; text-align: center; letter-spacing: 5px; margin: 20px 0;') #{otp}
+  p This OTP is valid for #{expiration || '10 minutes'}. Please do not share it with anyone.
+  p If you didn't request this, please ignore this email or contact support if you have any concerns.
+  p - The careerRedefine Team

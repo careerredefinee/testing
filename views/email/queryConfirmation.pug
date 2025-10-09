@@ -1,0 +1,14 @@
+extends baseEmail
+
+block content
+  p Hi #{name},
+  p We've received your query regarding "#{subject}".
+  p Our team will review your message and get back to you as soon as possible.
+  p Your query ID is: #{queryId}
+  p You can use this ID to track the status of your query.
+  p For your records, here's what you submitted:
+  p "#{message}"
+  p If you have any additional information to add, please reply to this email.
+  p Thank you for contacting us!
+  p Best regards,
+  p The careerRedefine Team
