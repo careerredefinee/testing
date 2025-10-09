@@ -546,8 +546,8 @@ if (queryForm) {
     // Determine the endpoint based on form type
 const isInterviewForm = this.querySelector('input[name="interview_date"]') !== null;
 const endpoint = isInterviewForm 
-  ? 'http://localhost:3000/api/book-interview' 
-  : 'http://localhost:3000/api/enquiry';
+  ? 'https://test5-x7xt.onrender.com/api/book-interview' 
+  : 'https://test5-x7xt.onrender.com/api/enquiry';
 
     // Submit to Node.js backend
     fetch(endpoint, {

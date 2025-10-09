@@ -1097,6 +1097,21 @@ app.post('/api/v1/ai/image', protect, aiController.generateImage);
 app.post('/api/v1/ai/music', protect, aiController.generateMusic);
 app.post('/api/v1/ai/video', protect, aiController.generateVideo);
 
+// ----- Tools (aliases for AI) -----
+// Public health
+app.get('/api/v1/tools/health', aiController.health);
+// Non-premium tools (require login but not premium)
+app.post('/api/v1/tools/chat', protect, aiController.chat);
+app.post('/api/v1/tools/code', protect, aiController.generateCode);
+app.post('/api/v1/tools/document', protect, aiController.analyzeDocument);
+// Premium tools require premium or admin
+app.post('/api/v1/premium-tools/chat', protect, requirePremium, aiController.chat);
+app.post('/api/v1/premium-tools/code', protect, requirePremium, aiController.generateCode);
+app.post('/api/v1/premium-tools/document', protect, requirePremium, aiController.analyzeDocument);
+app.post('/api/v1/premium-tools/image', protect, requirePremium, aiController.generateImage);
+app.post('/api/v1/premium-tools/music', protect, requirePremium, aiController.generateMusic);
+app.post('/api/v1/premium-tools/video', protect, requirePremium, aiController.generateVideo);
+
 // ----- Resume (Upload + Analysis) -----
 app.post(
   '/api/v1/resume/analyze',
