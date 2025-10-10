@@ -12,6 +12,7 @@ import DocumentTool from '../components/ai-tools/DocumentTool';
 import MusicTool from '../components/ai-tools/MusicTool';
 import VideoTool from '../components/ai-tools/VideoTool';
 import CrashCourseTool from '../components/ai-tools/CrashCourseTool';
+import RecipeTool from '../components/ai-tools/RecipeTool';
 
 interface ToolCardProps {
   title: string;
@@ -113,6 +114,14 @@ const AIToolsPage: React.FC = () => {
       gradient: 'from-green-500 to-emerald-600'
     },
     {
+      id: 'recipe',
+      title: 'Recipe Generator (Gemini)',
+      description: 'Create step-by-step recipes from your ingredients, diet and time using Gemini.',
+      buttonText: 'Generate Recipe',
+      icon: <FileText size={26} />,
+      gradient: 'from-emerald-500 to-teal-600'
+    },
+    {
       id: 'code',
       title: 'Code Generator',
       description: 'Generate code snippets in multiple languages from natural language prompts.',
@@ -169,6 +178,7 @@ const AIToolsPage: React.FC = () => {
       resume: <ResumeTool onClose={close} />,
       mentor: <MentorTool onClose={close} />,
       'crash-course': <CrashCourseTool onClose={close} />,
+      recipe: <RecipeTool onClose={close} />,
       code: <CodeTool onClose={close} />,
       image: <ImageTool onClose={close} />,
       document: <DocumentTool onClose={close} />,

@@ -9,6 +9,7 @@ import SalaryTool from './ai-tools/SalaryTool';
 import ResumeTool from './ai-tools/ResumeTool';
 import MentorTool from './ai-tools/MentorTool';
 import CrashCourseTool from './ai-tools/CrashCourseTool';
+import RecipeTool from './ai-tools/RecipeTool';
 
 const tools = [
   {
@@ -60,6 +61,14 @@ const tools = [
     cta: 'Generate Crash Course',
   },
   {
+    id: 'recipe',
+    icon: <FileText className="w-8 h-8" />,
+    title: 'Recipe Generator (Gemini)',
+    description: 'Create step-by-step recipes from your ingredients, diet and time using Gemini.',
+    gradient: 'from-emerald-500 to-teal-600',
+    cta: 'Generate Recipe',
+  },
+  {
     id: 'mentor',
     icon: <Bot className="w-8 h-8" />,
     title: '24/7 AI Career Mentor',
@@ -86,6 +95,7 @@ const ToolsSection = () => {
       resume: <ResumeTool onClose={close} />,
       mentor: <MentorTool onClose={close} />,
       'crash-course': <CrashCourseTool onClose={close} />,
+      recipe: <RecipeTool onClose={close} />,
     };
     const node = map[activeTool];
     if (!node) return null;
