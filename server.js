@@ -8,8 +8,6 @@ if (process.env.NODE_ENV !== 'production') {
 // Also merge variables from config.env in all environments so production/test get keys
 // Do not override already-set platform env vars
 dotenv.config({ path: './config.env', override: false });
-// Additionally merge variables from .envcareer (user-specific env file)
-dotenv.config({ path: './.envcareer', override: false });
 
 
 import express from 'express';
@@ -40,7 +38,6 @@ import * as awardController from './controllers/awardController.js';
 import * as bookingController from './controllers/bookingController.js';
 import * as authController from './controllers/authController.js';
 import * as aiController from './controllers/aiController.js';
-import * as toolsController from './controllers/toolsController.js';
 import * as questionController from './controllers/questionController.js';
 import * as championController from './controllers/championController.js';
 import * as mentorController from './controllers/mentorController.js';
@@ -708,6 +705,44 @@ app.get('/api/v1/test/db', async (req, res) => {
 // ----- Compatibility routes for legacy/static forms -----
 // This section handles form submissions from static HTML pages like datascience.html
 
+// Public: generic enquiry used by static HTML pages for queries (e.g., 'Request a Call Back')
+app.post('/api/enquiry', (req, res, next) => {
+  try {
+    const { name, email, phone, message, qualification, subject, page, form_type } = req.body || {};
+    // Build a sensible subject if missing
+    const derivedSubject = subject || `${page || 'General'} ${form_type === 'interview' ? 'Interview ' : ''}Enquiry`.trim();
+    // If no message provided, compose one including qualification
+    const composedMessage = message || `User enquiry submitted.${qualification ? ` Qualification: ${qualification}.` : ''}`;
+
+    // Normalize body to what queryController expects
+    req.body = {
+      name,
+      email,
+      phone,
+      subject: derivedSubject,
+      message: composedMessage,
+    };
+
+    return queryController.createQuery(req, res, next);
+  } catch (e) {
+    return res.status(400).json({ status: 'fail', message: e.message });
+  }
+});
+
+// Mirror path for the above enquiry form, without the /api prefix, for proxy compatibility.
+app.post('/enquiry', (req, res, next) => {
+  try {
+    const { name, email, phone, message, qualification, subject, page, form_type } = req.body || {};
+    const derivedSubject = subject || `${page || 'General'} ${form_type === 'interview' ? 'Interview ' : ''}Enquiry`.trim();
+    const composedMessage = message || `User enquiry submitted.${qualification ? ` Qualification: ${qualification}.` : ''}`;
+    req.body = { name, email, phone, subject: derivedSubject, message: composedMessage };
+    return queryController.createQuery(req, res, next);
+  } catch (e) {
+    return res.status(400).json({ status: 'fail', message: e.message });
+  }
+});
+
+// Public: interview booking used by static HTML pages for appointments (e.g., 'Book a Free Live Class')
 // Public: interview booking used by static HTML pages for appointments (e.g., 'Book a Free Live Class')
 app.post('/api/book-interview', (req, res, next) => {
   try {
@@ -748,6 +783,42 @@ app.post('/book-interview', (req, res, next) => {
   }
 });
 
+// ----- Legacy PHP compatibility for static course pages -----
+// Many static course pages post to relative action="course.php" which resolves to
+// /courses/course.php or /courses/courses/course.php. Provide handlers that
+// normalize to our Node controllers so forms work without PHP.
+app.post(['/courses/course.php', '/courses/courses/course.php'], (req, res, next) => {
+  try {
+    const { form_type } = req.body || {};
+    // Enquiry form
+    if (!form_type || String(form_type).toLowerCase() === 'enquiry') {
+      const { name, email, phone, message, qualification, subject, page } = req.body || {};
+      const derivedSubject = subject || `${page || 'Course'} Enquiry`;
+      const composedMessage = message || `User enquiry submitted.${qualification ? ` Qualification: ${qualification}.` : ''}`;
+      req.body = { name, email, phone, subject: derivedSubject, message: composedMessage };
+      return queryController.createQuery(req, res, next);
+    }
+
+    // Interview/booking form
+    if (String(form_type).toLowerCase() === 'interview') {
+      const { name, email, phone, message, interview_date, interview_time, date, time, timeSlot } = req.body || {};
+      const normalizedDate = interview_date || date;
+      const normalizedTime = interview_time || time || timeSlot;
+      req.body = { name, email, phone, message, date: normalizedDate, timeSlot: normalizedTime, type: 'consultation' };
+      return bookingController.createBooking(req, res, next);
+    }
+
+    // Default to enquiry if unknown type
+    const { name, email, phone, message, qualification, subject, page } = req.body || {};
+    const derivedSubject = subject || `${page || 'Course'} Enquiry`;
+    const composedMessage = message || `User enquiry submitted.${qualification ? ` Qualification: ${qualification}.` : ''}`;
+    req.body = { name, email, phone, subject: derivedSubject, message: composedMessage };
+    return queryController.createQuery(req, res, next);
+  } catch (e) {
+    return res.status(400).json({ status: 'fail', message: e.message });
+  }
+});
+
 // ----- Queries -----
 // Public submit
 app.post('/api/v1/queries', queryController.createQuery);
@@ -762,7 +833,6 @@ app.patch('/api/v1/queries/:id/status', protect, restrictTo('admin'), queryContr
 app.post('/api/v1/queries/:id/reply', protect, restrictTo('admin'), queryController.replyToQuery);
 // Admin: hard delete a query
 app.delete('/api/v1/queries/:id', protect, restrictTo('admin'), queryController.deleteQuery);
-
 
 
 // ----- Questions -----
@@ -970,35 +1040,6 @@ app.patch(
 );
 app.delete('/api/v1/mentors/:id', protect, restrictTo('admin'), mentorController.deleteMentor);
 
-
-// ----- Admin: Create Static HTML Pages -----
-app.post('/api/v1/admin/html-pages', protect, restrictTo('admin'), async (req, res) => {
-  try {
-    const { filename, location = 'courses', content } = req.body || {};
-    if (!filename || !/^[A-Za-z0-9._-]+\.html?$/i.test(String(filename))) {
-      return res.status(400).json({ status: 'fail', message: 'Invalid filename. Use letters, numbers, dot, dash, underscore and end with .html' });
-    }
-    if (!content || String(content).trim().length === 0) {
-      return res.status(400).json({ status: 'fail', message: 'Content is required' });
-    }
-    const loc = String(location).toLowerCase();
-    if (!['courses', 'articles'].includes(loc)) {
-      return res.status(400).json({ status: 'fail', message: 'location must be "courses" or "articles"' });
-    }
-
-    const targetDir = path.join(__dirname, 'public', loc);
-    await fs.mkdir(targetDir, { recursive: true });
-    const filePath = path.join(targetDir, filename);
-    await fs.writeFile(filePath, String(content), 'utf8');
-
-    const urlPath = `/${loc}/${filename}`;
-    const url = `${req.protocol}://${req.get('host')}${urlPath}`;
-    return res.status(201).json({ status: 'success', message: 'Page created successfully', path: urlPath, file: filePath, url });
-  } catch (e) {
-    console.error('Admin html-pages error:', e);
-    return res.status(500).json({ status: 'error', message: 'Failed to create page' });
-  }
-});
 // ----- Brands (Accreditations & Partnerships) -----
 // Public
 app.get('/api/v1/brands', brandController.getAllBrands);
@@ -1049,23 +1090,16 @@ app.delete('/api/v1/admin/premium-meetings/:id', protect, restrictTo('admin'), p
 
 // ----- AI -----
 app.get('/api/v1/ai/health', aiController.health);
-// Public AI endpoints (graceful fallbacks when no key configured)
-app.post('/api/v1/ai/chat', aiController.chat);
-app.post('/api/v1/ai/code', aiController.generateCode);
-app.post('/api/v1/ai/document', aiController.analyzeDocument);
-app.post('/api/v1/ai/image', aiController.generateImage);
-app.post('/api/v1/ai/music', aiController.generateMusic);
-app.post('/api/v1/ai/video', aiController.generateVideo);
+// Auth required for AI endpoints
+app.post('/api/v1/ai/chat', protect, aiController.chat);
+app.post('/api/v1/ai/code', protect, aiController.generateCode);
+app.post('/api/v1/ai/document', protect, aiController.analyzeDocument);
+app.post('/api/v1/ai/image', protect, aiController.generateImage);
+app.post('/api/v1/ai/music', protect, aiController.generateMusic);
+app.post('/api/v1/ai/video', protect, aiController.generateVideo);
 
 // ----- Tools (aliases for AI) -----
 // Public health
-// ----- New Tools v2 (fresh endpoints) -----
-app.post('/api/v2/tools/career-path', toolsController.careerPath);
-app.post('/api/v2/tools/interview', toolsController.interviewSim);
-app.post('/api/v2/tools/skill-gap', toolsController.skillGap);
-app.post('/api/v2/tools/salary', toolsController.salaryAdvisor);
-app.post('/api/v2/tools/resume', toolsController.resumeAssistant);
-app.post('/api/v2/tools/mentor', toolsController.mentor);
 app.get('/api/v1/tools/health', aiController.health);
 // Non-premium tools (require login but not premium)
 app.post('/api/v1/tools/chat', protect, aiController.chat);
