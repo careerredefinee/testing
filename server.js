@@ -1039,6 +1039,35 @@ app.patch(
 );
 app.delete('/api/v1/mentors/:id', protect, restrictTo('admin'), mentorController.deleteMentor);
 
+
+// ----- Admin: Create Static HTML Pages -----
+app.post('/api/v1/admin/html-pages', protect, restrictTo('admin'), async (req, res) => {
+  try {
+    const { filename, location = 'courses', content } = req.body || {};
+    if (!filename || !/^[A-Za-z0-9._-]+\.html?$/i.test(String(filename))) {
+      return res.status(400).json({ status: 'fail', message: 'Invalid filename. Use letters, numbers, dot, dash, underscore and end with .html' });
+    }
+    if (!content || String(content).trim().length === 0) {
+      return res.status(400).json({ status: 'fail', message: 'Content is required' });
+    }
+    const loc = String(location).toLowerCase();
+    if (!['courses', 'articles'].includes(loc)) {
+      return res.status(400).json({ status: 'fail', message: 'location must be "courses" or "articles"' });
+    }
+
+    const targetDir = path.join(__dirname, 'public', loc);
+    await fs.mkdir(targetDir, { recursive: true });
+    const filePath = path.join(targetDir, filename);
+    await fs.writeFile(filePath, String(content), 'utf8');
+
+    const urlPath = `/${loc}/${filename}`;
+    const url = `${req.protocol}://${req.get('host')}${urlPath}`;
+    return res.status(201).json({ status: 'success', message: 'Page created successfully', path: urlPath, file: filePath, url });
+  } catch (e) {
+    console.error('Admin html-pages error:', e);
+    return res.status(500).json({ status: 'error', message: 'Failed to create page' });
+  }
+});
 // ----- Brands (Accreditations & Partnerships) -----
 // Public
 app.get('/api/v1/brands', brandController.getAllBrands);

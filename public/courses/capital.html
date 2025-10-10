@@ -648,14 +648,14 @@ const endpoint = isInterviewForm
       <h2 style="font-size:2rem; color:#0d47a1; font-weight:800; margin:0 0 6px;">
         <i class="bi bi-calendar-check-fill" style="margin-right:8px;"></i>Book Your Interview Slot
       </h2>
-      <p style="color:#555; margin:0;">Fast booking. Response within minutes (7:00 AM – 7:00 PM).</n+      </p>
+      <p style="color:#555; margin:0;">Fast booking. Response within minutes (7:00 AM – 7:00 PM).</p>
     </div>
 
     <form id="fastInterviewForm" style="background:#fff; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.08); padding:18px; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px;">
       <input type="hidden" name="form_type" value="interview">
       <input name="name" placeholder="Full Name *" required style="padding:12px 14px; border:1px solid #e5e7eb; border-radius:10px;">
       <input type="email" name="email" placeholder="Email *" required style="padding:12px 14px; border:1px solid #e5e7eb; border-radius:10px;">
-      <input name="phone" placeholder="Phone *" required pattern="^[0-9+\-()\s]{7,}$" style="padding:12px 14px; border:1px solid #e5e7eb; border-radius:10px;">
+      <input name="phone" placeholder="Phone *" required pattern="^[0-9 ()+-]{7,}$" style="padding:12px 14px; border:1px solid #e5e7eb; border-radius:10px;">
       <input type="date" name="interview_date" id="fast_date" required style="padding:12px 14px; border:1px solid #e5e7eb; border-radius:10px;">
       <select name="interview_time" id="fast_time" required style="padding:12px 14px; border:1px solid #e5e7eb; border-radius:10px; background:#fff;">
         <option value="">Select Time</option>
@@ -681,10 +681,26 @@ const endpoint = isInterviewForm
         const dd = String(today.getDate()).padStart(2,'0');
         dateEl.min = `${yyyy}-${mm}-${dd}`;
 
+        function todayYMD(){
+          const d = new Date();
+          const yyyy = d.getFullYear();
+          const mm = String(d.getMonth()+1).padStart(2,'0');
+          const dd = String(d.getDate()).padStart(2,'0');
+          return `${yyyy}-${mm}-${dd}`;
+        }
+
         function populateTimes(){
           timeEl.innerHTML = '<option value="">Select Time</option>';
+          const now = new Date();
+          const isToday = dateEl.value === todayYMD();
           for(let h=7; h<=19; h++){
             for(let m=0; m<60; m+=30){
+              // Skip past slots when booking for today
+              if (isToday) {
+                const slotMinutes = h*60 + m;
+                const nowMinutes = now.getHours()*60 + now.getMinutes();
+                if (slotMinutes <= nowMinutes) continue;
+              }
               const hh = String(h).padStart(2,'0');
               const mm = String(m).padStart(2,'0');
               const label = `${hh}:${mm}`;
@@ -694,7 +710,9 @@ const endpoint = isInterviewForm
             }
           }
         }
+        // Populate and re-populate when date changes
         populateTimes();
+        dateEl.addEventListener('change', populateTimes);
 
         function setLoading(loading){
           const txt = submitBtn.querySelector('.txt');
