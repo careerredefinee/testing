@@ -8,7 +8,6 @@ import ScrollToTop from './components/ScrollToTop';
 import HomePage from './HomePage';
 import ServicesPage from './ServicesPage';
 import CoursesPage from './CoursesPage';
-import ToolsPage from './ToolsPage';
 import SupportPage from './SupportPage';
 import JobsPage from './JobsPage';
 import ReviewsPage from './ReviewsPage';
@@ -32,7 +31,6 @@ import PremiumPage from './pages/PremiumPage';
 import AdminGroupsPage from './pages/admin/GroupsPage';
 import GroupChatPage from './pages/GroupChatPage';
 import GroupsListPage from './pages/GroupsListPage';
-import PremiumToolsPage from './pages/PremiumToolsPage';
 import AssessmentsPage from './pages/admin/AssessmentsPage';
 import OptionalPage from './pages/admin/OptionalPage';
 
@@ -61,7 +59,7 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/services" element={<ServicesPage />} />
               <Route path="/courses" element={<CoursesPage />} />
-              <Route path="/tools" element={<ToolsPage />} />
+              {/** tools route removed as requested */}
               <Route path="/support" element={<SupportPage />} />
               <Route path="/jobs" element={<JobsPage />} />
               <Route path="/reviews" element={<ReviewsPage />} />
@@ -77,14 +75,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route
-                path="/premium-tools"
-                element={
-                  <ProtectedRoute requiredPremium redirectTo="/login">
-                    <PremiumToolsPage />
-                  </ProtectedRoute>
-                }
-              />
+              {/** premium-tools route removed as requested */}
               <Route
                 path="/profile"
                 element={

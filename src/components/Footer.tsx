@@ -25,7 +25,6 @@ const Footer = () => {
 
   const supportLinks = [
     { name: 'Help Center', href: '/support' },
-    { name: 'Tools', href: '/tools' },
     { name: 'Reviews', href: '/reviews' },
     { name: 'About', href: '/about' },
   ];
