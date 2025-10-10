@@ -652,122 +652,82 @@ const endpoint = isInterviewForm
   </script>
 </section>
 
-<!-- Interview Booking Section -->
-<section id="interview-booking" style="padding:60px 0; background:#f5f7ff;">
-  <div style="max-width:900px; margin:0 auto; padding:0 16px;">
-    <div style="text-align:center; margin-bottom:20px;">
-      <h2 style="font-size:2rem; color:#0d47a1; font-weight:800; margin:0 0 6px;">
-        <i class="bi bi-calendar-check-fill" style="margin-right:8px;"></i>Book Your Interview Slot
-      </h2>
-      <p style="color:#555; margin:0;">Fast booking. Response within minutes (7:00 AM – 7:00 PM).
-      </p>
+<!-- New Interview Booking (Recreated) -->
+<section id="slot-booking" style="padding:56px 0; background:#eef6ff;">
+  <div style="max-width:880px; margin:0 auto; padding:0 16px;">
+    <div style="text-align:center; margin-bottom:16px;">
+      <h2 style="font-size:1.9rem; color:#0b4aa2; font-weight:800; margin:0;">Schedule a Free Live Session</h2>
+      <small style="display:block; color:#5b6b7a; margin-top:6px;">Available 07:00–19:00 IST daily</small>
     </div>
 
-    <form id="fastInterviewForm" style="background:#fff; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.08); padding:18px; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px;">
+    <form id="slotForm" style="background:#ffffff; border:1px solid #e6eef7; border-radius:14px; padding:18px; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px;">
       <input type="hidden" name="form_type" value="interview">
-      <input name="name" placeholder="Full Name *" required style="padding:12px 14px; border:1px solid #e5e7eb; border-radius:10px;">
-      <input type="email" name="email" placeholder="Email *" required style="padding:12px 14px; border:1px solid #e5e7eb; border-radius:10px;">
-      <input name="phone" placeholder="Phone *" required pattern="^[0-9 ()+-]{7,}$" style="padding:12px 14px; border:1px solid #e5e7eb; border-radius:10px;">
-      <input type="date" name="interview_date" id="fast_date" required style="padding:12px 14px; border:1px solid #e5e7eb; border-radius:10px;">
-      <select name="interview_time" id="fast_time" required style="padding:12px 14px; border:1px solid #e5e7eb; border-radius:10px; background:#fff;">
-        <option value="">Select Time</option>
+      <input name="name" placeholder="Full name *" required style="padding:12px 14px; border:1px solid #d5dfeb; border-radius:10px;">
+      <input type="email" name="email" placeholder="Email *" required style="padding:12px 14px; border:1px solid #d5dfeb; border-radius:10px;">
+      <input name="phone" placeholder="Phone *" required pattern="^[0-9 ()+-]{7,}$" style="padding:12px 14px; border:1px solid #d5dfeb; border-radius:10px;">
+      <input type="date" name="interview_date" id="slot_date" required style="padding:12px 14px; border:1px solid #d5dfeb; border-radius:10px;">
+      <select name="interview_time" id="slot_time" required style="padding:12px 14px; border:1px solid #d5dfeb; border-radius:10px; background:#fff;">
+        <option value="">Select time</option>
       </select>
-      <button type="submit" id="fastSubmit" style="grid-column:1/-1; padding:12px 18px; background:#0d47a1; color:#fff; border:none; border-radius:10px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:8px;">
-        <span class="txt">Book Interview</span>
-        <span class="spn" style="width:18px; height:18px; border:2px solid rgba(255,255,255,0.4); border-top-color:#fff; border-radius:50%; display:none; animation: spin 1s linear infinite;"></span>
-      </button>
-      <div id="fastMsg" style="grid-column:1/-1; display:none; padding:10px 12px; border-radius:10px; font-weight:600;"></div>
+      <button type="submit" id="slot_btn" style="grid-column:1/-1; padding:12px 18px; background:#0b4aa2; color:#fff; border:none; border-radius:10px; font-weight:700; cursor:pointer;">Schedule</button>
+      <div id="slot_msg" style="grid-column:1/-1; display:none; padding:10px 12px; border-radius:10px; font-weight:600;"></div>
     </form>
 
     <script>
       (function(){
-        const form = document.getElementById('fastInterviewForm');
-        const dateEl = document.getElementById('fast_date');
-        const timeEl = document.getElementById('fast_time');
-        const submitBtn = document.getElementById('fastSubmit');
-        const msg = document.getElementById('fastMsg');
+        const form = document.getElementById('slotForm');
+        const dateEl = document.getElementById('slot_date');
+        const timeEl = document.getElementById('slot_time');
+        const btn = document.getElementById('slot_btn');
+        const msg = document.getElementById('slot_msg');
 
-        // Set min date = today
+        // min date = today
         const today = new Date();
-        const yyyy = today.getFullYear();
-        const mm = String(today.getMonth()+1).padStart(2,'0');
-        const dd = String(today.getDate()).padStart(2,'0');
-        dateEl.min = `${yyyy}-${mm}-${dd}`;
+        const toYMD = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        dateEl.min = toYMD(today);
 
-        // Helpers and time population with same-day past-time filtering
-        function todayYMD(){
-          const d = new Date();
-          const yyyy = d.getFullYear();
-          const mm = String(d.getMonth()+1).padStart(2,'0');
-          const dd = String(d.getDate()).padStart(2,'0');
-          return `${yyyy}-${mm}-${dd}`;
-        }
-
-        function populateTimes(){
-          timeEl.innerHTML = '<option value="">Select Time</option>';
+        function fillTimes(){
+          timeEl.innerHTML = '<option value="">Select time</option>';
           const now = new Date();
-          const isToday = dateEl.value === todayYMD();
-          for(let h=7; h<=19; h++){
-            for(let m=0; m<60; m+=30){
-              if (isToday) {
-                const slotMinutes = h*60 + m;
-                const nowMinutes = now.getHours()*60 + now.getMinutes();
-                if (slotMinutes <= nowMinutes) continue;
+          const selected = dateEl.value;
+          const isToday = selected === toYMD(new Date());
+          for (let h=7; h<=19; h++){
+            for (let m=0; m<60; m+=30){
+              if (isToday){
+                const slot = h*60+m;
+                const cur = now.getHours()*60+now.getMinutes();
+                if (slot <= cur) continue;
               }
-              const hh = String(h).padStart(2,'0');
-              const mm = String(m).padStart(2,'0');
-              const label = `${hh}:${mm}`;
+              const label = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
               const opt = document.createElement('option');
-              opt.value = label; opt.textContent = label;
-              timeEl.appendChild(opt);
+              opt.value = label; opt.textContent = label; timeEl.appendChild(opt);
             }
           }
         }
-        // Initial and on-date-change population
-        populateTimes();
-        dateEl.addEventListener('change', populateTimes);
+        dateEl.addEventListener('change', fillTimes);
+        fillTimes();
 
-        function setLoading(loading){
-          const txt = submitBtn.querySelector('.txt');
-          const spn = submitBtn.querySelector('.spn');
-          submitBtn.disabled = loading;
-          spn.style.display = loading ? 'inline-block' : 'none';
-          txt.textContent = loading ? 'Booking…' : 'Book Interview';
-        }
-
-        function showMsg(type, text){
+        function show(type, text){
           msg.style.display = 'block';
-          msg.style.background = type==='success' ? '#e8f5e9' : '#ffebee';
-          msg.style.color = type==='success' ? '#2e7d32' : '#c62828';
+          msg.style.background = type==='ok' ? '#e8f5e9' : '#ffebee';
+          msg.style.color = type==='ok' ? '#2e7d32' : '#c62828';
           msg.textContent = text;
         }
 
         form.addEventListener('submit', async (e)=>{
           e.preventDefault();
-          setLoading(true);
-          msg.style.display = 'none';
+          btn.disabled = true; msg.style.display='none';
           try{
-            const formData = new FormData(form);
-            const body = {};
-            formData.forEach((v,k)=> body[k]=v);
-            const res = await fetch('/api/book-interview', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(body)
-            });
-            const ok = res.status===200 || res.status===201;
-            let data = null; try{ data = await res.json(); }catch(_){ data = null; }
-            if(!ok){
-              throw new Error((data && (data.message||data.error)) || `Failed (${res.status})`);
-            }
-            showMsg('success', 'Interview booked! We will confirm shortly via email/SMS.');
-            form.reset();
-            populateTimes();
+            const fd = new FormData(form);
+            const body = {}; fd.forEach((v,k)=> body[k]=v);
+            const r = await fetch('/api/book-interview', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+            const ok = r.status===200 || r.status===201; let data=null; try{ data=await r.json(); }catch(_){ }
+            if(!ok) throw new Error((data && (data.message||data.error)) || `Failed (${r.status})`);
+            show('ok','Booked! You will receive confirmation shortly.');
+            form.reset(); fillTimes();
           }catch(err){
-            showMsg('error', err.message || 'Something went wrong. Please try again.');
-          }finally{
-            setLoading(false);
-          }
+            show('err', err.message || 'Something went wrong.');
+          }finally{ btn.disabled=false; }
         });
       })();
     </script>
