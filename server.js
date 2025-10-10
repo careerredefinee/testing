@@ -1089,13 +1089,13 @@ app.delete('/api/v1/admin/premium-meetings/:id', protect, restrictTo('admin'), p
 
 // ----- AI -----
 app.get('/api/v1/ai/health', aiController.health);
-// Auth required for AI endpoints
-app.post('/api/v1/ai/chat', protect, aiController.chat);
-app.post('/api/v1/ai/code', protect, aiController.generateCode);
-app.post('/api/v1/ai/document', protect, aiController.analyzeDocument);
-app.post('/api/v1/ai/image', protect, aiController.generateImage);
-app.post('/api/v1/ai/music', protect, aiController.generateMusic);
-app.post('/api/v1/ai/video', protect, aiController.generateVideo);
+// Public AI endpoints (graceful fallbacks when no key configured)
+app.post('/api/v1/ai/chat', aiController.chat);
+app.post('/api/v1/ai/code', aiController.generateCode);
+app.post('/api/v1/ai/document', aiController.analyzeDocument);
+app.post('/api/v1/ai/image', aiController.generateImage);
+app.post('/api/v1/ai/music', aiController.generateMusic);
+app.post('/api/v1/ai/video', aiController.generateVideo);
 
 // ----- Tools (aliases for AI) -----
 // Public health

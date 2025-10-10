@@ -653,107 +653,107 @@ const endpoint = isInterviewForm
 </section>
 
 <!-- Interview Booking Section -->
-<section id="interview-booking" style="padding: 70px 0; background: linear-gradient(135deg, #f5f7ff, #e8ecff);">
-  <div class="container" style="max-width: 1000px; margin: 0 auto; padding: 0 20px;">
-    <div class="section-header" style="text-align: center; margin-bottom: 50px;">
-      <h2 style="font-size: 2.5rem; color: #0d47a1; margin-bottom: 15px; font-weight: 700;">
-        <i class="bi bi-calendar-check-fill" style="margin-right: 10px;"></i>Book Your Interview Slot
+<section id="interview-booking" style="padding:60px 0; background:#f5f7ff;">
+  <div style="max-width:900px; margin:0 auto; padding:0 16px;">
+    <div style="text-align:center; margin-bottom:20px;">
+      <h2 style="font-size:2rem; color:#0d47a1; font-weight:800; margin:0 0 6px;">
+        <i class="bi bi-calendar-check-fill" style="margin-right:8px;"></i>Book Your Interview Slot
       </h2>
-      <p style="font-size: 1.1rem; color: #555; max-width: 700px; margin: 0 auto;">
-        Schedule a convenient time for your interview. Our team is available from 7:00 AM to 7:00 PM.
+      <p style="color:#555; margin:0;">Fast booking. Response within minutes (7:00 AM – 7:00 PM).
       </p>
     </div>
 
-    <div class="booking-container" style="background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); overflow: hidden; padding: 30px;">
-      <form id="interviewForm" style="max-width: 600px; margin: 0 auto;">
-        <input type="hidden" name="form_type" value="interview">
-        
-        <div class="form-group" style="margin-bottom: 20px;">
-          <label for="name" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Full Name <span style="color: #e53935;">*</span></label>
-          <input type="text" id="name" name="name" required 
-                 style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; transition: border-color 0.3s;"
-                 placeholder="Enter your full name">
-        </div>
-        
-        <div class="form-row" style="display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px;">
-          <div class="form-group" style="flex: 1; min-width: 250px;">
-            <label for="email" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Email <span style="color: #e53935;">*</span></label>
-            <input type="email" id="email" name="email" required
-                   style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"
-                   placeholder="your.email@example.com">
-          </div>
-          
-          <div class="form-group" style="flex: 1; min-width: 250px;">
-            <label for="phone" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Phone <span style="color: #e53935;">*</span></label>
-            <input type="tel" id="phone" name="phone" required
-                   style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"
-                   placeholder="+91 9876543210">
-          </div>
-        </div>
-        
-        <div class="form-row" style="display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 25px;">
-          <div class="form-group" style="flex: 1; min-width: 250px;">
-            <label for="interview_date" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Interview Date <span style="color: #e53935;">*</span></label>
-            <input type="date" id="interview_date" name="interview_date" required
-                   style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"
-                   min="">
-          </div>
-          
-          <div class="form-group" style="flex: 1; min-width: 250px;">
-            <label for="interview_time" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Interview Time <span style="color: #e53935;">*</span></label>
-            <select id="interview_time" name="interview_time" required
-                    style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; background-color: white;">
-              <option value="">Select a time slot</option>
-              <!-- Time slots will be populated by JavaScript -->
-            </select>
-          </div>
-        </div>
-        
-        <div class="form-actions" style="text-align: center; margin-top: 30px;">
-          <button type="submit" id="submitBtn" 
-                  style="background: linear-gradient(45deg, #0d47a1, #1976d2); color: white; border: none; padding: 14px 40px; 
-                         font-size: 16px; font-weight: 600; border-radius: 50px; cursor: pointer; transition: all 0.3s ease;
-                         box-shadow: 0 4px 15px rgba(13, 71, 161, 0.3);">
-            <span id="submitText">Book Interview</span>
-            <div id="loadingSpinner" class="spinner" style="display: none; margin: 0 auto; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite;"></div>
-          </button>
-        </div>
-      </form>
-      
-      <!-- ATM Card Style Success Message -->
-      <div id="successCard" class="message-card success" style="display: none;">
-        <div class="card-content">
-          <div class="card-icon">
-            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-              <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
-              <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
-            </svg>
-          </div>
-          <div class="card-details">
-            <h3 class="card-title">Success!</h3>
-            <p class="card-message" id="successMessage">Your request has been processed successfully.</p>
-          </div>
-          <button class="close-btn" onclick="hideMessage('success')">×</button>
-        </div>
-      </div>
+    <form id="fastInterviewForm" style="background:#fff; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.08); padding:18px; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px;">
+      <input type="hidden" name="form_type" value="interview">
+      <input name="name" placeholder="Full Name *" required style="padding:12px 14px; border:1px solid #e5e7eb; border-radius:10px;">
+      <input type="email" name="email" placeholder="Email *" required style="padding:12px 14px; border:1px solid #e5e7eb; border-radius:10px;">
+      <input name="phone" placeholder="Phone *" required pattern="^[0-9+\-()\s]{7,}$" style="padding:12px 14px; border:1px solid #e5e7eb; border-radius:10px;">
+      <input type="date" name="interview_date" id="fast_date" required style="padding:12px 14px; border:1px solid #e5e7eb; border-radius:10px;">
+      <select name="interview_time" id="fast_time" required style="padding:12px 14px; border:1px solid #e5e7eb; border-radius:10px; background:#fff;">
+        <option value="">Select Time</option>
+      </select>
+      <button type="submit" id="fastSubmit" style="grid-column:1/-1; padding:12px 18px; background:#0d47a1; color:#fff; border:none; border-radius:10px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:8px;">
+        <span class="txt">Book Interview</span>
+        <span class="spn" style="width:18px; height:18px; border:2px solid rgba(255,255,255,0.4); border-top-color:#fff; border-radius:50%; display:none; animation: spin 1s linear infinite;"></span>
+      </button>
+      <div id="fastMsg" style="grid-column:1/-1; display:none; padding:10px 12px; border-radius:10px; font-weight:600;"></div>
+    </form>
 
-      <!-- ATM Card Style Error Message -->
-      <div id="errorCard" class="message-card error" style="display: none;">
-        <div class="card-content">
-          <div class="card-icon">
-            <svg class="crossmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-              <circle class="crossmark__circle" cx="26" cy="26" r="25" fill="none"/>
-              <path class="crossmark__check" fill="none" d="M16 16 36 36 M36 16 16 36"/>
-            </svg>
-          </div>
-          <div class="card-details">
-            <h3 class="card-title">Error</h3>
-            <p class="card-message" id="errorMessage">An error occurred. Please try again.</p>
-          </div>
-          <button class="close-btn" onclick="hideMessage('error')">×</button>
-        </div>
-      </div>
-    </div>
+    <script>
+      (function(){
+        const form = document.getElementById('fastInterviewForm');
+        const dateEl = document.getElementById('fast_date');
+        const timeEl = document.getElementById('fast_time');
+        const submitBtn = document.getElementById('fastSubmit');
+        const msg = document.getElementById('fastMsg');
+
+        // Set min date = today
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth()+1).padStart(2,'0');
+        const dd = String(today.getDate()).padStart(2,'0');
+        dateEl.min = `${yyyy}-${mm}-${dd}`;
+
+        // Populate 07:00–19:00 each 30 mins
+        function populateTimes(){
+          timeEl.innerHTML = '<option value="">Select Time</option>';
+          for(let h=7; h<=19; h++){
+            for(let m=0; m<60; m+=30){
+              const hh = String(h).padStart(2,'0');
+              const mm = String(m).padStart(2,'0');
+              const label = `${hh}:${mm}`;
+              const opt = document.createElement('option');
+              opt.value = label; opt.textContent = label;
+              timeEl.appendChild(opt);
+            }
+          }
+        }
+        populateTimes();
+
+        function setLoading(loading){
+          const txt = submitBtn.querySelector('.txt');
+          const spn = submitBtn.querySelector('.spn');
+          submitBtn.disabled = loading;
+          spn.style.display = loading ? 'inline-block' : 'none';
+          txt.textContent = loading ? 'Booking…' : 'Book Interview';
+        }
+
+        function showMsg(type, text){
+          msg.style.display = 'block';
+          msg.style.background = type==='success' ? '#e8f5e9' : '#ffebee';
+          msg.style.color = type==='success' ? '#2e7d32' : '#c62828';
+          msg.textContent = text;
+        }
+
+        form.addEventListener('submit', async (e)=>{
+          e.preventDefault();
+          setLoading(true);
+          msg.style.display = 'none';
+          try{
+            const formData = new FormData(form);
+            const body = {};
+            formData.forEach((v,k)=> body[k]=v);
+            const res = await fetch('/api/book-interview', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(body)
+            });
+            const ok = res.status===200 || res.status===201;
+            let data = null; try{ data = await res.json(); }catch(_){ data = null; }
+            if(!ok){
+              throw new Error((data && (data.message||data.error)) || `Failed (${res.status})`);
+            }
+            showMsg('success', 'Interview booked! We will confirm shortly via email/SMS.');
+            form.reset();
+            populateTimes();
+          }catch(err){
+            showMsg('error', err.message || 'Something went wrong. Please try again.');
+          }finally{
+            setLoading(false);
+          }
+        });
+      })();
+    </script>
   </div>
 </section>
 <!-- Interview Success Card -->
@@ -2116,7 +2116,7 @@ document.querySelectorAll('.course-container').forEach(course => {
 });
 </script>
 
-</script>
+
 
 
 <script>
