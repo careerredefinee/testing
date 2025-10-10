@@ -708,43 +708,6 @@ app.get('/api/v1/test/db', async (req, res) => {
 // ----- Compatibility routes for legacy/static forms -----
 // This section handles form submissions from static HTML pages like datascience.html
 
-// Public: generic enquiry used by static HTML pages for queries (e.g., 'Request a Call Back')
-app.post('/api/enquiry', (req, res, next) => {
-  try {
-    const { name, email, phone, message, qualification, subject, page, form_type } = req.body || {};
-    // Build a sensible subject if missing
-    const derivedSubject = subject || `${page || 'General'} ${form_type === 'interview' ? 'Interview ' : ''}Enquiry`.trim();
-    // If no message provided, compose one including qualification
-    const composedMessage = message || `User enquiry submitted.${qualification ? ` Qualification: ${qualification}.` : ''}`;
-
-    // Normalize body to what queryController expects
-    req.body = {
-      name,
-      email,
-      phone,
-      subject: derivedSubject,
-      message: composedMessage,
-    };
-
-    return queryController.createQuery(req, res, next);
-  } catch (e) {
-    return res.status(400).json({ status: 'fail', message: e.message });
-  }
-});
-
-// Mirror path for the above enquiry form, without the /api prefix, for proxy compatibility.
-app.post('/enquiry', (req, res, next) => {
-  try {
-    const { name, email, phone, message, qualification, subject, page, form_type } = req.body || {};
-    const derivedSubject = subject || `${page || 'General'} ${form_type === 'interview' ? 'Interview ' : ''}Enquiry`.trim();
-    const composedMessage = message || `User enquiry submitted.${qualification ? ` Qualification: ${qualification}.` : ''}`;
-    req.body = { name, email, phone, subject: derivedSubject, message: composedMessage };
-    return queryController.createQuery(req, res, next);
-  } catch (e) {
-    return res.status(400).json({ status: 'fail', message: e.message });
-  }
-});
-
 // Public: interview booking used by static HTML pages for appointments (e.g., 'Book a Free Live Class')
 app.post('/api/book-interview', (req, res, next) => {
   try {
@@ -785,42 +748,6 @@ app.post('/book-interview', (req, res, next) => {
   }
 });
 
-// ----- Legacy PHP compatibility for static course pages -----
-// Many static course pages post to relative action="course.php" which resolves to
-// /courses/course.php or /courses/courses/course.php. Provide handlers that
-// normalize to our Node controllers so forms work without PHP.
-app.post(['/courses/course.php', '/courses/courses/course.php'], (req, res, next) => {
-  try {
-    const { form_type } = req.body || {};
-    // Enquiry form
-    if (!form_type || String(form_type).toLowerCase() === 'enquiry') {
-      const { name, email, phone, message, qualification, subject, page } = req.body || {};
-      const derivedSubject = subject || `${page || 'Course'} Enquiry`;
-      const composedMessage = message || `User enquiry submitted.${qualification ? ` Qualification: ${qualification}.` : ''}`;
-      req.body = { name, email, phone, subject: derivedSubject, message: composedMessage };
-      return queryController.createQuery(req, res, next);
-    }
-
-    // Interview/booking form
-    if (String(form_type).toLowerCase() === 'interview') {
-      const { name, email, phone, message, interview_date, interview_time, date, time, timeSlot } = req.body || {};
-      const normalizedDate = interview_date || date;
-      const normalizedTime = interview_time || time || timeSlot;
-      req.body = { name, email, phone, message, date: normalizedDate, timeSlot: normalizedTime, type: 'consultation' };
-      return bookingController.createBooking(req, res, next);
-    }
-
-    // Default to enquiry if unknown type
-    const { name, email, phone, message, qualification, subject, page } = req.body || {};
-    const derivedSubject = subject || `${page || 'Course'} Enquiry`;
-    const composedMessage = message || `User enquiry submitted.${qualification ? ` Qualification: ${qualification}.` : ''}`;
-    req.body = { name, email, phone, subject: derivedSubject, message: composedMessage };
-    return queryController.createQuery(req, res, next);
-  } catch (e) {
-    return res.status(400).json({ status: 'fail', message: e.message });
-  }
-});
-
 // ----- Queries -----
 // Public submit
 app.post('/api/v1/queries', queryController.createQuery);
@@ -835,6 +762,7 @@ app.patch('/api/v1/queries/:id/status', protect, restrictTo('admin'), queryContr
 app.post('/api/v1/queries/:id/reply', protect, restrictTo('admin'), queryController.replyToQuery);
 // Admin: hard delete a query
 app.delete('/api/v1/queries/:id', protect, restrictTo('admin'), queryController.deleteQuery);
+
 
 
 // ----- Questions -----
