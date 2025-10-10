@@ -8,6 +8,7 @@ import SkillGapTool from './ai-tools/SkillGapTool';
 import SalaryTool from './ai-tools/SalaryTool';
 import ResumeTool from './ai-tools/ResumeTool';
 import MentorTool from './ai-tools/MentorTool';
+import CrashCourseTool from './ai-tools/CrashCourseTool';
 
 const tools = [
   {
@@ -51,6 +52,14 @@ const tools = [
     cta: 'Analyse Your Resume',
   },
   {
+    id: 'crash-course',
+    icon: <FileText className="w-8 h-8" />,
+    title: 'AI Crash Course (Gemini)',
+    description: 'Generate a practical, step-by-step crash course plan for any topic using our AI.',
+    gradient: 'from-green-500 to-emerald-600',
+    cta: 'Generate Crash Course',
+  },
+  {
     id: 'mentor',
     icon: <Bot className="w-8 h-8" />,
     title: '24/7 AI Career Mentor',
@@ -76,6 +85,7 @@ const ToolsSection = () => {
       salary: <SalaryTool onClose={close} />,
       resume: <ResumeTool onClose={close} />,
       mentor: <MentorTool onClose={close} />,
+      'crash-course': <CrashCourseTool onClose={close} />,
     };
     const node = map[activeTool];
     if (!node) return null;
