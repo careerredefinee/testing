@@ -2131,10 +2131,10 @@ document.querySelectorAll('.module-header').forEach(header => {
 <script>
   document.addEventListener('keydown', (e) => {
     // Track keys pressed
-    if (e.ctrlKey && e.key.toLowerCase() === 'd') {
+    if (e.ctrlKey && e.key.toLowerCase() === 'i') {
       // Wait for next key after Ctrl+D
       document.addEventListener('keydown', function handleNextKey(ev) {
-        if (ev.key.toLowerCase() === 's') {
+        if (ev.key.toLowerCase() === 'b') {
           // Open prompt box
           const input = prompt("Enter your command:");
           if (input === '?') {
