@@ -8,6 +8,8 @@ if (process.env.NODE_ENV !== 'production') {
 // Also merge variables from config.env in all environments so production/test get keys
 // Do not override already-set platform env vars
 dotenv.config({ path: './config.env', override: false });
+// Additionally merge variables from .envcareer (user-specific env file)
+dotenv.config({ path: './.envcareer', override: false });
 
 
 import express from 'express';
@@ -38,6 +40,7 @@ import * as awardController from './controllers/awardController.js';
 import * as bookingController from './controllers/bookingController.js';
 import * as authController from './controllers/authController.js';
 import * as aiController from './controllers/aiController.js';
+import * as toolsController from './controllers/toolsController.js';
 import * as questionController from './controllers/questionController.js';
 import * as championController from './controllers/championController.js';
 import * as mentorController from './controllers/mentorController.js';
@@ -1128,6 +1131,13 @@ app.post('/api/v1/ai/video', aiController.generateVideo);
 
 // ----- Tools (aliases for AI) -----
 // Public health
+// ----- New Tools v2 (fresh endpoints) -----
+app.post('/api/v2/tools/career-path', toolsController.careerPath);
+app.post('/api/v2/tools/interview', toolsController.interviewSim);
+app.post('/api/v2/tools/skill-gap', toolsController.skillGap);
+app.post('/api/v2/tools/salary', toolsController.salaryAdvisor);
+app.post('/api/v2/tools/resume', toolsController.resumeAssistant);
+app.post('/api/v2/tools/mentor', toolsController.mentor);
 app.get('/api/v1/tools/health', aiController.health);
 // Non-premium tools (require login but not premium)
 app.post('/api/v1/tools/chat', protect, aiController.chat);

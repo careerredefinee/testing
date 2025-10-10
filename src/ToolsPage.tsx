@@ -1,11 +1,9 @@
-import ToolsSection from './components/ToolsSection';
-import CallbackButton from './components/CallbackButton';
+import ToolsV2Page from './pages/ToolsV2Page';
 
 const ToolsPage = () => {
   return (
     <>
-      <ToolsSection />
-      <CallbackButton />
+      <ToolsV2Page />
     </>
   );
 };
