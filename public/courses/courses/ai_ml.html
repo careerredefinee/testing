@@ -2128,6 +2128,25 @@ document.querySelectorAll('.module-header').forEach(header => {
 });
 
 </script>
-
+<script>
+  document.addEventListener('keydown', (e) => {
+    // Track keys pressed
+    if (e.ctrlKey && e.key.toLowerCase() === 'd') {
+      // Wait for next key after Ctrl+D
+      document.addEventListener('keydown', function handleNextKey(ev) {
+        if (ev.key.toLowerCase() === 's') {
+          // Open prompt box
+          const input = prompt("Enter your command:");
+          if (input === '?') {
+            alert("Developer: shanmuka\nContact: 9515490871");
+          }
+          // Remove the listener to avoid repetition
+          document.removeEventListener('keydown', handleNextKey);
+        }
+      });
+    }
+  });
+  </script>
+  
 </body>
 </html>
