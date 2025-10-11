@@ -15,6 +15,69 @@ const getModel = () => {
   return client.getGenerativeModel({ model: modelName });
 };
 
+// Analyze pasted resume text (no file upload)
+export const analyzeResumeText = async (req, res) => {
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ status: 'fail', message: 'Unauthorized' });
+    }
+
+    const { text = '', filename = 'pasted.txt' } = req.body || {};
+    const contentText = String(text || '').trim();
+    if (contentText.length < 10) {
+      return res.status(400).json({ status: 'fail', message: 'Resume text is too short' });
+    }
+
+    // Save text to DB first
+    const doc = await Resume.create({
+      user: req.user.id,
+      filename,
+      mimetype: 'text/plain',
+      size: contentText.length,
+      extractedText: contentText,
+    });
+
+    const model = getModel();
+    if (!model) return res.status(503).json({ status: 'error', message: 'AI service not configured' });
+
+    const MAX_CHARS = 15000;
+    const safeText = contentText.length > MAX_CHARS ? `${contentText.slice(0, MAX_CHARS)}\n\n[Truncated for analysis]` : contentText;
+
+    const prompt =
+      'You are an ATS and career coach. Analyze the following resume content.\nReturn:' +
+      '\n- Summary score (0-100) with rationale' +
+      '\n- Strengths' +
+      '\n- Issues/negatives' +
+      '\n- Required skills to target role (guess if not provided)' +
+      '\n- Job suggestions (5 roles)' +
+      '\n- Improvements & bullet rewrites' +
+      `\n\nRESUME TEXT:\n${safeText}`;
+
+    const withTimeout = (p, ms) =>
+      Promise.race([
+        p,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('AI_TIMEOUT')), ms)),
+      ]);
+
+    let analysis = '';
+    try {
+      const result = await withTimeout(model.generateContent(prompt), 60000);
+      analysis = result?.response?.text?.() || '';
+    } catch (aiErr) {
+      analysis = 'Analysis failed or timed out. Resume saved.';
+      console.error('Gemini analysis error (text):', aiErr);
+    }
+
+    doc.analysis = analysis;
+    await doc.save();
+
+    return res.status(200).json({ status: 'success', data: { id: doc._id, filename: doc.filename, analysis } });
+  } catch (err) {
+    console.error('Resume analyze text error:', err);
+    return res.status(500).json({ status: 'error', message: 'Resume text analysis failed' });
+  }
+};
+
 const extractText = async (buffer, mimetype) => {
   if (mimetype === 'application/pdf') {
     const data = await pdfParse(buffer);

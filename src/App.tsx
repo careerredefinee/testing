@@ -33,6 +33,14 @@ import GroupChatPage from './pages/GroupChatPage';
 import GroupsListPage from './pages/GroupsListPage';
 import AssessmentsPage from './pages/admin/AssessmentsPage';
 import OptionalPage from './pages/admin/OptionalPage';
+import ToolsIndex from './pages/tools/ToolsIndex';
+import CareerPathToolPage from './pages/tools/CareerPathToolPage';
+import InterviewToolPage from './pages/tools/InterviewToolPage';
+import SkillGapToolPage from './pages/tools/SkillGapToolPage';
+import SalaryToolPage from './pages/tools/SalaryToolPage';
+import ResumeAnalysisToolPage from './pages/tools/ResumeAnalysisToolPage';
+import MentorToolPage from './pages/tools/MentorToolPage';
+import AdminResumesPage from './pages/admin/AdminResumesPage';
 
 // Admin Layout component
 const AdminLayout: React.FC = () => {
@@ -59,7 +67,13 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/services" element={<ServicesPage />} />
               <Route path="/courses" element={<CoursesPage />} />
-              {/** tools route removed as requested */}
+              <Route path="/tools" element={<ToolsIndex />} />
+              <Route path="/tools/career-path" element={<CareerPathToolPage />} />
+              <Route path="/tools/interview" element={<InterviewToolPage />} />
+              <Route path="/tools/skill-gap" element={<SkillGapToolPage />} />
+              <Route path="/tools/salary" element={<SalaryToolPage />} />
+              <Route path="/tools/resume-analysis" element={<ResumeAnalysisToolPage />} />
+              <Route path="/tools/mentor" element={<MentorToolPage />} />
               <Route path="/support" element={<SupportPage />} />
               <Route path="/jobs" element={<JobsPage />} />
               <Route path="/reviews" element={<ReviewsPage />} />
@@ -112,6 +126,7 @@ function App() {
                   <Route path="/admin/users" element={<UsersPage />} />
                   <Route path="/admin/jobs" element={<AdminJobsPage />} />
                   <Route path="/admin/materials" element={<MaterialsPage />} />
+                  <Route path="/admin/resumes" element={<AdminResumesPage />} />
                   <Route path="/admin/assessments" element={<AssessmentsPage />} />
                   <Route path="/admin/optional" element={<OptionalPage />} />
                   <Route path="/admin/groups" element={<AdminGroupsPage />} />

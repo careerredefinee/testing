@@ -1081,6 +1081,12 @@ app.post(
   resumeController.uploadResume,
   resumeController.analyzeResume
 );
+// Pasted resume text analysis
+app.post(
+  '/api/v1/resume/analyze-text',
+  protect,
+  resumeController.analyzeResumeText
+);
 // Resume listing and retrieval
 app.get('/api/v1/resume', protect, restrictTo('admin'), resumeController.listResumes);
 app.get('/api/v1/resume/mine', protect, resumeController.listMyResumes);
