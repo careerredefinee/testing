@@ -779,6 +779,74 @@ app.post('/book-interview', (req, res, next) => {
   }
 });
 
+// ----- Legacy/static page aliases -----
+// Some static course pages post to /api/interview or /interview or camelCase variants
+app.post('/api/interview', (req, res, next) => {
+  try {
+    const { name, email, phone, message, interview_date, interview_time, date, time, timeSlot } = req.body || {};
+    const normalizedDate = interview_date || date;
+    const normalizedTime = interview_time || time || timeSlot;
+    req.body = { name, email, phone, message, date: normalizedDate, timeSlot: normalizedTime, type: 'consultation' };
+    return bookingController.createBooking(req, res, next);
+  } catch (e) {
+    return res.status(400).json({ status: 'fail', message: e.message });
+  }
+});
+app.post('/interview', (req, res, next) => {
+  try {
+    const { name, email, phone, message, interview_date, interview_time, date, time, timeSlot } = req.body || {};
+    const normalizedDate = interview_date || date;
+    const normalizedTime = interview_time || time || timeSlot;
+    req.body = { name, email, phone, message, date: normalizedDate, timeSlot: normalizedTime, type: 'consultation' };
+    return bookingController.createBooking(req, res, next);
+  } catch (e) {
+    return res.status(400).json({ status: 'fail', message: e.message });
+  }
+});
+app.post('/api/bookInterview', (req, res, next) => {
+  try {
+    const { name, email, phone, message, interview_date, interview_time, date, time, timeSlot } = req.body || {};
+    const normalizedDate = interview_date || date;
+    const normalizedTime = interview_time || time || timeSlot;
+    req.body = { name, email, phone, message, date: normalizedDate, timeSlot: normalizedTime, type: 'consultation' };
+    return bookingController.createBooking(req, res, next);
+  } catch (e) {
+    return res.status(400).json({ status: 'fail', message: e.message });
+  }
+});
+app.post('/bookInterview', (req, res, next) => {
+  try {
+    const { name, email, phone, message, interview_date, interview_time, date, time, timeSlot } = req.body || {};
+    const normalizedDate = interview_date || date;
+    const normalizedTime = interview_time || time || timeSlot;
+    req.body = { name, email, phone, message, date: normalizedDate, timeSlot: normalizedTime, type: 'consultation' };
+    return bookingController.createBooking(req, res, next);
+  } catch (e) {
+    return res.status(400).json({ status: 'fail', message: e.message });
+  }
+});
+
+// Enquiry forms on static pages often post to /api/enquiry or /enquiry
+app.post('/api/enquiry', (req, res, next) => {
+  try {
+    // Normalize common field names coming from static forms
+    const { name, email, phone, subject, message, course } = req.body || {};
+    req.body = { name, email, phone, subject: subject || 'Course Enquiry', message, course };
+    return queryController.createQuery(req, res, next);
+  } catch (e) {
+    return res.status(400).json({ status: 'fail', message: e.message });
+  }
+});
+app.post('/enquiry', (req, res, next) => {
+  try {
+    const { name, email, phone, subject, message, course } = req.body || {};
+    req.body = { name, email, phone, subject: subject || 'Course Enquiry', message, course };
+    return queryController.createQuery(req, res, next);
+  } catch (e) {
+    return res.status(400).json({ status: 'fail', message: e.message });
+  }
+});
+
 
 // ----- Queries -----
 // Public submit
