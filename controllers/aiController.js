@@ -9,23 +9,16 @@ const getClient = () => {
   return new GoogleGenerativeAI(key);
 };
 
-// Mutable model name with env default; can be overridden from server.js
-let MODEL_NAME = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
-export const setModelName = (name) => {
-  if (typeof name === 'string' && name.trim()) {
-    MODEL_NAME = name.trim();
-  }
-};
-
 const getTextModel = () => {
   const client = getClient();
   if (!client) return null;
-  return client.getGenerativeModel({ model: MODEL_NAME });
+  const modelName = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+  return client.getGenerativeModel({ model: modelName });
 };
 
 export const health = async (req, res) => {
   const ready = !!getClient();
-  res.status(200).json({ status: 'ok', model: MODEL_NAME, ready });
+  res.status(200).json({ status: 'ok', model: process.env.GEMINI_MODEL || 'gemini-1.5-flash', ready });
 };
 
 export const chat = async (req, res) => {
