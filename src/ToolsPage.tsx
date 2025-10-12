@@ -1,9 +1,11 @@
-import ToolsV2Page from './pages/ToolsV2Page';
+import ToolsSection from './components/ToolsSection';
+import CallbackButton from './components/CallbackButton';
 
 const ToolsPage = () => {
   return (
     <>
-      <ToolsV2Page />
+      <ToolsSection />
+      <CallbackButton />
     </>
   );
 };
