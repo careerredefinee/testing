@@ -31,7 +31,6 @@ const Navbar = () => {
     { name: 'Services', href: '/services' },
     { name: 'Courses', href: '/courses' },
     { name: 'Tools', href: '/tools' },
-    { name: 'Premium', href: '/premium' },
     { name: 'Knowledge Hub', href: '/knowledge-hub' },
     { name: 'Support', href: '/support' },
     { name: 'Jobs', href: '/jobs' },
@@ -125,6 +124,19 @@ const Navbar = () => {
           <div className="hidden md:flex items-center ml-auto mr-2">
             <div className="flex items-center space-x-8 mr-6">
               {navItems.map((item) => renderNavItem(item))}
+              {user?.isPremium && (
+                <Link
+                  to="/premium"
+                  className={`relative text-sm font-medium transition-colors duration-200 hover:text-blue-600 ${
+                    location.pathname === '/premium' ? 'text-blue-600' : 'text-gray-700'
+                  }`}
+                >
+                  Premium
+                  {location.pathname === '/premium' && (
+                    <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-blue-600 rounded-full"></div>
+                  )}
+                </Link>
+              )}
             </div>
             <div className="flex items-center space-x-4">
               {isAuthenticated ? (
@@ -171,6 +183,17 @@ const Navbar = () => {
                 onClick={() => setIsOpen(false)}
               >
                 Login
+              </Link>
+            )}
+            {user?.isPremium && (
+              <Link
+                to="/premium"
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  location.pathname === '/premium' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-50'
+                }`}
+                onClick={() => setIsOpen(false)}
+              >
+                Premium
               </Link>
             )}
             

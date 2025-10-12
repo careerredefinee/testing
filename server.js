@@ -38,7 +38,6 @@ import * as awardController from './controllers/awardController.js';
 import * as bookingController from './controllers/bookingController.js';
 import * as authController from './controllers/authController.js';
 import * as aiController from './controllers/aiController.js';
-import { setModelName as setAIModelName } from './controllers/aiController.js';
 import * as questionController from './controllers/questionController.js';
 import * as championController from './controllers/championController.js';
 import * as mentorController from './controllers/mentorController.js';
