@@ -175,16 +175,6 @@ const Navbar = () => {
         >
           <div className="flex flex-col space-y-3">
             {navItems.map((item) => renderNavItem(item, true))}
-            {/* Mobile: Login right after nav items (after 'About') */}
-            {!isAuthenticated && (
-              <Link
-                to="/login"
-                className="px-4 py-2 text-sm font-medium rounded-lg transition-colors text-gray-700 hover:bg-gray-50"
-                onClick={() => setIsOpen(false)}
-              >
-                Login
-              </Link>
-            )}
             {user?.isPremium && (
               <Link
                 to="/premium"
@@ -222,6 +212,13 @@ const Navbar = () => {
                 </>
               ) : (
                 <div className="flex flex-col space-y-3">
+                  <Link 
+                    to="/login"
+                    className="px-4 py-2 text-sm font-medium rounded-lg transition-colors text-gray-700 hover:bg-gray-50 text-center"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Login
+                  </Link>
                   <Link 
                     to="/register" 
                     className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 text-center shadow-md"

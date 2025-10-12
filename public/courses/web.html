@@ -791,91 +791,17 @@ if (queryForm) {
       <p style="font-size: 1rem; color: #555;">Share your details and preferred date & time. We'll confirm shortly.</p>
     </div>
 
-    <form id="quickBookForm" style="background: white; border: 1px solid #e5e7eb; border-radius: 14px; box-shadow: 0 8px 20px rgba(0,0,0,0.06); padding: 20px; max-width: 720px; margin: 0 auto;">
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-        <div>
-          <label style="display:block; font-weight:600; color:#374151; margin-bottom:6px;">Full Name</label>
-          <input name="name" type="text" required placeholder="Your name" style="width:100%; padding:12px 14px; border:1px solid #d1d5db; border-radius:8px;">
-        </div>
-        <div>
-          <label style="display:block; font-weight:600; color:#374151; margin-bottom:6px;">Email</label>
-          <input name="email" type="email" required placeholder="you@example.com" style="width:100%; padding:12px 14px; border:1px solid #d1d5db; border-radius:8px;">
-        </div>
-        <div>
-          <label style="display:block; font-weight:600; color:#374151; margin-bottom:6px;">Phone</label>
-          <input name="phone" type="tel" required placeholder="+91 9876543210" style="width:100%; padding:12px 14px; border:1px solid #d1d5db; border-radius:8px;">
-        </div>
-        <div>
-          <label style="display:block; font-weight:600; color:#374151; margin-bottom:6px;">Preferred Date</label>
-          <input name="date" type="date" required style="width:100%; padding:12px 14px; border:1px solid #d1d5db; border-radius:8px;">
-        </div>
-        <div>
-          <label style="display:block; font-weight:600; color:#374151; margin-bottom:6px;">Preferred Time</label>
-          <input name="timeSlot" type="time" required style="width:100%; padding:12px 14px; border:1px solid #d1d5db; border-radius:8px;">
-        </div>
-        <div>
-          <label style="display:block; font-weight:600; color:#374151; margin-bottom:6px;">Message (optional)</label>
-          <input name="message" type="text" placeholder="Any specific note" style="width:100%; padding:12px 14px; border:1px solid #d1d5db; border-radius:8px;">
-        </div>
-      </div>
-
-      <div style="text-align:center; margin-top: 18px;">
-        <button type="submit" id="quickBookBtn" style="background: linear-gradient(45deg,#0d47a1,#1976d2); color:#fff; border:none; padding:12px 28px; font-weight:700; border-radius:10px; box-shadow:0 6px 14px rgba(13,71,161,0.25);">
-          <span class="btn-text">Book Now</span>
-          <span class="btn-spin spinner" style="display:none; vertical-align:middle;"></span>
-        </button>
-      </div>
-    </form>
+    <div style="background: white; border: 1px solid #e5e7eb; border-radius: 14px; box-shadow: 0 8px 20px rgba(0,0,0,0.06); padding: 28px; max-width: 720px; margin: 0 auto; text-align:center;">
+      <a href="/support#booking" style="display:inline-block; background: linear-gradient(45deg,#0d47a1,#1976d2); color:#fff; text-decoration:none; padding:14px 32px; font-weight:800; border-radius:9999px; box-shadow:0 10px 24px rgba(13,71,161,0.25);">
+        Book a Slot
+      </a>
+      <div style="margin-top:8px; color:#6b7280; font-size:0.9rem;">You will be redirected to our Support page booking form.</div>
+    </div>
   </div>
 </section>
 
 <script>
-// Quick Book form: fast submit to /api/book-interview with required keys
-(function(){
-  const form = document.getElementById('quickBookForm');
-  if (!form) return;
-  form.addEventListener('submit', function(e){
-    e.preventDefault();
-    const btn = document.getElementById('quickBookBtn');
-    const text = btn.querySelector('.btn-text');
-    const spin = btn.querySelector('.btn-spin');
-    btn.disabled = true; if (text) text.textContent = 'Sending…'; if (spin) spin.style.display='inline-block';
-
-    const fd = new FormData(form);
-    const payload = {
-      name: fd.get('name') || '',
-      email: fd.get('email') || '',
-      phone: fd.get('phone') || '',
-      message: fd.get('message') || '',
-      date: fd.get('date') || '',
-      timeSlot: fd.get('timeSlot') || '',
-      type: 'consultation'
-    };
-
-    fetch('https://test5-x7xt.onrender.com/api/book-interview', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    })
-    .then(async (resp)=>{
-      let data=null; try{ data = await resp.json(); }catch(_){ data=null; }
-      if (!resp.ok) {
-        const msg = (data && (data.message||data.error)) ? (data.message||data.error) : `Request failed (${resp.status})`;
-        throw new Error(msg);
-      }
-      return data;
-    })
-    .then(()=>{
-      showNotification('success', 'Your slot is booked. We\'ll confirm by email shortly.');
-      form.reset();
-    })
-    .catch((err)=>{
-      showNotification('error', err.message || 'There was an error. Please try again.');
-    })
-    .finally(()=>{
-      btn.disabled = false; if (text) text.textContent = 'Book Now'; if (spin) spin.style.display='none';
-    });
-  });
-})();
+// Booking handled on /support#booking. Inline quick booking form removed.
 </script>
 <!-- Interview Success Card -->
 <div id="interviewSuccessCard" style="

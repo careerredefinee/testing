@@ -269,7 +269,7 @@ const SupportSection: React.FC = () => {
               <button
                 onClick={() => {
                   if (user?.isPremium) {
-                    window.open('https://wa.me/919515490871?text=Hi%20Career%20Redefine%20Support', '_blank', 'noopener,noreferrer');
+                    window.open('https://wa.me/918618536940?text=Hi%20Career%20Redefine%20Support', '_blank', 'noopener,noreferrer');
                   } else {
                     setPremiumMessage('This feature is accessible only to Premium users.');
                     setShowPremium(true);
@@ -337,7 +337,7 @@ const SupportSection: React.FC = () => {
                 Chat with us on WhatsApp for quick assistance and updates.
               </p>
               <a
-                href="https://wa.me/919515490871?text=Hi%20Career%20Redefine%20Support"
+                href="https://wa.me/918618536940?text=Hi%20Career%20Redefine%20Support"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-6 inline-block bg-green-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-green-700 transition-colors"

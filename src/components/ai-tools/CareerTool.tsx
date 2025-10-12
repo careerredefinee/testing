@@ -51,7 +51,7 @@ Location: ${form.location || 'N/A'}
       const response = await aiService.chat({
         message,
         tool: 'career-path',
-        context: 'Generate a structured career discovery and planning guide based on the provided inputs. Keep it concise and actionable.'
+        context: 'Generate concise bullet points only. No markdown headings, no hashes (#), no asterisks (*).'
       });
 
       const text = response?.data?.reply || response?.reply || '';
@@ -155,18 +155,16 @@ Location: ${form.location || 'N/A'}
         {!error && !result && !loading && (
           <p className="text-gray-500">Fill out the details above and click Generate to see your personalized career path.</p>
         )}
-        {result && (
-          <article className="prose max-w-none">
-            {/* eslint-disable-next-line react/no-danger */}
-            {(() => {
-              const formatted = result
-                .replace(/^(\s*)([*-])\s+/gm, '$1• ')
-                .replace(/\*/g, '')
-                .replace(/\n/g, '<br/>');
-              return <div dangerouslySetInnerHTML={{ __html: formatted }} />;
-            })()}
-          </article>
-        )}
+        {result && (() => {
+          const text = result.replace(/[#*`>]/g, '').replace(/\r/g, '').trim();
+          const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
+          const items = lines.map(l => l.replace(/^[-•*]\s+/, '').replace(/^\d+\.?\s+/, ''));
+          return (
+            <ul className="list-disc pl-5 space-y-1 text-gray-800">
+              {items.map((it, idx) => (<li key={idx}>{it}</li>))}
+            </ul>
+          );
+        })()}
       </div>
     </div>
   );
