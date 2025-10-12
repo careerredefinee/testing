@@ -12,12 +12,19 @@ const getClient = () => {
   }
 };
 
-// ✅ Get text model (use stable model hardcoded here)
-const STABLE_TEXT_MODEL = "gemini-1.5-flash"; // keep this stable; do not read from env
+// ✅ Model selection (set from server.js)
+let MODEL_NAME = "gemini-1.5-flash"; // default; overridden by server
+export const setModelName = (name) => {
+  if (typeof name === 'string' && name.trim()) {
+    MODEL_NAME = name.trim();
+  }
+};
+
+// ✅ Get text model
 const getTextModel = () => {
   const client = getClient();
   if (!client) return null;
-  return client.getGenerativeModel({ model: STABLE_TEXT_MODEL });
+  return client.getGenerativeModel({ model: MODEL_NAME });
 };
 
 // ✅ Health Check
@@ -25,7 +32,7 @@ export const health = async (req, res) => {
   const ready = !!getClient();
   return res.status(200).json({
     status: "ok",
-    model: STABLE_TEXT_MODEL,
+    model: MODEL_NAME,
     ready,
   });
 };

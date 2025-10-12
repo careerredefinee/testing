@@ -20,7 +20,14 @@ export const createBooking = async (req, res) => {
       return res.status(400).json({ status: 'fail', message: 'name, email, phone, date, and timeSlot are required' });
     }
 
-    const bookingDate = new Date(date);
+    // Parse HTML date (yyyy-mm-dd) as LOCAL date to avoid UTC offset issues
+    let bookingDate;
+    if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      const [y, m, d] = date.split('-').map((x) => parseInt(x, 10));
+      bookingDate = new Date(y, m - 1, d); // Local midnight
+    } else {
+      bookingDate = new Date(date);
+    }
     if (Number.isNaN(bookingDate.getTime())) {
       return res.status(400).json({ status: 'fail', message: 'Invalid date' });
     }

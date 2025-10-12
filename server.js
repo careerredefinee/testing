@@ -72,6 +72,9 @@ import cleanupUnverifiedAccounts from './utils/cleanupUnverifiedAccounts.js';
 // Initialize cleanup of unverified accounts
 cleanupUnverifiedAccounts();
 
+// Configure AI model centrally (do not rely on env for model name)
+aiController.setModelName('gemini-1.5-pro');
+
 // Import models
 import User from './models/User.js';
 import Review from './models/Review.js';
