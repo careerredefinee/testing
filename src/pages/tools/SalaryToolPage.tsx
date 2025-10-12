@@ -12,9 +12,9 @@ const SalaryToolPage: React.FC = () => {
   const submit = async () => {
     setError(''); setReply(''); setLoading(true);
     try {
-      const resp = await fetch(`${BASE_URL}/api/v2/tools/salary`, {
+      const resp = await fetch(`${BASE_URL}/api/v1/tools/chat`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role, location, years })
+        body: JSON.stringify({ message: `Estimate salary for ${role} in ${location} with ${years} years experience. Add negotiation script.`, tool: 'salary', context: 'Salary Advisor' })
       });
       const data = await resp.json();
       if (!resp.ok) throw new Error(data?.message || 'Request failed');

@@ -12,12 +12,12 @@ const getClient = () => {
   }
 };
 
-// ✅ Get text model (defaults to free, stable model)
+// ✅ Get text model (use stable model hardcoded here)
+const STABLE_TEXT_MODEL = "gemini-1.5-flash"; // keep this stable; do not read from env
 const getTextModel = () => {
   const client = getClient();
   if (!client) return null;
-  const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash"; // free model
-  return client.getGenerativeModel({ model: modelName });
+  return client.getGenerativeModel({ model: STABLE_TEXT_MODEL });
 };
 
 // ✅ Health Check
@@ -25,7 +25,7 @@ export const health = async (req, res) => {
   const ready = !!getClient();
   return res.status(200).json({
     status: "ok",
-    model: process.env.GEMINI_MODEL || "gemini-1.5-flash",
+    model: STABLE_TEXT_MODEL,
     ready,
   });
 };

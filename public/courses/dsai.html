@@ -636,110 +636,102 @@ if (queryForm) {
   </script>
 </section>
 
-<!-- Interview Booking Section -->
-<section id="interview-booking" style="padding: 70px 0; background: linear-gradient(135deg, #f5f7ff, #e8ecff);">
-  <div class="container" style="max-width: 1000px; margin: 0 auto; padding: 0 20px;">
-    <div class="section-header" style="text-align: center; margin-bottom: 50px;">
-      <h2 style="font-size: 2.5rem; color: #0d47a1; margin-bottom: 15px; font-weight: 700;">
-        <i class="bi bi-calendar-check-fill" style="margin-right: 10px;"></i>Book Your Interview Slot
+<!-- Book Your Slot (Simplified) -->
+<section id="book-slot" style="padding: 60px 0; background: #f8fbff;">
+  <div class="container" style="max-width: 900px; margin: 0 auto; padding: 0 20px;">
+    <div class="section-header" style="text-align: center; margin-bottom: 28px;">
+      <h2 style="font-size: 2rem; color: #0d47a1; margin-bottom: 8px; font-weight: 800;">
+        <i class="bi bi-calendar-check-fill" style="margin-right: 8px;"></i>Book Your Slot
       </h2>
-      <p style="font-size: 1.1rem; color: #555; max-width: 700px; margin: 0 auto;">
-        Schedule a convenient time for your interview. Our team is available from 7:00 AM to 7:00 PM.
-      </p>
+      <p style="font-size: 1rem; color: #555;">Share your details and preferred date & time. We'll confirm shortly.</p>
     </div>
 
-    <div class="booking-container" style="background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); overflow: hidden; padding: 30px;">
-      <form id="interviewForm" style="max-width: 600px; margin: 0 auto;">
-        <input type="hidden" name="form_type" value="interview">
-        
-        <div class="form-group" style="margin-bottom: 20px;">
-          <label for="name" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Full Name <span style="color: #e53935;">*</span></label>
-          <input type="text" id="name" name="name" required 
-                 style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; transition: border-color 0.3s;"
-                 placeholder="Enter your full name">
+    <form id="quickBookForm" style="background: white; border: 1px solid #e5e7eb; border-radius: 14px; box-shadow: 0 8px 20px rgba(0,0,0,0.06); padding: 20px; max-width: 720px; margin: 0 auto;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div>
+          <label style="display:block; font-weight:600; color:#374151; margin-bottom:6px;">Full Name</label>
+          <input name="name" type="text" required placeholder="Your name" style="width:100%; padding:12px 14px; border:1px solid #d1d5db; border-radius:8px;">
         </div>
-        
-        <div class="form-row" style="display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px;">
-          <div class="form-group" style="flex: 1; min-width: 250px;">
-            <label for="email" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Email <span style="color: #e53935;">*</span></label>
-            <input type="email" id="email" name="email" required
-                   style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"
-                   placeholder="your.email@example.com">
-          </div>
-          
-          <div class="form-group" style="flex: 1; min-width: 250px;">
-            <label for="phone" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Phone <span style="color: #e53935;">*</span></label>
-            <input type="tel" id="phone" name="phone" required
-                   style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"
-                   placeholder="+91 9876543210">
-          </div>
+        <div>
+          <label style="display:block; font-weight:600; color:#374151; margin-bottom:6px;">Email</label>
+          <input name="email" type="email" required placeholder="you@example.com" style="width:100%; padding:12px 14px; border:1px solid #d1d5db; border-radius:8px;">
         </div>
-        
-        <div class="form-row" style="display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 25px;">
-          <div class="form-group" style="flex: 1; min-width: 250px;">
-            <label for="interview_date" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Interview Date <span style="color: #e53935;">*</span></label>
-            <input type="date" id="interview_date" name="interview_date" required
-                   style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"
-                   min="">
-          </div>
-          
-          <div class="form-group" style="flex: 1; min-width: 250px;">
-            <label for="interview_time" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Interview Time <span style="color: #e53935;">*</span></label>
-            <select id="interview_time" name="interview_time" required
-                    style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; background-color: white;">
-              <option value="">Select a time slot</option>
-              <!-- Time slots will be populated by JavaScript -->
-            </select>
-          </div>
+        <div>
+          <label style="display:block; font-weight:600; color:#374151; margin-bottom:6px;">Phone</label>
+          <input name="phone" type="tel" required placeholder="+91 9876543210" style="width:100%; padding:12px 14px; border:1px solid #d1d5db; border-radius:8px;">
         </div>
-        
-        <div class="form-actions" style="text-align: center; margin-top: 30px;">
-          <button type="submit" id="submitBtn" 
-                  style="background: linear-gradient(45deg, #0d47a1, #1976d2); color: white; border: none; padding: 14px 40px; 
-                         font-size: 16px; font-weight: 600; border-radius: 50px; cursor: pointer; transition: all 0.3s ease;
-                         box-shadow: 0 4px 15px rgba(13, 71, 161, 0.3);">
-            <span id="submitText">Book Interview</span>
-            <div id="loadingSpinner" class="spinner" style="display: none; margin: 0 auto; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite;"></div>
-          </button>
+        <div>
+          <label style="display:block; font-weight:600; color:#374151; margin-bottom:6px;">Preferred Date</label>
+          <input name="date" type="date" required style="width:100%; padding:12px 14px; border:1px solid #d1d5db; border-radius:8px;">
         </div>
-      </form>
-      
-      <!-- ATM Card Style Success Message -->
-      <div id="successCard" class="message-card success" style="display: none;">
-        <div class="card-content">
-          <div class="card-icon">
-            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-              <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
-              <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
-            </svg>
-          </div>
-          <div class="card-details">
-            <h3 class="card-title">Success!</h3>
-            <p class="card-message" id="successMessage">Your request has been processed successfully.</p>
-          </div>
-          <button class="close-btn" onclick="hideMessage('success')">×</button>
+        <div>
+          <label style="display:block; font-weight:600; color:#374151; margin-bottom:6px;">Preferred Time</label>
+          <input name="timeSlot" type="time" required style="width:100%; padding:12px 14px; border:1px solid #d1d5db; border-radius:8px;">
+        </div>
+        <div>
+          <label style="display:block; font-weight:600; color:#374151; margin-bottom:6px;">Message (optional)</label>
+          <input name="message" type="text" placeholder="Any specific note" style="width:100%; padding:12px 14px; border:1px solid #d1d5db; border-radius:8px;">
         </div>
       </div>
 
-      <!-- ATM Card Style Error Message -->
-      <div id="errorCard" class="message-card error" style="display: none;">
-        <div class="card-content">
-          <div class="card-icon">
-            <svg class="crossmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-              <circle class="crossmark__circle" cx="26" cy="26" r="25" fill="none"/>
-              <path class="crossmark__check" fill="none" d="M16 16 36 36 M36 16 16 36"/>
-            </svg>
-          </div>
-          <div class="card-details">
-            <h3 class="card-title">Error</h3>
-            <p class="card-message" id="errorMessage">An error occurred. Please try again.</p>
-          </div>
-          <button class="close-btn" onclick="hideMessage('error')">×</button>
-        </div>
+      <div style="text-align:center; margin-top: 18px;">
+        <button type="submit" id="quickBookBtn" style="background: linear-gradient(45deg,#0d47a1,#1976d2); color:#fff; border:none; padding:12px 28px; font-weight:700; border-radius:10px; box-shadow:0 6px 14px rgba(13,71,161,0.25);">
+          <span class="btn-text">Book Now</span>
+          <span class="btn-spin spinner" style="display:none; vertical-align:middle;"></span>
+        </button>
       </div>
-    </div>
+    </form>
   </div>
 </section>
+
+<script>
+// Quick Book form: fast submit to /api/book-interview with required keys
+(function(){
+  const form = document.getElementById('quickBookForm');
+  if (!form) return;
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    const btn = document.getElementById('quickBookBtn');
+    const text = btn.querySelector('.btn-text');
+    const spin = btn.querySelector('.btn-spin');
+    btn.disabled = true; if (text) text.textContent = 'Sending…'; if (spin) spin.style.display='inline-block';
+
+    const fd = new FormData(form);
+    const payload = {
+      name: fd.get('name') || '',
+      email: fd.get('email') || '',
+      phone: fd.get('phone') || '',
+      message: fd.get('message') || '',
+      date: fd.get('date') || '',
+      timeSlot: fd.get('timeSlot') || '',
+      type: 'consultation'
+    };
+
+    fetch('https://test5-x7xt.onrender.com/api/book-interview', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    .then(async (resp)=>{
+      let data=null; try{ data = await resp.json(); }catch(_){ data=null; }
+      if (!resp.ok) {
+        const msg = (data && (data.message||data.error)) ? (data.message||data.error) : `Request failed (${resp.status})`;
+        throw new Error(msg);
+      }
+      return data;
+    })
+    .then(()=>{
+      showNotification('success', 'Your slot is booked. We\'ll confirm by email shortly.');
+      form.reset();
+    })
+    .catch((err)=>{
+      showNotification('error', err.message || 'There was an error. Please try again.');
+    })
+    .finally(()=>{
+      btn.disabled = false; if (text) text.textContent = 'Book Now'; if (spin) spin.style.display='none';
+    });
+  });
+})();
+</script>
 <!-- Interview Success Card -->
 <div id="interviewSuccessCard" style="
   display:none; 

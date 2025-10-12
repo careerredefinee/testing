@@ -98,7 +98,7 @@ const useAI = <T extends Record<string, any>>(tool: ToolId) => {
 };
 
 const CareerPathWidget: React.FC = () => {
-  const { loading, error, reply, call } = useAI<{skills:string; interests:string; experience:string}>('career-path');
+  const { loading, error, reply, call } = useAI<{message:string; tool?:string; context?:string}>('career-path');
   const [skills, setSkills] = useState('React, Node.js, SQL');
   const [interests, setInterests] = useState('building products, data, startups');
   const [experience, setExperience] = useState('fresher');
@@ -122,7 +122,7 @@ const CareerPathWidget: React.FC = () => {
             <option value="senior">Senior</option>
           </select>
         </div>
-        <button className={`px-4 py-2 rounded-md text-white ${loading?'bg-blue-300':'bg-blue-600 hover:bg-blue-700'}`} onClick={()=> call({ skills, interests, experience })} disabled={loading}> {loading?'Generating…':'Generate Plan'} </button>
+        <button className={`px-4 py-2 rounded-md text-white ${loading?'bg-blue-300':'bg-blue-600 hover:bg-blue-700'}`} onClick={()=> call({ message: `Skills: ${skills}\nInterests: ${interests}\nExperience: ${experience}. Provide role matches and a 30/60/90 plan.`, tool: 'career-path', context: 'Career Path' })} disabled={loading}> {loading?'Generating…':'Generate Plan'} </button>
         {error && <p className="text-sm text-red-600">{error}</p>}
       </div>
       <div className="border rounded-md p-4 min-h-[320px] whitespace-pre-wrap">{reply || 'Output will appear here.'}</div>
@@ -131,7 +131,7 @@ const CareerPathWidget: React.FC = () => {
 };
 
 const InterviewWidget: React.FC = () => {
-  const { loading, error, reply, call } = useAI<{role:string; seniority:string; domain:string}>('interview');
+  const { loading, error, reply, call } = useAI<{message:string; tool?:string; context?:string}>('interview');
   const [role, setRole] = useState('Software Engineer');
   const [seniority, setSeniority] = useState('junior');
   const [domain, setDomain] = useState('web');
@@ -154,7 +154,7 @@ const InterviewWidget: React.FC = () => {
           <label className="text-sm text-gray-700">Domain</label>
           <input className="w-full border rounded-md px-3 py-2" value={domain} onChange={(e)=> setDomain(e.target.value)} />
         </div>
-        <button className={`px-4 py-2 rounded-md text-white ${loading?'bg-emerald-300':'bg-emerald-600 hover:bg-emerald-700'}`} onClick={()=> call({ role, seniority, domain })} disabled={loading}> {loading?'Generating…':'Generate Questions'} </button>
+        <button className={`px-4 py-2 rounded-md text-white ${loading?'bg-emerald-300':'bg-emerald-600 hover:bg-emerald-700'}`} onClick={()=> call({ message: `Generate interview questions for a ${seniority} ${role} in ${domain}. Include strong answer cues.`, tool: 'interview', context: 'Interview Simulator' })} disabled={loading}> {loading?'Generating…':'Generate Questions'} </button>
         {error && <p className="text-sm text-red-600">{error}</p>}
       </div>
       <div className="border rounded-md p-4 min-h-[320px] whitespace-pre-wrap">{reply || 'Output will appear here.'}</div>
@@ -163,7 +163,7 @@ const InterviewWidget: React.FC = () => {
 };
 
 const SkillGapWidget: React.FC = () => {
-  const { loading, error, reply, call } = useAI<{targetRole:string; currentSkills:string}>('skill-gap');
+  const { loading, error, reply, call } = useAI<{message:string; tool?:string; context?:string}>('skill-gap');
   const [targetRole, setTargetRole] = useState('Data Analyst');
   const [currentSkills, setCurrentSkills] = useState('Excel, SQL, Python basics');
   return (
@@ -177,7 +177,7 @@ const SkillGapWidget: React.FC = () => {
           <label className="text-sm text-gray-700">Current Skills</label>
           <input className="w-full border rounded-md px-3 py-2" value={currentSkills} onChange={(e)=> setCurrentSkills(e.target.value)} />
         </div>
-        <button className={`px-4 py-2 rounded-md text-white ${loading?'bg-purple-300':'bg-purple-600 hover:bg-purple-700'}`} onClick={()=> call({ targetRole, currentSkills })} disabled={loading}> {loading?'Analyzing…':'Analyze Gaps'} </button>
+        <button className={`px-4 py-2 rounded-md text-white ${loading?'bg-purple-300':'bg-purple-600 hover:bg-purple-700'}`} onClick={()=> call({ message: `Target role: ${targetRole}. Current skills: ${currentSkills}. Identify gaps and propose a 4-week plan.`, tool: 'skill-gap', context: 'Skill Gap' })} disabled={loading}> {loading?'Analyzing…':'Analyze Gaps'} </button>
         {error && <p className="text-sm text-red-600">{error}</p>}
       </div>
       <div className="border rounded-md p-4 min-h-[320px] whitespace-pre-wrap">{reply || 'Output will appear here.'}</div>
@@ -186,7 +186,7 @@ const SkillGapWidget: React.FC = () => {
 };
 
 const SalaryWidget: React.FC = () => {
-  const { loading, error, reply, call } = useAI<{role:string; location:string; years:number}>('salary');
+  const { loading, error, reply, call } = useAI<{message:string; tool?:string; context?:string}>('salary');
   const [role, setRole] = useState('Software Engineer');
   const [location, setLocation] = useState('Bengaluru');
   const [years, setYears] = useState(2);
@@ -205,7 +205,7 @@ const SalaryWidget: React.FC = () => {
           <label className="text-sm text-gray-700">Years of Experience</label>
           <input type="number" min={0} className="w-full border rounded-md px-3 py-2" value={years} onChange={(e)=> setYears(parseInt(e.target.value || '0', 10))} />
         </div>
-        <button className={`px-4 py-2 rounded-md text-white ${loading?'bg-amber-300':'bg-amber-600 hover:bg-amber-700'}`} onClick={()=> call({ role, location, years })} disabled={loading}> {loading?'Estimating…':'Estimate & Script'} </button>
+        <button className={`px-4 py-2 rounded-md text-white ${loading?'bg-amber-300':'bg-amber-600 hover:bg-amber-700'}`} onClick={()=> call({ message: `Estimate salary for ${role} in ${location} with ${years} years experience. Add negotiation script.`, tool: 'salary', context: 'Salary Advisor' })} disabled={loading}> {loading?'Estimating…':'Estimate & Script'} </button>
         {error && <p className="text-sm text-red-600">{error}</p>}
       </div>
       <div className="border rounded-md p-4 min-h-[320px] whitespace-pre-wrap">{reply || 'Output will appear here.'}</div>
@@ -214,7 +214,7 @@ const SalaryWidget: React.FC = () => {
 };
 
 const ResumeWidget: React.FC = () => {
-  const { loading, error, reply, call } = useAI<{resumeText:string; targetRole:string}>('resume');
+  const { loading, error, reply, call } = useAI<{content:string; analysisType?:string}>('resume');
   const [resumeText, setResumeText] = useState('Paste your resume text here...');
   const [targetRole, setTargetRole] = useState('Frontend Developer');
   return (
@@ -228,7 +228,7 @@ const ResumeWidget: React.FC = () => {
           <label className="text-sm text-gray-700">Resume Text</label>
           <textarea className="w-full border rounded-md px-3 py-2 h-40" value={resumeText} onChange={(e)=> setResumeText(e.target.value)} />
         </div>
-        <button className={`px-4 py-2 rounded-md text-white ${loading?'bg-rose-300':'bg-rose-600 hover:bg-rose-700'}`} onClick={()=> call({ resumeText, targetRole })} disabled={loading}> {loading?'Analyzing…':'Analyze Resume'} </button>
+        <button className={`px-4 py-2 rounded-md text-white ${loading?'bg-rose-300':'bg-rose-600 hover:bg-rose-700'}`} onClick={()=> call({ content: `Target Role: ${targetRole}\n\nResume:\n${resumeText}`, analysisType: 'summary' })} disabled={loading}> {loading?'Analyzing…':'Analyze Resume'} </button>
         {error && <p className="text-sm text-red-600">{error}</p>}
       </div>
       <div className="border rounded-md p-4 min-h-[320px] whitespace-pre-wrap">{reply || 'Output will appear here.'}</div>
@@ -237,7 +237,7 @@ const ResumeWidget: React.FC = () => {
 };
 
 const MentorWidget: React.FC = () => {
-  const { loading, error, reply, call } = useAI<{question:string}>('mentor');
+  const { loading, error, reply, call } = useAI<{message:string; tool?:string; context?:string}>('mentor');
   const [question, setQuestion] = useState('I have 1 year gap after graduation. How to position it?');
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -246,7 +246,7 @@ const MentorWidget: React.FC = () => {
           <label className="text-sm text-gray-700">Your Question</label>
           <textarea className="w-full border rounded-md px-3 py-2 h-32" value={question} onChange={(e)=> setQuestion(e.target.value)} />
         </div>
-        <button className={`px-4 py-2 rounded-md text-white ${loading?'bg-sky-300':'bg-sky-600 hover:bg-sky-700'}`} onClick={()=> call({ question })} disabled={loading}> {loading?'Thinking…':'Ask Mentor'} </button>
+        <button className={`px-4 py-2 rounded-md text-white ${loading?'bg-sky-300':'bg-sky-600 hover:bg-sky-700'}`} onClick={()=> call({ message: question, tool: 'mentor', context: 'AI Mentor' })} disabled={loading}> {loading?'Thinking…':'Ask Mentor'} </button>
         {error && <p className="text-sm text-red-600">{error}</p>}
       </div>
       <div className="border rounded-md p-4 min-h-[320px] whitespace-pre-wrap">{reply || 'Output will appear here.'}</div>

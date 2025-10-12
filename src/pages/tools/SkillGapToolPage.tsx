@@ -11,9 +11,9 @@ const SkillGapToolPage: React.FC = () => {
   const submit = async () => {
     setError(''); setReply(''); setLoading(true);
     try {
-      const resp = await fetch(`${BASE_URL}/api/v2/tools/skill-gap`, {
+      const resp = await fetch(`${BASE_URL}/api/v1/tools/chat`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ targetRole, currentSkills })
+        body: JSON.stringify({ message: `Target role: ${targetRole}. Current skills: ${currentSkills}. Identify gaps and propose a 4-week plan.`, tool: 'skill-gap', context: 'Skill Gap' })
       });
       const data = await resp.json();
       if (!resp.ok) throw new Error(data?.message || 'Request failed');

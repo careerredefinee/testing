@@ -12,9 +12,9 @@ const InterviewToolPage: React.FC = () => {
   const submit = async () => {
     setError(''); setReply(''); setLoading(true);
     try {
-      const resp = await fetch(`${BASE_URL}/api/v2/tools/interview`, {
+      const resp = await fetch(`${BASE_URL}/api/v1/tools/chat`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role, seniority, domain })
+        body: JSON.stringify({ message: `Generate interview questions for a ${seniority} ${role} in ${domain}. Include strong answer cues.`, tool: 'interview', context: 'Interview Simulator' })
       });
       const data = await resp.json();
       if (!resp.ok) throw new Error(data?.message || 'Request failed');

@@ -12,7 +12,7 @@ const CareerPathToolPage: React.FC = () => {
   const submit = async () => {
     setError(''); setReply(''); setLoading(true);
     try {
-      const resp = await fetch(`${BASE_URL}/api/v2/tools/career-path`, {
+      const resp = await fetch(`${BASE_URL}/api/v1/tools/chat`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ skills, interests, experience })
       });
