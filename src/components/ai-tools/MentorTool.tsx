@@ -15,7 +15,7 @@ const MentorTool: React.FC<Props> = ({ onClose }) => {
     setLoading(true); setError(null); setResult('');
     try {
       const message = `Act as a 24/7 AI career mentor. Provide clear, empathetic, and practical advice.\nQuestion: ${question || 'N/A'}`;
-      const r = await aiService.chat({ message, tool: 'mentor', context: 'Return short actionable guidance and next steps.' });
+      const r = await aiService.chat({ message, tool: 'mentor', context: 'Return short actionable guidance in bullet points only. No markdown, no hashes (#), no asterisks (*).' });
       setResult(r?.data?.reply || '');
     } catch (err: any) {
       setError(err?.response?.data?.message || 'Failed to get mentor advice.');
@@ -38,16 +38,16 @@ const MentorTool: React.FC<Props> = ({ onClose }) => {
       <div className="mt-4 bg-gray-50 border rounded-lg p-4 min-h-[200px]">
         {error && <div className="text-red-600 mb-2">{error}</div>}
         {!error && !result && !loading && <p className="text-gray-500">Type a question and click Ask.</p>}
-        {result && (
-          <article className="prose max-w-none">
-            {(() => {
-              const formatted = result
-                .replace(/^(\s*)([*-])\s+/gm, '$1• ')
-                .replace(/\n/g, '<br/>');
-              return <div dangerouslySetInnerHTML={{ __html: formatted }} />;
-            })()}
-          </article>
-        )}
+        {result && (() => {
+          const text = result.replace(/[#*`>]/g, '').replace(/\r/g, '').trim();
+          const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
+          const items = lines.map(l => l.replace(/^[-•*]\s+/, '').replace(/^\d+\.?\s+/, ''));
+          return (
+            <ul className="list-disc pl-5 space-y-1 text-gray-800">
+              {items.map((it, idx) => (<li key={idx}>{it}</li>))}
+            </ul>
+          );
+        })()}
       </div>
     </div>
   );

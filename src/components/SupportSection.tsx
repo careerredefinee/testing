@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { adminService } from '../services/adminService';
 import { ChevronDown, MessageSquare, Calendar, Users } from 'lucide-react';
 
@@ -28,6 +29,7 @@ const faqs = [
 
 const SupportSection: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [openFaq, setOpenFaq] = React.useState<number | null>(0);
   const [showBooking, setShowBooking] = React.useState(false);
   const bookingRef = React.useRef<HTMLDivElement | null>(null);
@@ -264,21 +266,19 @@ const SupportSection: React.FC = () => {
               <p className="mt-4 text-gray-600">
                 Connect instantly with experienced mentors for guidance on resumes, interviews, and career strategy. Real people. Real support.
               </p>
-              <a
-                href={user?.isPremium ? 'https://wa.me/919515490871?text=Hi%20Career%20Redefine%20Support' : '#chat'}
-                onClick={(e) => {
-                  if (!user?.isPremium) {
-                    e.preventDefault();
+              <button
+                onClick={() => {
+                  if (user?.isPremium) {
+                    window.open('https://wa.me/919515490871?text=Hi%20Career%20Redefine%20Support', '_blank', 'noopener,noreferrer');
+                  } else {
                     setPremiumMessage('This feature is accessible only to Premium users.');
                     setShowPremium(true);
                   }
                 }}
-                target={user?.isPremium ? '_blank' as any : undefined}
-                rel={user?.isPremium ? 'noopener noreferrer' as any : undefined}
                 className="mt-6 inline-block bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 transition-colors"
               >
                 Chat Now
-              </a>
+              </button>
             </div>
 
             {/* Mentor Appointment */}
@@ -312,11 +312,11 @@ const SupportSection: React.FC = () => {
               <p className="mt-4 text-gray-600">
                 Connect with peers, share experiences, and grow together in our exclusive community. Participate in forums, workshops, and networking events.
               </p>
-              <a
-                href={user?.isPremium ? '/groups' : '#community'}
-                onClick={(e) => {
-                  if (!user?.isPremium) {
-                    e.preventDefault();
+              <button
+                onClick={() => {
+                  if (user?.isPremium) {
+                    navigate('/groups');
+                  } else {
                     setPremiumMessage('This is a Premium feature. Please upgrade to access the Community Hub.');
                     setShowPremium(true);
                   }
@@ -324,7 +324,7 @@ const SupportSection: React.FC = () => {
                 className="mt-6 inline-block bg-purple-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-purple-700 transition-colors"
               >
                 Join Community
-              </a>
+              </button>
             </div>
 
             {/* WhatsApp Support */}

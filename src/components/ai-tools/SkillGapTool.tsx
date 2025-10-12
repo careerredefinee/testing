@@ -18,7 +18,7 @@ const SkillGapTool: React.FC<Props> = ({ onClose }) => {
       const message = `Act as a skill-gap analyzer for the role: ${targetRole || 'N/A'}.
 Given the user's current skills: ${currentSkills || 'N/A'}
 Return: \n- Missing critical skills \n- Priority order \n- 8-week learning roadmap (weekly) \n- Minimal projects to prove skills \n- Resources (free first).`;
-      const r = await aiService.chat({ message, tool: 'skill-gap', context: 'Return concise bullets with week-by-week plan.' });
+      const r = await aiService.chat({ message, tool: 'skill-gap', context: 'Return concise bullet points only with week-by-week plan. No markdown, no hashes (#), no asterisks (*).' });
       setResult(r?.data?.reply || '');
     } catch (err: any) {
       setError(err?.response?.data?.message || 'Failed to analyze skill gaps.');
@@ -42,17 +42,16 @@ Return: \n- Missing critical skills \n- Priority order \n- 8-week learning roadm
       <div className="mt-4 bg-gray-50 border rounded-lg p-4 min-h-[200px]">
         {error && <div className="text-red-600 mb-2">{error}</div>}
         {!error && !result && !loading && <p className="text-gray-500">Enter your details and click Analyze.</p>}
-        {result && (
-          <article className="prose max-w-none">
-            {(() => {
-              const formatted = result
-                .replace(/^(\s*)([*-])\s+/gm, '$1• ')
-                .replace(/\*/g, '')
-                .replace(/\n/g, '<br/>');
-              return <div dangerouslySetInnerHTML={{ __html: formatted }} />;
-            })()}
-          </article>
-        )}
+        {result && (() => {
+          const text = result.replace(/[#*`>]/g, '').replace(/\r/g, '').trim();
+          const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
+          const items = lines.map(l => l.replace(/^[-•*]\s+/, '').replace(/^\d+\.?\s+/, ''));
+          return (
+            <ul className="list-disc pl-5 space-y-1 text-gray-800">
+              {items.map((it, idx) => (<li key={idx}>{it}</li>))}
+            </ul>
+          );
+        })()}
       </div>
     </div>
   );

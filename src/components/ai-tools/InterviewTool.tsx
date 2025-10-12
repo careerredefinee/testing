@@ -18,7 +18,7 @@ const InterviewTool: React.FC<Props> = ({ onClose }) => {
       const message = `Act as a dynamic interview simulator for the role: ${role || 'N/A'}.
 Use the job description to tailor questions. Ask 5 rounds. After each answer, provide brief feedback and an improved sample answer.
 Job Description:\n${description || 'N/A'}`;
-      const r = await aiService.chat({ message, tool: 'interview', context: 'Simulate interview Q&A with feedback. Return as numbered sections.' });
+      const r = await aiService.chat({ message, tool: 'interview', context: 'Simulate interview Q&A with feedback. Use short bullet points. No markdown, no hashes, no asterisks.' });
       setResult(r?.data?.reply || '');
     } catch (err: any) {
       setError(err?.response?.data?.message || 'Failed to generate interview simulation.');
@@ -46,17 +46,17 @@ Job Description:\n${description || 'N/A'}`;
       <div className="mt-4 bg-gray-50 border rounded-lg p-4 min-h-[200px]">
         {error && <div className="text-red-600 mb-2">{error}</div>}
         {!error && !result && !loading && <p className="text-gray-500">Enter details and click Start Simulation.</p>}
-        {result && (
-          <article className="prose max-w-none">
-            {(() => {
-              const formatted = result
-                .replace(/^(\s*)([*-])\s+/gm, '$1• ')
-                .replace(/\*/g, '')
-                .replace(/\n/g, '<br/>');
-              return <div dangerouslySetInnerHTML={{ __html: formatted }} />;
-            })()}
-          </article>
-        )}
+        {result && (() => {
+          // Convert any markdown-ish output to clean bullet list
+          const text = result.replace(/[#*`>]/g, '').replace(/\r/g, '').trim();
+          const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
+          const items = lines.map(l => l.replace(/^[-•*]\s+/, '').replace(/^\d+\.?\s+/, ''));
+          return (
+            <ul className="list-disc pl-5 space-y-1 text-gray-800">
+              {items.map((it, idx) => (<li key={idx}>{it}</li>))}
+            </ul>
+          );
+        })()}
       </div>
     </div>
   );

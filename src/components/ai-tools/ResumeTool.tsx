@@ -26,8 +26,9 @@ const ResumeTool: React.FC<Props> = ({ onClose }) => {
         // Text-only analysis fallback (no cover letter)
         const message = `You are an ATS and career coach. Analyze the following candidate profile for resume improvements.
 Target role: ${role || 'N/A'}\nExperience summary: ${experience || 'N/A'}\nSkills: ${skills || 'N/A'}
-Return: \n- Summary assessment \n- Strengths \n- Gaps with suggested bullet improvements \n- Keyword optimization tips \n- 5 tailored STAR-style bullet points.`;
-        const r = await aiService.chat({ message, tool: 'resume_analysis', context: 'Resume analysis only (no cover letter).' });
+Return only concise bullet points for: summary assessment, strengths, gaps with bullet improvements, keyword optimization tips, and 5 tailored bullets.
+Do NOT use markdown, hashes (#), or asterisks (*).`;
+        const r = await aiService.chat({ message, tool: 'resume_analysis', context: 'Return bullet points only. No markdown, no hashes, no asterisks.' });
         setResult(r?.data?.reply || '');
       }
     } catch (err: any) {
@@ -68,25 +69,16 @@ Return: \n- Summary assessment \n- Strengths \n- Gaps with suggested bullet impr
       <div className="mt-4 bg-gray-50 border rounded-lg p-4 min-h-[240px] max-h-[420px] overflow-auto">
         {error && <div className="text-red-600 mb-2">{error}</div>}
         {!error && !result && !loading && <p className="text-gray-500">Enter details and click Build.</p>}
-        {result && (
-          <article className="prose max-w-none">
-            {(() => {
-              const formatted = result
-                // Convert markdown headings (e.g., # Title, ## Title) to bullet points
-                .replace(/^\s*#+\s+/gm, '• ')
-                // Convert markdown list markers * or - to bullet points
-                .replace(/^(\s*)([*-])\s+/gm, '$1• ')
-                // Strip markdown bold/italic while keeping text
-                .replace(/\*\*(.*?)\*\*/g, '$1')
-                .replace(/\*(.*?)\*/g, '$1')
-                // Normalize multiple consecutive bullets (edge cases)
-                .replace(/^\s*•\s*•\s*/gm, '• ')
-                // Convert newlines to <br/>
-                .replace(/\n/g, '<br/>' );
-              return <div dangerouslySetInnerHTML={{ __html: formatted }} />;
-            })()}
-          </article>
-        )}
+        {result && (() => {
+          const text = result.replace(/[#*`>]/g, '').replace(/\r/g, '').trim();
+          const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
+          const items = lines.map(l => l.replace(/^[-•*]\s+/, '').replace(/^\d+\.?\s+/, ''));
+          return (
+            <ul className="list-disc pl-5 space-y-1 text-gray-800">
+              {items.map((it, idx) => (<li key={idx}>{it}</li>))}
+            </ul>
+          );
+        })()}
       </div>
     </div>
   );
