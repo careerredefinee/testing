@@ -38,6 +38,7 @@ import * as awardController from './controllers/awardController.js';
 import * as bookingController from './controllers/bookingController.js';
 import * as authController from './controllers/authController.js';
 import * as aiController from './controllers/aiController.js';
+import { setModelName as setAIModelName } from './controllers/aiController.js';
 import * as questionController from './controllers/questionController.js';
 import * as championController from './controllers/championController.js';
 import * as mentorController from './controllers/mentorController.js';
@@ -73,7 +74,11 @@ import cleanupUnverifiedAccounts from './utils/cleanupUnverifiedAccounts.js';
 cleanupUnverifiedAccounts();
 
 // Configure AI model centrally (do not rely on env for model name)
-aiController.setModelName('gemini-2.5-flash-lite');
+try {
+  setAIModelName('gemini-2.5-flash-lite');
+} catch (e) {
+  console.warn('AI model setter unavailable, continuing with default model.');
+}
 
 // Import models
 import User from './models/User.js';

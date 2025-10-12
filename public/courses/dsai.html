@@ -697,13 +697,33 @@ if (queryForm) {
     btn.disabled = true; if (text) text.textContent = 'Sending…'; if (spin) spin.style.display='inline-block';
 
     const fd = new FormData(form);
+    // Validate future time when booking for today
+    const pickedDate = String(fd.get('date') || '');
+    const pickedTime = String(fd.get('timeSlot') || '');
+    try {
+      if (pickedDate && pickedTime) {
+        const now = new Date();
+        const todayStr = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString().split('T')[0];
+        if (pickedDate === todayStr) {
+          const [hh, mm] = pickedTime.split(':').map((x)=>parseInt(x,10));
+          const slotMin = (hh||0)*60 + (mm||0);
+          const nowMin = now.getHours()*60 + now.getMinutes();
+          if (slotMin <= nowMin) {
+            showNotification('error', 'Please choose a future time today.');
+            btn.disabled = false; if (text) text.textContent = 'Book Now'; if (spin) spin.style.display='none';
+            return;
+          }
+        }
+      }
+    } catch(_) {}
+
     const payload = {
       name: fd.get('name') || '',
       email: fd.get('email') || '',
       phone: fd.get('phone') || '',
       message: fd.get('message') || '',
-      date: fd.get('date') || '',
-      timeSlot: fd.get('timeSlot') || '',
+      date: pickedDate,
+      timeSlot: pickedTime,
       type: 'consultation'
     };
 
@@ -979,23 +999,25 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
-// Set minimum date to today
+// Set minimum date to today (support both legacy interview form and new quick form)
 document.addEventListener('DOMContentLoaded', function() {
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('interview_date').min = today;
-  
-  // Generate time slots
-  generateTimeSlots();
-  
-  // Add event listener for date change
-  const dateInput = document.getElementById('interview_date');
-  if (dateInput) {
-    dateInput.addEventListener('change', function() {
-      generateTimeSlots();
-    });
-  }
+  const today = new Date();
+  const yyyyMmDd = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString().split('T')[0];
+
+  // Legacy interview form (if still present)
+  const legacyDate = document.getElementById('interview_date');
+  if (legacyDate) {
+    legacyDate.min = yyyyMmDd;
     generateTimeSlots();
-  });
+    legacyDate.addEventListener('change', function() { generateTimeSlots(); });
+  }
+
+  // New quick form
+  const quickFormDate = document.querySelector('form#quickBookForm input[name="date"]');
+  if (quickFormDate) {
+    quickFormDate.setAttribute('min', yyyyMmDd);
+  }
+});
   
   // Show notification card function
   function showNotification(type, message) {
