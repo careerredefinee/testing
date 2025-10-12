@@ -11,7 +11,7 @@ const getModel = () => {
   const key = process.env.GEMINI_API_KEY;
   if (!key) return null;
   const client = new GoogleGenerativeAI(key);
-  const modelName = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+  const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash-lite';
   return client.getGenerativeModel({ model: modelName });
 };
 

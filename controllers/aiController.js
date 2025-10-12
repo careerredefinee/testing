@@ -12,13 +12,13 @@ const getClient = () => {
 const getTextModel = () => {
   const client = getClient();
   if (!client) return null;
-  const modelName = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+  const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash-lite';
   return client.getGenerativeModel({ model: modelName });
 };
 
 export const health = async (req, res) => {
   const ready = !!getClient();
-  res.status(200).json({ status: 'ok', model: process.env.GEMINI_MODEL || 'gemini-1.5-flash', ready });
+  res.status(200).json({ status: 'ok', model: process.env.GEMINI_MODEL || 'gemini-2.5-flash-lite', ready });
 };
 
 export const chat = async (req, res) => {

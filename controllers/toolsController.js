@@ -9,7 +9,7 @@ const buildClient = () => {
 const getModel = () => {
   const client = buildClient();
   if (!client) return null;
-  const modelName = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+  const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash-lite';
   return client.getGenerativeModel({ model: modelName });
 };
 
