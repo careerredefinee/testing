@@ -541,15 +541,20 @@ if (queryForm) {
     formData.forEach((value, key) => {
       formObject[key] = value;
     });
+
+    // If it's an interview form, ensure the time key is 'timeSlot' for the backend.
+    if (formObject.interview_time) {
+      formObject.timeSlot = formObject.interview_time;
+      delete formObject.interview_time;
+    }
     
     // Determine the endpoint based on form type
-    // Determine the endpoint based on form type
-const isInterviewForm = this.querySelector('input[name="interview_date"]') !== null;
-const endpoint = isInterviewForm 
-  ? 'https://test5-x7xt.onrender.com/api/book-interview' 
-  : 'https://test5-x7xt.onrender.com/api/enquiry:1  Failed to load resource: ';
+    const isInterviewForm = this.querySelector('input[name="interview_date"]') !== null;
+    const endpoint = isInterviewForm 
+      ? 'https://test5-x7xt.onrender.com/api/book-interview' 
+      : 'https://test5-x7xt.onrender.com/api/enquiry';
 
-    // Submit to Node.js backend
+    // Submit to Node.js backend (robust handling like datascience.html)
     fetch(endpoint, {
       method: 'POST',
       headers: {
@@ -567,14 +572,13 @@ const endpoint = isInterviewForm
     })
     .then(({data, status, ok}) => {
       if (!(status === 200 || status === 201)) {
-  let msg = `Request failed with status ${status}`;
-  if (data && (data.message || data.error)) {
-    msg = data.message || data.error;
-  }
-  console.error('Server error:', msg);
-  throw new Error(msg);
-}
-
+        let msg = `Request failed with status ${status}`;
+        if (data && (data.message || data.error)) {
+          msg = data.message || data.error;
+        }
+        console.error('Server error:', msg);
+        throw new Error(msg);
+      }
       return data;
     })
     .then(data => {
@@ -583,13 +587,9 @@ const endpoint = isInterviewForm
       
       // Show success message in the appropriate card
       if (isInterviewForm) {
-        // For interview form, show success card with interview details
-        document.getElementById('successCard').style.display = 'block';
-        document.getElementById('successCard').querySelector('h3').textContent = 'Interview Scheduled Successfully!';
-        document.getElementById('successCard').querySelector('p').innerHTML = 
-          `Your interview has been scheduled for <strong>${formObject.interview_date} at ${formObject.interview_time}</strong>.<br><br>
-          We've sent the details to your email. Please check your inbox.`;
-        
+        // Use interview notification system
+        const msg = `Your interview has been scheduled for ${formObject.interview_date} at ${formObject.timeSlot}. We've sent the details to your email.`;
+        showInterviewNotification('success', msg);
         // Reset form and time slots for interview form
         this.reset();
         generateTimeSlots();

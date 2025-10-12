@@ -534,12 +534,18 @@ if (queryForm) {
     formData.forEach((value, key) => {
       formObject[key] = value;
     });
+
+    // If it's an interview form, ensure the time key is 'timeSlot' for the backend.
+    if (formObject.interview_time) {
+      formObject.timeSlot = formObject.interview_time;
+      delete formObject.interview_time;
+    }
     
     // Determine the endpoint based on form type
     const isInterviewForm = this.querySelector('input[name="interview_date"]') !== null;
     const endpoint = isInterviewForm 
       ? 'https://test5-x7xt.onrender.com/api/book-interview' 
-      : 'https://test5-x7xt.onrender.com/api/enquiry:1  Failed to load resource: ';
+      : 'https://test5-x7xt.onrender.com/api/enquiry';
 
     // Submit to Node.js backend (robust handling like datascience.html)
     fetch(endpoint, {

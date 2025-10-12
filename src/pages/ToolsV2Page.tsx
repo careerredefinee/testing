@@ -6,12 +6,12 @@ import BASE_URL from '../config';
 type ToolId = 'career-path' | 'interview' | 'skill-gap' | 'salary' | 'resume' | 'mentor';
 
 const endpointMap: Record<ToolId, string> = {
-  'career-path': '/api/v2/tools/career-path',
-  interview: '/api/v2/tools/interview',
-  'skill-gap': '/api/v2/tools/skill-gap',
-  salary: '/api/v2/tools/salary',
-  resume: '/api/v2/tools/resume',
-  mentor: '/api/v2/tools/mentor',
+  'career-path': '/api/v1/tools/chat',
+  interview: '/api/v1/tools/chat',
+  'skill-gap': '/api/v1/tools/chat',
+  salary: '/api/v1/tools/chat',
+  resume: '/api/v1/tools/document',
+  mentor: '/api/v1/tools/chat',
 };
 
 const Section: React.FC<{ title: string; subtitle: string; children: React.ReactNode }>
