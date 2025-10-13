@@ -25,7 +25,13 @@ const BookingForm: React.FC = () => {
 
   const workingSlots = React.useMemo(() => {
     const slots: string[] = [];
-    for (let h = 9; h < 18; h++) slots.push(`${String(h).padStart(2, '0')}:00`);
+    for (let h = 9; h <= 17; h++) {
+      for (let m = 0; m < 60; m += 30) {
+        const hh = String(h).padStart(2, '0');
+        const mm = String(m).padStart(2, '0');
+        slots.push(`${hh}:${mm}`);
+      }
+    }
     return slots;
   }, []);
 
@@ -53,7 +59,7 @@ const BookingForm: React.FC = () => {
     const message = (booking.message || '').trim();
 
     const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRe = /^[0-9+()\-\s]{7,20}$/;
+    const phoneRe = /^[-0-9+() ]{7,20}$/;
 
     if (!name || !email || !phone || !date || !timeSlot) {
       setErrorMsg('Please fill in name, email, phone, date and time.');
@@ -133,6 +139,21 @@ const BookingForm: React.FC = () => {
             placeholder="you@example.com"
             required
           />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700" htmlFor="booking-type">Session Type</label>
+          <select
+            id="booking-type"
+            name="type"
+            className="mt-1 w-full rounded-md border border-gray-300 px-4 py-3 shadow-sm focus:border-green-600 focus:ring-green-600"
+            value={booking.type}
+            onChange={(e) => setBooking((s) => ({ ...s, type: e.target.value }))}
+          >
+            <option value="consultation">Consultation</option>
+            <option value="resume-review">Resume Review</option>
+            <option value="mock-interview">Mock Interview</option>
+            <option value="career-planning">Career Planning</option>
+          </select>
         </div>
         <div className="sm:col-span-2">
           <label className="block text-sm font-medium text-gray-700" htmlFor="booking-phone">Phone</label>
