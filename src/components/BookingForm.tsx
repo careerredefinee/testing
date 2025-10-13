@@ -141,7 +141,7 @@ const BookingForm: React.FC = () => {
             name="phone"
             type="tel"
             inputMode="tel"
-            pattern="[0-9+()\-\s]{7,20}"
+            pattern="[-0-9+() ]{7,20}"
             className="mt-1 w-full rounded-md border border-gray-300 px-4 py-3 shadow-sm focus:border-green-600 focus:ring-green-600"
             value={booking.phone}
             onChange={(e) => setBooking((s) => ({ ...s, phone: e.target.value }))}
