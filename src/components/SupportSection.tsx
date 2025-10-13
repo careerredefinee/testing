@@ -75,10 +75,12 @@ const SupportSection: React.FC = () => {
 
   const isPastTimeForToday = (dateStr: string, timeStr: string) => {
     if (!dateStr || !timeStr) return false;
-    const selected = new Date(`${dateStr}T${timeStr}:00`);
+    // Construct local date-time robustly to avoid timezone parsing issues
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const [hh, mm] = timeStr.split(':').map(Number);
+    const selected = new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0, 0, 0);
     const now = new Date();
-    // if selected date is today, ensure time is in future
-    const sameDay = selected.toDateString() === now.toDateString();
+    const sameDay = selected.getFullYear() === now.getFullYear() && selected.getMonth() === now.getMonth() && selected.getDate() === now.getDate();
     return sameDay && selected.getTime() <= now.getTime();
   };
 
@@ -86,28 +88,50 @@ const SupportSection: React.FC = () => {
     e.preventDefault();
     setSuccessMsg(null);
     setErrorMsg(null);
-    if (!booking.name || !booking.email || !booking.phone || !booking.date || !booking.timeSlot) {
+
+    // Trim inputs and perform strict validation
+    const name = booking.name.trim();
+    const email = booking.email.trim();
+    const phone = booking.phone.trim();
+    const date = booking.date;
+    const timeSlot = booking.timeSlot;
+    const type = booking.type || 'consultation';
+    const message = (booking.message || '').trim();
+
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRe = /^[0-9+()\-\s]{7,20}$/;
+
+    if (!name || !email || !phone || !date || !timeSlot) {
       setErrorMsg('Please fill in name, email, phone, date and time.');
       return;
     }
-    if (booking.date < todayStr) {
+    if (!emailRe.test(email)) {
+      setErrorMsg('Please enter a valid email address.');
+      return;
+    }
+    if (!phoneRe.test(phone)) {
+      setErrorMsg('Please enter a valid phone number.');
+      return;
+    }
+    if (date < todayStr) {
       setErrorMsg('Date cannot be in the past.');
       return;
     }
-    if (isPastTimeForToday(booking.date, booking.timeSlot)) {
+    if (isPastTimeForToday(date, timeSlot)) {
       setErrorMsg('Please choose a future time for today.');
       return;
     }
+
     try {
       setSubmitting(true);
       await adminService.createBooking({
-        name: booking.name,
-        email: booking.email,
-        phone: booking.phone,
-        date: booking.date,
-        timeSlot: booking.timeSlot,
-        type: booking.type,
-        message: booking.message || undefined
+        name,
+        email,
+        phone,
+        date,
+        timeSlot,
+        type,
+        message: message || undefined,
       });
       setSuccessMsg('Your booking request has been submitted. Please check your email for confirmation.');
       setBooking({ name: '', email: '', phone: '', message: '', date: '', timeSlot: '', type: 'consultation' });
@@ -137,6 +161,53 @@ const SupportSection: React.FC = () => {
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
 
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setContactSuccess(null);
+    setContactError(null);
+
+    const name = contactName.trim();
+    const email = contactEmail.trim();
+    const phone = (contactPhone || '').trim();
+    const message = contactMessage.trim();
+
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRe = /^[0-9+()\-\s]{7,20}$/;
+
+    if (!name || !email || !message) {
+      setContactError('Please fill in Name, Email and Message.');
+      return;
+    }
+    if (!emailRe.test(email)) {
+      setContactError('Please enter a valid email address.');
+      return;
+    }
+    if (phone && !phoneRe.test(phone)) {
+      setContactError('Please enter a valid phone number.');
+      return;
+    }
+
+    try {
+      setContactSubmitting(true);
+      await adminService.createQuestion({
+        subject: 'General Question',
+        message,
+        name,
+        email,
+        phone: phone || undefined,
+      });
+      setContactSuccess("Thanks! Your question has been submitted. We'll reply by email.");
+      setContactName('');
+      setContactEmail('');
+      setContactPhone('');
+      setContactMessage('');
+    } catch (err: any) {
+      setContactError(err?.response?.data?.message || 'Failed to send your message. Please try again.');
+    } finally {
+      setContactSubmitting(false);
+    }
+  };
+
   return (
     <div className="bg-gray-50 font-sans">
       {/* Booking Form Section (hidden until clicked) - moved outside hero to avoid overlay */}
@@ -153,10 +224,13 @@ const SupportSection: React.FC = () => {
             {errorMsg && (
               <div className="mb-6 rounded-md bg-red-50 p-4 text-red-800 border border-red-200">{errorMsg}</div>
             )}
-            <form onSubmit={handleBookingSubmit} className="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8">
+            <form onSubmit={handleBookingSubmit} className="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8" noValidate>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Name</label>
+                <label className="block text-sm font-medium text-gray-700" htmlFor="booking-name">Name</label>
                 <input
+                  id="booking-name"
+                  name="name"
+                  autoComplete="name"
                   className="mt-1 w-full rounded-md border border-gray-300 px-4 py-3 shadow-sm focus:border-green-600 focus:ring-green-600"
                   value={booking.name}
                   onChange={(e) => setBooking((s) => ({ ...s, name: e.target.value }))}
@@ -165,9 +239,13 @@ const SupportSection: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <label className="block text-sm font-medium text-gray-700" htmlFor="booking-email">Email</label>
                 <input
+                  id="booking-email"
+                  name="email"
                   type="email"
+                  autoComplete="email"
+                  inputMode="email"
                   className="mt-1 w-full rounded-md border border-gray-300 px-4 py-3 shadow-sm focus:border-green-600 focus:ring-green-600"
                   value={booking.email}
                   onChange={(e) => setBooking((s) => ({ ...s, email: e.target.value }))}
@@ -176,8 +254,13 @@ const SupportSection: React.FC = () => {
                 />
               </div>
               <div className="sm:col-span-2">
-                <label className="block text-sm font-medium text-gray-700">Phone</label>
+                <label className="block text-sm font-medium text-gray-700" htmlFor="booking-phone">Phone</label>
                 <input
+                  id="booking-phone"
+                  name="phone"
+                  type="tel"
+                  inputMode="tel"
+                  pattern="[0-9+()\-\s]{7,20}"
                   className="mt-1 w-full rounded-md border border-gray-300 px-4 py-3 shadow-sm focus:border-green-600 focus:ring-green-600"
                   value={booking.phone}
                   onChange={(e) => setBooking((s) => ({ ...s, phone: e.target.value }))}
@@ -186,8 +269,10 @@ const SupportSection: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Date</label>
+                <label className="block text-sm font-medium text-gray-700" htmlFor="booking-date">Date</label>
                 <input
+                  id="booking-date"
+                  name="date"
                   type="date"
                   min={todayStr}
                   className="mt-1 w-full rounded-md border border-gray-300 px-4 py-3 shadow-sm focus:border-green-600 focus:ring-green-600"
@@ -197,8 +282,10 @@ const SupportSection: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Time</label>
+                <label className="block text-sm font-medium text-gray-700" htmlFor="booking-time">Time</label>
                 <select
+                  id="booking-time"
+                  name="time"
                   className="mt-1 w-full rounded-md border border-gray-300 px-4 py-3 shadow-sm focus:border-green-600 focus:ring-green-600"
                   value={booking.timeSlot}
                   onChange={(e) => setBooking((s) => ({ ...s, timeSlot: e.target.value }))}
@@ -213,9 +300,12 @@ const SupportSection: React.FC = () => {
                 </select>
               </div>
               <div className="sm:col-span-2">
-                <label className="block text-sm font-medium text-gray-700">Message (optional)</label>
+                <label className="block text-sm font-medium text-gray-700" htmlFor="booking-message">Message (optional)</label>
                 <textarea
+                  id="booking-message"
+                  name="message"
                   rows={4}
+                  maxLength={1000}
                   className="mt-1 w-full rounded-md border border-gray-300 px-4 py-3 shadow-sm focus:border-green-600 focus:ring-green-600"
                   value={booking.message}
                   onChange={(e) => setBooking((s) => ({ ...s, message: e.target.value }))}
@@ -408,58 +498,32 @@ const SupportSection: React.FC = () => {
             <div className="mb-6 rounded-md bg-red-50 p-4 text-red-800 border border-red-200">{contactError}</div>
           )}
           <form
-            onSubmit={async (e) => {
-              e.preventDefault();
-              setContactSuccess(null);
-              setContactError(null);
-              if (!contactName || !contactEmail || !contactMessage) {
-                setContactError('Please fill in Name, Email and Message.');
-                return;
-              }
-              try {
-                setContactSubmitting(true);
-                await adminService.createQuestion({
-                  subject: 'General Question',
-                  message: contactMessage,
-                  name: contactName,
-                  email: contactEmail,
-                  phone: contactPhone || undefined,
-                });
-                setContactSuccess('Thanks! Your question has been submitted. We\'ll reply by email.');
-                setContactName('');
-                setContactEmail('');
-                setContactPhone('');
-                setContactMessage('');
-              } catch (err: any) {
-                setContactError(err?.response?.data?.message || 'Failed to send your message. Please try again.');
-              } finally {
-                setContactSubmitting(false);
-              }
-            }}
+            onSubmit={handleContactSubmit}
+            noValidate
             className="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8"
           >
             <div>
               <label htmlFor="contact-name" className="block text-sm font-medium text-gray-700">Name</label>
               <div className="mt-1">
-                <input id="contact-name" type="text" value={contactName} onChange={(e) => setContactName(e.target.value)} className="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" />
+                <input id="contact-name" name="name" type="text" autoComplete="name" value={contactName} onChange={(e) => setContactName(e.target.value)} className="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" required />
               </div>
             </div>
             <div>
               <label htmlFor="contact-email" className="block text-sm font-medium text-gray-700">Email</label>
               <div className="mt-1">
-                <input id="contact-email" type="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} className="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" />
+                <input id="contact-email" name="email" type="email" inputMode="email" autoComplete="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} className="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" required />
               </div>
             </div>
             <div className="sm:col-span-2">
               <label htmlFor="contact-phone" className="block text-sm font-medium text-gray-700">Phone (optional)</label>
               <div className="mt-1">
-                <input id="contact-phone" type="tel" value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} className="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" />
+                <input id="contact-phone" name="phone" type="tel" inputMode="tel" pattern="[0-9+()\-\s]{7,20}" value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} className="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" />
               </div>
             </div>
             <div className="sm:col-span-2">
               <label htmlFor="contact-message" className="block text-sm font-medium text-gray-700">Message</label>
               <div className="mt-1">
-                <textarea id="contact-message" rows={4} value={contactMessage} onChange={(e) => setContactMessage(e.target.value)} className="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border border-gray-300 rounded-md"></textarea>
+                <textarea id="contact-message" name="message" rows={4} maxLength={2000} value={contactMessage} onChange={(e) => setContactMessage(e.target.value)} className="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border border-gray-300 rounded-md" required></textarea>
               </div>
             </div>
             <div className="sm:col-span-2 text-center">
