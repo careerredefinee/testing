@@ -55,11 +55,11 @@ const BookingForm: React.FC = () => {
     const phone = booking.phone.trim();
     const date = booking.date;
     const timeSlot = booking.timeSlot;
-    const type = booking.type || 'consultation';
+    const type = 'consultation';
     const message = (booking.message || '').trim();
 
     const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRe = /^[-0-9+() ]{7,20}$/;
+    const phoneRe = /^[0-9+()\- ]{7,20}$/;
 
     if (!name || !email || !phone || !date || !timeSlot) {
       setErrorMsg('Please fill in name, email, phone, date and time.');
@@ -96,8 +96,11 @@ const BookingForm: React.FC = () => {
       setSuccessMsg('Your booking request has been submitted. Please check your email for confirmation.');
       setBooking({ name: '', email: '', phone: '', message: '', date: '', timeSlot: '', type: 'consultation' });
     } catch (err: any) {
-      const msg = err?.response?.data?.message || 'Failed to submit booking. Please try again.';
-      setErrorMsg(msg);
+      const backend = err?.response?.data;
+      const details = Array.isArray(backend?.errors)
+        ? backend.errors.map((e: any) => (e?.msg || e)).join(', ')
+        : (backend?.message || backend?.error);
+      setErrorMsg(details || 'Failed to submit booking. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -162,7 +165,6 @@ const BookingForm: React.FC = () => {
             name="phone"
             type="tel"
             inputMode="tel"
-            pattern="[-0-9+() ]{7,20}"
             className="mt-1 w-full rounded-md border border-gray-300 px-4 py-3 shadow-sm focus:border-green-600 focus:ring-green-600"
             value={booking.phone}
             onChange={(e) => setBooking((s) => ({ ...s, phone: e.target.value }))}
