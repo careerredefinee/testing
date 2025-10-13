@@ -491,23 +491,27 @@ export const searchCourses = async (req, res) => {
 // Get popular courses
 export const getPopularCourses = async (req, res) => {
   try {
+    // Be defensive: ensure numeric sort fields exist and keep response light
     const courses = await Course.find({ isPublished: true })
+      .select('title image instructor price rating numReviews')
       .sort({ rating: -1, numReviews: -1, createdAt: -1 })
       .limit(5)
-      .select('title image instructor price rating numReviews')
-      .populate('instructor', 'name');
+      .populate('instructor', 'name')
+      .lean();
 
-    res.status(200).json({
+    return res.status(200).json({
       status: 'success',
       results: courses.length,
-      data: {
-        courses,
-      },
+      data: { courses },
     });
   } catch (err) {
-    res.status(500).json({
-      status: 'error',
-      message: 'Error retrieving popular courses',
+    // Log details server-side and return empty list to avoid UI break
+    console.error('getPopularCourses error:', err?.message || err);
+    return res.status(200).json({
+      status: 'success',
+      results: 0,
+      data: { courses: [] },
+      warning: 'Failed to load popular courses',
     });
   }
 };

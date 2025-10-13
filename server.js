@@ -882,7 +882,7 @@ app.delete('/api/v1/questions/:id', protect, restrictTo('admin'), questionContro
 // ----- Callback Requests -----
 // Public submit
 app.post('/api/v1/callbacks', callController.createCallbackRequest);
-// Admin
+// Admin list and delete (used by admin UI)
 app.get('/api/v1/callbacks', protect, restrictTo('admin'), callController.getCallbackRequests);
 app.delete('/api/v1/callbacks/:id', protect, restrictTo('admin'), callController.deleteCallbackRequest);
 

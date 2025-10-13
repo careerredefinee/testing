@@ -59,8 +59,14 @@ const PremiumToolsPage: React.FC = () => {
   const [debugOutput, setDebugOutput] = useState<string>('');
   const [debugLoading, setDebugLoading] = useState<boolean>(false);
   const [debugError, setDebugError] = useState<string | null>(null);
+  // Code Generator tool
+  const [codePrompt, setCodePrompt] = useState<string>('');
+  const [codeLanguage, setCodeLanguage] = useState<string>('javascript');
+  const [codeOutput, setCodeOutput] = useState<string>('');
+  const [codeLoading, setCodeLoading] = useState<boolean>(false);
+  const [codeError, setCodeError] = useState<string | null>(null);
   // Page-level tool selection
-  const [activeTool, setActiveTool] = useState<null | 'debug' | 'quiz' | 'interview' | 'jobs'>(null);
+  const [activeTool, setActiveTool] = useState<null | 'debug' | 'quiz' | 'interview' | 'jobs' | 'codegen'>(null);
 
   const canLoadMore = (s: ToolState) => s.items.length > s.shown && s.shown < 20;
 
@@ -242,6 +248,20 @@ Rules:
           <div className="text-sm text-gray-600">Analyze code up to ~200 lines and get fixes.</div>
         </button>
 
+        {/* Code Generator */}
+        <button
+          onClick={() => setActiveTool('codegen')}
+          className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 text-left hover:shadow-md transition"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-white flex items-center justify-center">
+              <CodeIcon size={22} />
+            </div>
+            <div className="font-semibold text-gray-900">Code Generator</div>
+          </div>
+          <div className="text-sm text-gray-600">Generate production-quality code with Gemini.</div>
+        </button>
+
         {/* Quiz */}
         <button
           onClick={() => setActiveTool('quiz')}
@@ -340,6 +360,81 @@ Rules:
               {debugOutput && (
                 <div className="mt-4 bg-gray-50 rounded-md p-4 border prose prose-sm max-w-none">
                   <pre className="whitespace-pre-wrap break-words">{debugOutput}</pre>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+
+        {activeTool === 'codegen' && (
+          <>
+            <div className="max-w-5xl mx-auto mb-4">
+              <button onClick={() => setActiveTool(null)} className="inline-flex items-center justify-center px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50">Back</button>
+            </div>
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">Code Generator (Gemini)</h2>
+              <p className="text-sm text-gray-600 mb-3">Describe what you want to build. Select a language and generate code.</p>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
+                <textarea
+                  value={codePrompt}
+                  onChange={(e) => setCodePrompt(e.target.value)}
+                  rows={6}
+                  placeholder="e.g., Create an Express middleware that logs method and URL, then calls next()"
+                  className="md:col-span-3 w-full resize-y rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                />
+                <div className="md:col-span-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>
+                  <select
+                    value={codeLanguage}
+                    onChange={(e) => setCodeLanguage(e.target.value)}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  >
+                    <option value="javascript">JavaScript</option>
+                    <option value="typescript">TypeScript</option>
+                    <option value="python">Python</option>
+                    <option value="go">Go</option>
+                    <option value="java">Java</option>
+                    <option value="csharp">C#</option>
+                  </select>
+                  <div className="mt-3 flex items-center gap-2">
+                    <button
+                      onClick={async () => {
+                        if (!codePrompt.trim()) {
+                          setCodeError('Please enter a prompt');
+                          return;
+                        }
+                        try {
+                          setCodeLoading(true);
+                          setCodeError(null);
+                          setCodeOutput('');
+                          const resp = await aiService.generateCode(codePrompt, codeLanguage);
+                          const code = (resp as any)?.data?.code || (resp as any)?.code || '';
+                          setCodeOutput(code);
+                        } catch (e: any) {
+                          const msg = e?.response?.data?.message || e?.message || 'Failed to generate code';
+                          setCodeError(msg);
+                        } finally {
+                          setCodeLoading(false);
+                        }
+                      }}
+                      disabled={codeLoading}
+                      className="inline-flex items-center justify-center px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-60"
+                    >
+                      {codeLoading ? 'Generating…' : 'Generate Code'}
+                    </button>
+                    <button
+                      onClick={() => { setCodePrompt(''); setCodeOutput(''); setCodeError(null); }}
+                      className="inline-flex items-center justify-center px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-50"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </div>
+              </div>
+              {codeError && <div className="text-sm text-red-600 mt-1">{codeError}</div>}
+              {codeOutput && (
+                <div className="mt-4 bg-gray-50 rounded-md p-4 border">
+                  <pre className="whitespace-pre-wrap break-words text-sm">{codeOutput}</pre>
                 </div>
               )}
             </div>
