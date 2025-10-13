@@ -5,6 +5,7 @@ const QuestionForm: React.FC = () => {
   const [contactName, setContactName] = React.useState('');
   const [contactEmail, setContactEmail] = React.useState('');
   const [contactPhone, setContactPhone] = React.useState('');
+  const [contactSubject, setContactSubject] = React.useState('General Question');
   const [contactMessage, setContactMessage] = React.useState('');
   const [contactSubmitting, setContactSubmitting] = React.useState(false);
   const [contactSuccess, setContactSuccess] = React.useState<string | null>(null);
@@ -18,13 +19,14 @@ const QuestionForm: React.FC = () => {
     const name = contactName.trim();
     const email = contactEmail.trim();
     const phone = (contactPhone || '').trim();
+    const subject = contactSubject.trim() || 'General Question';
     const message = contactMessage.trim();
 
     const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRe = /^[0-9+()\-\s]{7,20}$/;
+    const phoneRe = /^[-0-9+() ]{7,20}$/;
 
-    if (!name || !email || !message) {
-      setContactError('Please fill in Name, Email and Message.');
+    if (!name || !email || !message || !subject) {
+      setContactError('Please fill in Name, Email, Subject and Message.');
       return;
     }
     if (!emailRe.test(email)) {
@@ -39,7 +41,7 @@ const QuestionForm: React.FC = () => {
     try {
       setContactSubmitting(true);
       await adminService.createQuestion({
-        subject: 'General Question',
+        subject,
         message,
         name,
         email,
@@ -49,6 +51,7 @@ const QuestionForm: React.FC = () => {
       setContactName('');
       setContactEmail('');
       setContactPhone('');
+      setContactSubject('General Question');
       setContactMessage('');
     } catch (err: any) {
       setContactError(err?.response?.data?.message || 'Failed to send your message. Please try again.');
@@ -78,6 +81,18 @@ const QuestionForm: React.FC = () => {
             <input id="contact-email" name="email" type="email" inputMode="email" autoComplete="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} className="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" required />
           </div>
         </div>
+        <div>
+          <label htmlFor="contact-subject" className="block text-sm font-medium text-gray-700">Subject</label>
+          <div className="mt-1">
+            <select id="contact-subject" name="subject" value={contactSubject} onChange={(e) => setContactSubject(e.target.value)} className="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" required>
+              <option>General Question</option>
+              <option>Pricing</option>
+              <option>Technical Issue</option>
+              <option>Mentor Session</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
         <div className="sm:col-span-2">
           <label htmlFor="contact-phone" className="block text-sm font-medium text-gray-700">Phone (optional)</label>
           <div className="mt-1">
@@ -87,7 +102,7 @@ const QuestionForm: React.FC = () => {
         <div className="sm:col-span-2">
           <label htmlFor="contact-message" className="block text-sm font-medium text-gray-700">Message</label>
           <div className="mt-1">
-            <textarea id="contact-message" name="message" rows={4} maxLength={2000} value={contactMessage} onChange={(e) => setContactMessage(e.target.value)} className="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border border-gray-300 rounded-md" required></textarea>
+            <textarea id="contact-message" name="message" rows={5} maxLength={2000} value={contactMessage} onChange={(e) => setContactMessage(e.target.value)} className="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border border-gray-300 rounded-md" required></textarea>
           </div>
         </div>
         <div className="sm:col-span-2 text-center">
