@@ -54,9 +54,20 @@ const LoginSection: React.FC = () => {
     const GOOGLE_CLIENT_ID = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID ||
       '1014835939047-ehubqki99eco9r2g0i5ib1ctj2arj3o8.apps.googleusercontent.com';
 
+    // Sanitize client_id: strip accidental protocol prefixes and whitespace
+    let clientId = String(GOOGLE_CLIENT_ID || '').trim();
+    // Remove any leading protocol like 'http:' or 'https:' that would break GIS request
+    clientId = clientId.replace(/^https?:/i, '');
+    // Also remove any leading '//' if present after stripping protocol
+    clientId = clientId.replace(/^\/\//, '');
+    if (process.env.NODE_ENV !== 'production' && clientId !== GOOGLE_CLIENT_ID) {
+      // Helpful warning in development if we had to sanitize the value
+      console.warn('Sanitized VITE_GOOGLE_CLIENT_ID for GIS initialization');
+    }
+
     try {
       g.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
+        client_id: clientId,
         callback: async (response: any) => {
           if (isGoogleLoading) return;
           setIsGoogleLoading(true);
