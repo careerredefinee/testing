@@ -1,4 +1,5 @@
 import api from '../utils/api';
+import axios from 'axios';
 
 interface DashboardStats {
   users: number;
@@ -271,9 +272,12 @@ export const adminService = {
   },
 
   createBooking: async (payload: { name: string; email: string; phone: string; date: string; timeSlot: string; type?: string; message?: string }) => {
-    // Backend booking model: name, email, phone, date, timeSlot, type, message
-    const response = await api.post('/api/v1/bookings', payload);
-    return response.data?.data; // { booking }
+    // Public bookings endpoint (no auth). Use absolute URL to bypass interceptors/tokens.
+    const response = await axios.post('https://test5-x7xt.onrender.com/api/v1/bookings', payload, {
+      headers: { 'Content-Type': 'application/json' },
+      withCredentials: false,
+    });
+    return (response.data as any)?.data; // { booking }
   },
 
   // Champions
