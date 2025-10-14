@@ -65,51 +65,65 @@ export const createBooking = async (req, res) => {
 
     const newBooking = await Booking.create(payload);
 
-    // Send confirmation email to user
-    const userEmail = new Email(
-      { email, name },
-      `${req.protocol}://${req.get('host')}/bookings/${newBooking._id}`
-    );
-    await userEmail.send('bookingConfirmation', 'Your Booking Request Received', {
-      name,
-      date: bookingDate.toDateString(),
-      time: timeSlot,
-      bookingId: newBooking._id,
-      supportEmail: process.env.EMAIL_FROM,
-    });
+    // Respond immediately to keep the request fast
+    res.status(201).json({ status: 'success', data: { booking: newBooking } });
 
-    // Notify admin about new booking (reuse bookingStatusUpdate template with pending status)
-    const configuredAdminEmailNew = process.env.ADMIN_EMAIL;
-    if (configuredAdminEmailNew) {
-      const adminEmailer = new Email(
-        { email: configuredAdminEmailNew, name: 'Admin' },
-        `${req.protocol}://${req.get('host')}/admin#appointments`
-      );
-      await adminEmailer.send('bookingStatusUpdate', 'New Booking Request', {
-        firstName: 'Admin',
-        status: 'pending',
-        date: bookingDate.toDateString(),
-        time: timeSlot,
-        bookingId: newBooking._id,
-      });
-    } else {
-      const admin = await User.findOne({ role: 'admin' });
-      if (admin) {
-        const adminEmail = new Email(
-          { email: admin.email, name: admin.name },
-          `${req.protocol}://${req.get('host')}/admin#appointments`
-        );
-        await adminEmail.send('bookingStatusUpdate', 'New Booking Request', {
-          firstName: admin.name?.split(' ')[0] || 'Admin',
-          status: 'pending',
+    // Fire-and-forget email notifications (do not await)
+    try {
+      const bookingUrl = `${req.protocol}://${req.get('host')}/bookings/${newBooking._id}`;
+      const adminUrl = `${req.protocol}://${req.get('host')}/admin#appointments`;
+
+      // User confirmation
+      const userEmail = new Email({ email, name }, bookingUrl);
+      void userEmail
+        .send('bookingConfirmation', 'Your Booking Request Received', {
+          name,
           date: bookingDate.toDateString(),
           time: timeSlot,
           bookingId: newBooking._id,
-        });
+          supportEmail: process.env.EMAIL_FROM,
+        })
+        .catch((e) => console.warn('User booking email failed:', e?.message));
+
+      // Admin notification (try configured email first; fallback to DB lookup)
+      const configuredAdminEmailNew = process.env.ADMIN_EMAIL;
+      if (configuredAdminEmailNew) {
+        const adminEmailer = new Email({ email: configuredAdminEmailNew, name: 'Admin' }, adminUrl);
+        void adminEmailer
+          .send('bookingStatusUpdate', 'New Booking Request', {
+            firstName: 'Admin',
+            status: 'pending',
+            date: bookingDate.toDateString(),
+            time: timeSlot,
+            bookingId: newBooking._id,
+          })
+          .catch((e) => console.warn('Admin booking email failed:', e?.message));
+      } else {
+        // Fallback async admin lookup and email
+        void (async () => {
+          try {
+            const admin = await User.findOne({ role: 'admin' });
+            if (admin?.email) {
+              const adminEmail = new Email({ email: admin.email, name: admin.name || 'Admin' }, adminUrl);
+              await adminEmail.send('bookingStatusUpdate', 'New Booking Request', {
+                firstName: admin.name?.split(' ')[0] || 'Admin',
+                status: 'pending',
+                date: bookingDate.toDateString(),
+                time: timeSlot,
+                bookingId: newBooking._id,
+              });
+            }
+          } catch (e) {
+            console.warn('Admin fallback email failed:', e?.message);
+          }
+        })();
       }
+    } catch (e) {
+      // Never block the original response
+      console.warn('Background email task failed to schedule:', e?.message);
     }
 
-    res.status(201).json({ status: 'success', data: { booking: newBooking } });
+    return; // ensure no further processing
   } catch (err) {
     res.status(400).json({ status: 'fail', message: err.message });
   }

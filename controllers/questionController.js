@@ -16,58 +16,63 @@ export const createQuestion = async (req, res) => {
       source: 'contact_form'
     });
 
-    // Send confirmation email to the user (best-effort)
+    // Respond immediately to keep the request fast
+    res.status(201).json({ status: 'success', data: { question: created } });
+
+    // Fire-and-forget emails (do not await)
     try {
       if (email) {
         const userEmailer = new Email(
           { email, name },
           `${req.protocol}://${req.get('host')}/contact`
         );
-        await userEmailer.send('queryConfirmation', 'We received your question', {
-          name,
-          subject: created.subject,
-          message: created.message,
-          supportEmail: process.env.EMAIL_FROM,
-        });
+        void userEmailer
+          .send('queryConfirmation', 'We received your question', {
+            name,
+            subject: created.subject,
+            message: created.message,
+            supportEmail: process.env.EMAIL_FROM,
+          })
+          .catch((e) => console.warn('Question user confirmation email failed:', e?.message));
       }
-    } catch (e) {
-      console.warn('Question user confirmation email failed:', e?.message);
-    }
 
-    // Notify admin (best-effort)
-    try {
       const configuredAdmin = process.env.ADMIN_EMAIL || process.env.EMAIL_FROM;
       if (configuredAdmin) {
         const emailer = new Email({ email: configuredAdmin, name: 'Admin' }, `${req.protocol}://${req.get('host')}/admin#questions`);
-        await emailer.send('adminNewQuery', 'New Question Submitted', {
-          adminName: 'Admin',
-          userName: name,
-          userEmail: email,
-          subject: created.subject,
-          message: created.message,
-          adminUrl: `${req.protocol}://${req.get('host')}/admin#questions`,
-        });
-      } else {
-        // Fallback to first admin user in DB
-        const adminUser = await (await import('../models/User.js')).default.findOne({ role: 'admin' });
-        if (adminUser?.email) {
-          const emailer = new Email({ email: adminUser.email, name: adminUser.name || 'Admin' }, `${req.protocol}://${req.get('host')}/admin#questions`);
-          await emailer.send('adminNewQuery', 'New Question Submitted', {
-            adminName: adminUser.name || 'Admin',
+        void emailer
+          .send('adminNewQuery', 'New Question Submitted', {
+            adminName: 'Admin',
             userName: name,
             userEmail: email,
             subject: created.subject,
             message: created.message,
             adminUrl: `${req.protocol}://${req.get('host')}/admin#questions`,
-          });
-        }
+          })
+          .catch((e) => console.warn('Question admin email failed:', e?.message));
+      } else {
+        // Fallback to first admin user in DB
+        void (async () => {
+          try {
+            const adminUser = await (await import('../models/User.js')).default.findOne({ role: 'admin' });
+            if (adminUser?.email) {
+              const emailer = new Email({ email: adminUser.email, name: adminUser.name || 'Admin' }, `${req.protocol}://${req.get('host')}/admin#questions`);
+              await emailer.send('adminNewQuery', 'New Question Submitted', {
+                adminName: adminUser.name || 'Admin',
+                userName: name,
+                userEmail: email,
+                subject: created.subject,
+                message: created.message,
+                adminUrl: `${req.protocol}://${req.get('host')}/admin#questions`,
+              });
+            }
+          } catch (e) {
+            console.warn('Question admin fallback email failed:', e?.message);
+          }
+        })();
       }
     } catch (e) {
-      // Do not fail the request if email fails
-      console.warn('Question admin email failed:', e?.message);
+      console.warn('Background email task for question failed to schedule:', e?.message);
     }
-
-    res.status(201).json({ status: 'success', data: { question: created } });
   } catch (err) {
     res.status(400).json({ status: 'fail', message: err.message });
   }
