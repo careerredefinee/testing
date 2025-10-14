@@ -96,7 +96,7 @@ const QuestionForm: React.FC = () => {
         <div className="sm:col-span-2">
           <label htmlFor="contact-phone" className="block text-sm font-medium text-gray-700">Phone (optional)</label>
           <div className="mt-1">
-            <input id="contact-phone" name="phone" type="tel" inputMode="tel" value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} className="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" />
+            <input id="contact-phone" name="phone" type="tel" inputMode="tel" value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} className="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" pattern="[0-9()+\\- ]{7,20}" title="Enter 7-20 characters: digits, spaces, plus (+), hyphen (-), or parentheses ()" />
           </div>
         </div>
         <div className="sm:col-span-2">

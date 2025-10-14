@@ -161,6 +161,8 @@ const QueryForm: React.FC<QueryFormProps> = ({ courseId, courseName, defaultSubj
             id="phone"
             {...register('phone')}
             className="mt-1 block w-full rounded-lg border border-gray-300 bg-white shadow-sm px-3 py-2 focus:border-blue-500 focus:ring-blue-500"
+            pattern="[0-9()+\\- ]{7,20}"
+            title="Enter 7-20 characters: digits, spaces, plus (+), hyphen (-), or parentheses ()"
             disabled={isSubmitting}
           />
         </div>
