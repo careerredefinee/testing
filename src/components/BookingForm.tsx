@@ -146,7 +146,7 @@ const BookingForm: React.FC = () => {
             value={booking.phone}
             onChange={(e) => setBooking((s) => ({ ...s, phone: e.target.value }))}
             placeholder="Phone number"
-            required
+            
           />
         </div>
         <div>
