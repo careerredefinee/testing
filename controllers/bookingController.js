@@ -16,8 +16,9 @@ export const createBooking = async (req, res) => {
   try {
     const { name, email, phone, message, date, timeSlot, type } = req.body;
 
-    if (!name || !email || !phone || !date || !timeSlot) {
-      return res.status(400).json({ status: 'fail', message: 'name, email, phone, date, and timeSlot are required' });
+    // Phone is optional; only require name, email, date, and timeSlot
+    if (!name || !email || !date || !timeSlot) {
+      return res.status(400).json({ status: 'fail', message: 'name, email, date, and timeSlot are required' });
     }
 
     // Parse HTML date (yyyy-mm-dd) as LOCAL date to avoid UTC offset issues

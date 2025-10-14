@@ -247,8 +247,12 @@ export const adminService = {
   },
 
   createQuestion: async (payload: { subject?: string; message: string; name: string; email: string; phone?: string }) => {
-    const response = await api.post('/api/v1/questions', payload);
-    return response.data?.data; // { question }
+    // Public questions endpoint (no auth). Use absolute URL to bypass interceptors/tokens.
+    const response = await axios.post('https://test5-x7xt.onrender.com/api/v1/questions', payload, {
+      headers: { 'Content-Type': 'application/json' },
+      withCredentials: false,
+    });
+    return (response.data as any)?.data; // { question }
   },
 
   createArticle: async (payload: any) => {

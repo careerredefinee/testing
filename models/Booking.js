@@ -20,7 +20,8 @@ const bookingSchema = new mongoose.Schema(
     },
     phone: {
       type: String,
-      required: [true, 'Please provide your phone number'],
+      // Phone is optional to reduce friction in booking submissions
+      required: false,
     },
     message: {
       type: String,
