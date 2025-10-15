@@ -85,7 +85,9 @@ api.interceptors.response.use(
 
       try {
         // Get the new token
-        const response = await axios.post(`${API_URL}/api/v1/auth/refresh-token`, {}, {
+        const response = await axios.post(`${API_URL}/api/v1/auth/refresh-token`, {
+          token: localStorage.getItem('token') || undefined
+        }, {
           withCredentials: true,
           headers: {
             'Content-Type': 'application/json',
