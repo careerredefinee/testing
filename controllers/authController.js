@@ -356,17 +356,35 @@ export const login = async (req, res, next) => {
       });
     }
 
-    // 2) Check if user exists && password is correct
-    const user = await User.findOne({ email, active: true }).select('+password +role');
+    // 2) Normalize email and fetch user regardless of active to give clearer messages
+    const normalizedEmail = String(email).trim().toLowerCase();
+    const user = await User.findOne({ email: normalizedEmail }).select('+password +role +active');
 
-    if (!user || !(await user.correctPassword(password, user.password))) {
+    if (!user) {
       return res.status(401).json({
         status: 'fail',
         message: 'Incorrect email or password',
       });
     }
 
-    // 3) Check if user is verified
+    // 3) Check if user is active
+    if (user.active === false) {
+      return res.status(401).json({
+        status: 'fail',
+        message: 'Your account has been deactivated. Please contact support.',
+      });
+    }
+
+    // 4) Check password correctness
+    const passwordOk = await user.correctPassword(password, user.password);
+    if (!passwordOk) {
+      return res.status(401).json({
+        status: 'fail',
+        message: 'Incorrect email or password',
+      });
+    }
+
+    // 5) Check if user is verified
     if (!user.isVerified) {
       return res.status(401).json({
         status: 'fail',
@@ -374,7 +392,7 @@ export const login = async (req, res, next) => {
       });
     }
 
-    // 4) Generate session ID for tracking
+    // 6) Generate session ID for tracking
     const sessionId = crypto.randomBytes(16).toString('hex');
     user.activeSessions = user.activeSessions || [];
     user.activeSessions.push({
@@ -391,7 +409,7 @@ export const login = async (req, res, next) => {
 
     await user.save({ validateBeforeSave: false });
 
-    // 5) Set session cookie
+    // 7) Set session cookie
     if (rememberMe) {
       // Set longer expiry for 'remember me' (30 days)
       req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -400,11 +418,11 @@ export const login = async (req, res, next) => {
       req.session.cookie.expires = false;
     }
 
-    // 6) Store user info in session
+    // 8) Store user info in session
     req.session.userId = user._id;
     req.session.sessionId = sessionId;
 
-    // 7) Send token to client
+    // 9) Send token to client
     createSendToken(user, 200, req, res);
   } catch (err) {
     console.error('Login error details:', {
