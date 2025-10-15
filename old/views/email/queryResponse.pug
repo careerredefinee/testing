@@ -1,0 +1,21 @@
+extends baseEmail
+
+block content
+  p Hi #{firstName},
+  p Thank you for reaching out to us. Here's the response to your query:
+  
+  .query-details(style='background-color: #f8f9fa; padding: 15px; border-left: 4px solid #4CAF50; margin: 20px 0;')
+    h3(style='margin-top: 0;') Your Original Query:
+    p(style='font-style: italic;')= originalQuery
+    
+    h3 Our Response:
+    p= response
+  
+  if additionalNotes
+    .additional-notes(style='margin: 20px 0;')
+      h4 Additional Notes:
+      p= additionalNotes
+  
+  p If you have any further questions or need additional assistance, please don't hesitate to reply to this email.
+  p Best regards,
+  p The careerRedefine Support Team

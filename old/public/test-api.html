@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #output { margin-top: 20px; white-space: pre-wrap; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>API Connection Test</h1>
+    <div>
+        <button onclick="testEndpoint('/api/v1/auth/login', 'POST', { email: 'test@test.com', password: 'test123' })">
+            Test Login Endpoint
+        </button>
+        <button onclick="testEndpoint('/api/v1/auth/signup', 'POST', { 
+            name: 'Test User', 
+            email: 'test@test.com', 
+            password: 'test123',
+            passwordConfirm: 'test123',
+            phone: '+1234567890'
+        })">
+            Test Signup Endpoint
+        </button>
+        <button onclick="testEndpoint('/api/v1/users/me', 'GET')">
+            Test Auth Status
+        </button>
+    </div>
+    <div id="output">Click a button to test an endpoint...</div>
+
+    <script>
+    async function testEndpoint(endpoint, method = 'GET', data = null) {
+        const output = document.getElementById('output');
+        output.textContent = `Testing ${method} ${endpoint}...`;
+        
+        try {
+            const config = {
+                method,
+                url: `http://localhost:3000${endpoint}`,
+                withCredentials: true,
+                validateStatus: () => true
+            };
+            
+            if (data) {
+                config.data = data;
+            }
+            
+            const response = await axios(config);
+            
+            let result = `Status: ${response.status} ${response.statusText}\n`;
+            result += 'Response: ' + JSON.stringify(response.data, null, 2);
+            
+            output.textContent = result;
+            output.className = response.status < 400 ? 'success' : 'error';
+            
+            console.log('Response:', response);
+            
+        } catch (error) {
+            console.error('Error:', error);
+            output.textContent = `Error: ${error.message}\n${error.stack || ''}`;
+            output.className = 'error';
+        }
+    }
+    </script>
+</body>
+</html>

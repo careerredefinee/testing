@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Redefine - Mock Interviews & Hackathons</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="servicegap.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+        }
+        
+        .intro-section {
+            background-color: #f8f9fa;
+            padding: 80px 0;
+        }
+        
+       
+        
+        .service-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 30px;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .service-icon {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+        
+        .process-step {
+            text-align: center;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background: var(--secondary);
+            color: white;
+            border-radius: 50%;
+            line-height: 50px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--secondary);
+            display: block;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .content-image {
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .feature-list li {
+            margin-bottom: 10px;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .feature-list li:before {
+            content: '\f00c';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            color: var(--success);
+            position: absolute;
+            left: 0;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, var(--secondary), #2980b9);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        .explanation-section {
+            background-color: var(--primary);
+            color: white;
+            padding: 80px 0;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        footer {
+            background-color: #1a252f;
+            color: white;
+            padding: 50px 0 20px;
+        }
+        
+        .footer-links a {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .social-icons a {
+            color: white;
+            font-size: 1.2rem;
+            margin-right: 15px;
+            transition: color 0.3s ease;
+        }
+        
+        .social-icons a:hover {
+            color: var(--secondary);
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--secondary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .back-to-top.show {
+            opacity: 1;
+        }
+        
+        .stats-section {
+            background-color: #f8f9fa;
+            padding: 80px 0;
+        }
+        
+        .image-section {
+            padding: 80px 0;
+        }
+        
+        .testimonial-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+        
+        .testimonial-author {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .testimonial-role {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .hackathon-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .interview-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+   <!-- Navbar -->
+<nav style="background:#ffffff; padding:10px 0; box-shadow:0 2px 8px rgba(0,0,0,0.08); position:sticky; top:0; z-index:999;">
+    <div style="max-width:1200px; margin:0 auto; padding:0 12px; display:flex; align-items:center;">
+      <!-- Logo left -->
+      <a href="/" style="display:flex; align-items:center; text-decoration:none; margin-left:8px;">
+        <img src="/cr_logo.png" alt="Career Redefine" style="height:40px; width:auto;">
+      </a>
+      <!-- Links right -->
+      <div id="nav-menu" style="margin-left:auto; margin-right:8px; display:flex; gap:20px; align-items:center;">
+        <a href="/" style="text-decoration:none; color:#1f2937; font-weight:600;">Home</a>
+        <a href="/services" style="text-decoration:none; color:#1f2937; font-weight:600;">Services</a>
+        <a href="/courses" style="text-decoration:none; color:#1f2937; font-weight:600;">Courses</a>
+        <a href="/tools" style="text-decoration:none; color:#1f2937; font-weight:600;">Tools</a>
+        <a href="/support" style="text-decoration:none; color:#1f2937; font-weight:600;">Support</a>
+        <a href="/jobs" style="text-decoration:none; color:#1f2937; font-weight:600;">Jobs</a>
+        <a href="/reviews" style="text-decoration:none; color:#1f2937; font-weight:600;">Reviews</a>
+        <a href="/about" style="text-decoration:none; color:#1f2937; font-weight:600;">About</a>
+      </div>
+    </div>
+  </nav>
+<script>
+  const menuToggle = document.getElementById("menu-toggle");
+  const navMenu = document.getElementById("nav-menu");
+
+  function handleResize() {
+    if (window.innerWidth <= 768) {
+      menuToggle.style.display = "block"; // show hamburger
+
+      // Left-side drawer (full height, half width)
+      navMenu.style.position = "fixed";
+      navMenu.style.top = "0";
+      navMenu.style.left = "-50%"; // hidden initially
+      navMenu.style.height = "100vh";  // full screen height
+      navMenu.style.width = "50%";     // half screen width
+      navMenu.style.background = "linear-gradient(145deg, #e3f2fd, #c3e0ff)";
+      navMenu.style.flexDirection = "column";
+      navMenu.style.alignItems = "flex-start";
+      navMenu.style.padding = "60px 20px";
+      navMenu.style.gap = "20px";
+      navMenu.style.transition = "left 0.3s ease";
+      navMenu.style.boxShadow = "2px 0 15px rgba(0,0,0,0.3)";
+      navMenu.style.borderRadius = "0 8px 8px 0";
+
+      // style links bigger for mobile
+      Array.from(navMenu.getElementsByTagName("a")).forEach(a => {
+        a.style.display = "block";
+        a.style.fontSize = "18px";
+        a.style.width = "100%";
+        a.style.padding = "8px 0";
+        a.style.color = "#0d47a1";
+      });
+
+    } else {
+      menuToggle.style.display = "none"; // hide hamburger
+      navMenu.style.position = "static";
+      navMenu.style.flexDirection = "row";
+      navMenu.style.height = "auto";
+      navMenu.style.width = "auto";
+      navMenu.style.padding = "0";
+      navMenu.style.background = "transparent";
+      navMenu.style.left = "0";
+      navMenu.style.boxShadow = "none";
+
+      // reset link style for desktop
+      Array.from(navMenu.getElementsByTagName("a")).forEach(a => {
+        a.style.fontSize = "16px";
+        a.style.padding = "0";
+      });
+    }
+  }
+
+  // toggle open/close
+  let isOpen = false;
+  menuToggle.addEventListener("click", () => {
+    if (!isOpen) {
+      navMenu.style.left = "0";   // slide in from left
+      isOpen = true;
+    } else {
+      navMenu.style.left = "-50%"; // slide out
+      isOpen = false;
+    }
+  });
+
+  window.addEventListener("resize", handleResize);
+  window.addEventListener("load", handleResize);
+</script>
+
+    <!-- Introduction Section -->
+    <section class="intro-section" id="intro">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-5 fw-bold mb-4">Mock Interviews & Hackathons: Sharpen Your Skills</h1>
+                    <p class="lead mb-4">Gain confidence and real-world experience with our mock interview sessions and competitive hackathons, designed to sharpen your skills for today's competitive job market.</p>
+                    <p>Whether you're preparing for technical interviews or looking to showcase your problem-solving abilities, our immersive experiences provide the perfect platform to test your abilities, receive expert feedback, and stand out from the competition.</p>
+                    <a href="#programs" class="btn btn-primary btn-lg mt-3">Explore Our Programs</a>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Mock Interviews & Hackathons" class="img-fluid rounded" style="max-height: 400px;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Programs Section -->
+    <section id="programs" class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="section-title center-title">Our Mock Interview & Hackathon Programs</h2>
+                    <p class="lead">Comprehensive solutions to prepare you for real-world challenges</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <div class="card service-card">
+                        <div class="card-body">
+                            <div class="service-icon">
+                                <i class="fas fa-laptop-code"></i>
+                            </div>
+                            <h4 class="card-title">Technical Mock Interviews</h4>
+                            <p class="card-text">Practice coding challenges and algorithmic problems with industry experts simulating real technical interviews.</p>
+                            <ul class="feature-list">
+                                <li>Data structures & algorithms</li>
+                                <li>System design questions</li>
+                                <li>Coding challenges in multiple languages</li>
+                                <li>Real-time feedback and improvement tips</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="card service-card">
+                        <div class="card-body">
+                            <div class="service-icon">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <h4 class="card-title">Behavioral Interview Practice</h4>
+                            <p class="card-text">Master the art of answering behavioral questions and showcasing your soft skills effectively.</p>
+                            <ul class="feature-list">
+                                <li>STAR method training</li>
+                                <li>Leadership & teamwork scenarios</li>
+                                <li>Conflict resolution questions</li>
+                                <li>Personal branding and storytelling</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="card service-card">
+                        <div class="card-body">
+                            <div class="service-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <h4 class="card-title">Competitive Hackathons</h4>
+                            <p class="card-text">Participate in time-bound coding competitions that simulate real-world project challenges.</p>
+                            <ul class="feature-list">
+                                <li>Individual and team competitions</li>
+                                <li>Industry-relevant problem statements</li>
+                                <li>Expert judging and feedback</li>
+                                <li>Networking with tech professionals</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="card service-card">
+                        <div class="card-body">
+                            <div class="service-icon">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <h4 class="card-title">Project-Based Hackathons</h4>
+                            <p class="card-text">Build complete applications or solutions within constrained timeframes to showcase your capabilities.</p>
+                            <ul class="feature-list">
+                                <li>Full-stack development challenges</li>
+                                <li>UI/UX design competitions</li>
+                                <li>API integration projects</li>
+                                <li>Portfolio-worthy outcomes</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="card service-card">
+                        <div class="card-body">
+                            <div class="service-icon">
+                                <i class="fas fa-video"></i>
+                            </div>
+                            <h4 class="card-title">Video Interview Simulations</h4>
+                            <p class="card-text">Practice one-way video interviews that are increasingly common in today's hiring processes.</p>
+                            <ul class="feature-list">
+                                <li>Platform-specific practice</li>
+                                <li>Time-management training</li>
+                                <li>Body language and presentation feedback</li>
+                                <li>Technical setup assistance</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="card service-card">
+                        <div class="card-body">
+                            <div class="service-icon">
+                                <i class="fas fa-handshake"></i>
+                            </div>
+                            <h4 class="card-title">Industry-Specific Preparation</h4>
+                            <p class="card-text">Tailored mock interviews focusing on specific industries like finance, healthcare, or tech startups.</p>
+                            <ul class="feature-list">
+                                <li>Domain-specific technical questions</li>
+                                <li>Industry terminology and trends</li>
+                                <li>Case study presentations</li>
+                                <li>Role-play with industry experts</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="section-title center-title">Our Impact</h2>
+                    <p class="lead">Transformative results for job seekers and aspiring professionals</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number">87%</span>
+                        <h5>Interview Success Rate</h5>
+                        <p>Participants report significantly higher success in actual job interviews</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number">2.3x</span>
+                        <h5>Confidence Boost</h5>
+                        <p>Average increase in interview confidence after our mock sessions</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number">94%</span>
+                        <h5>Skill Improvement</h5>
+                        <p>Participants demonstrate measurable improvement in technical skills</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number">300+</span>
+                        <h5>Hackathon Winners</h5>
+                        <p>Participants who have won or placed in competitive hackathons</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section id="process" class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="section-title center-title">Our 4-Step Preparation Process</h2>
+                    <p class="lead">A structured approach to interview and hackathon success</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="process-step">
+                        <div class="step-number">1</div>
+                        <h4>Skill Assessment</h4>
+                        <p>We begin with evaluating your current technical and interpersonal skills to identify areas for improvement.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="process-step">
+                        <div class="step-number">2</div>
+                        <h4>Customized Preparation Plan</h4>
+                        <p>Based on assessment results, we create a personalized roadmap targeting your specific goals.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="process-step">
+                        <div class="step-number">3</div>
+                        <h4>Practice & Simulation</h4>
+                        <p>Through mock interviews and hackathon simulations, we build your confidence and capabilities.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="process-step">
+                        <div class="step-number">4</div>
+                        <h4>Feedback & Refinement</h4>
+                        <p>We provide detailed feedback and support continuous improvement until you're interview-ready.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<!-- Special Cards Section -->
+<section class="py-5" style="background-color: #f8f9fa;">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Career Workshops Card -->
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm" style="background-color: #ffffff;">
+                    <div class="card-body">
+                        <h3 class="card-title text-primary"><i class="fas fa-chalkboard-teacher me-2"></i>Career Workshops</h3>
+                        <p class="card-text">Enhance your professional skills with our interactive workshops led by industry experts.</p>
+                        <ul class="list-unstyled">
+                            <li><strong>Resume Building Masterclass</strong> </li>
+                            <li><strong>Networking & Personal Branding</strong> </li>
+                            <li><strong>Technical Skill Enhancement</strong> </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mock Interview Slots Card -->
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm" style="background-color: #ffffff;">
+                    <div class="card-body">
+                        <h3 class="card-title text-primary"><i class="fas fa-calendar-alt me-2"></i>Mock Interview Slots</h3>
+                        <p class="card-text">Book your personalized mock interview session with industry experts.</p>
+                        <ul class="list-unstyled">
+                            <li><strong>FAANG Technical Practice:</strong> Weekly sessions</li>
+                            <li><strong>Behavioral Interview Prep:</strong> Flexible scheduling</li>
+                            <li><strong>Video Interview Simulation:</strong> On-demand availability</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+    <!-- Image & Content Section -->
+    <section class="image-section bg-light">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Mock Interviews & Hackathons" class="content-image">
+                </div>
+                <div class="col-lg-6">
+                    <h2 class="section-title">Why Mock Interviews & Hackathons Matter</h2>
+                    <p>In today's competitive job market, technical skills alone are not enough to secure your dream job. Employers are looking for candidates who can perform under pressure, communicate effectively, and solve real-world problems.</p>
+                    <p>Our mock interviews and hackathons simulate the actual interview and competition environments, helping you build the confidence and experience needed to excel when it matters most.</p>
+                    
+                    <div class="highlight-box">
+                        <h4><i class="fas fa-lightbulb me-2"></i> Key Insight</h4>
+                        <p>Candidates who participate in mock interviews are 3 times more likely to receive job offers. Hackathon participants develop problem-solving skills that are 47% higher than their peers, making them highly attractive to employers seeking innovative thinkers.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Explanation Section -->
+    <section class="explanation-section" id="explanation">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="section-title center-title" style="color: white;">How Our Programs Work</h2>
+                    <p class="lead" style="color: #ecf0f1;">A detailed breakdown of our approach to interview and hackathon preparation</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-6">
+                    <h3 class="mb-4">Mastering the Technical Interview</h3>
+                    <p>Technical interviews can be daunting, but with proper preparation, they become opportunities to showcase your skills. Our mock interviews are designed by industry professionals who know exactly what companies are looking for.</p>
+                    <p>We cover everything from data structures and algorithms to system design questions, ensuring you're prepared for any technical challenge.</p>
+                    
+                    <h4 class="mt-4">Our Technical Interview Approach</h4>
+                    <p>We simulate real interview conditions with time-bound coding challenges and whiteboard sessions. Our experts provide immediate feedback on your problem-solving approach, code quality, and communication skills.</p>
+                    <ul class="feature-list" style="color: white;">
+                        <li>Comprehensive question bank updated regularly</li>
+                        <li>Multiple programming language support</li>
+                        <li>Real-time coding environment simulation</li>
+                        <li>Performance analytics and improvement tracking</li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-6">
+                    <h3 class="mb-4">Excelling in Hackathons</h3>
+                    <p>Hackathons are not just about coding—they're about innovation, teamwork, and delivering under pressure. Our hackathon programs prepare you for these high-intensity events.</p>
+                    <p>We provide realistic problem statements, mentorship throughout the process, and judging criteria that mirror actual competitions.</p>
+                    
+                    <h4 class="mt-4">Our Hackathon Methodology</h4>
+                    <p>From ideation to presentation, we guide you through the entire hackathon process. Our events feature industry-relevant challenges and opportunities to network with professionals.</p>
+                    <ul class="feature-list" style="color: white;">
+                        <li>Team formation assistance and collaboration tools</li>
+                        <li>Mentorship from industry experts</li>
+                        <li>Presentation skills training for demo days</li>
+                        <li>Portfolio development for standout projects</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="highlight-box" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
+                        <h4><i class="fas fa-star me-2"></i> Our Commitment to Your Success</h4>
+                        <p>We believe that practice makes perfect, especially when it comes to interviews and competitive coding. Our team of industry professionals is dedicated to providing realistic simulations, constructive feedback, and continuous support as you prepare for your career milestones. Whether you're aiming for top tech companies or looking to showcase your skills in competitive events, we have the expertise and resources to help you succeed.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+   <!-- Footer -->
+<!-- Footer -->
+<footer class="bg-primary text-white py-5" style="perspective:1000px;">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 mb-4">
+        <h5 class="fw-bold mb-3" style="transform-style:preserve-3d; transition: transform 0.5s;" onmouseover="this.style.transform='rotateY(15deg)'" onmouseout="this.style.transform='rotateY(0deg)'">
+          <i class="fas fa-rocket me-2"></i>Career Redefine
+        </h5>
+        <p class="mb-3">Transforming careers through innovative learning and professional development.</p>
+        <div class="social-links">
+          <a href="https://www.facebook.com/profile.php?id=61564699643555" class="text-white me-3" style="transition: transform 0.3s;" onmouseover="this.style.transform='rotate(15deg)'" onmouseout="this.style.transform='rotate(0deg)'"><i class="fab fa-facebook"></i></a>
+          <a href="#" class="text-white me-3" style="transition: transform 0.3s;" onmouseover="this.style.transform='rotate(15deg)'" onmouseout="this.style.transform='rotate(0deg)'"><i class="fab fa-twitter"></i></a>
+          <a href="https://www.linkedin.com/company/career-redefine/" class="text-white me-3" style="transition: transform 0.3s;" onmouseover="this.style.transform='rotate(15deg)'" onmouseout="this.style.transform='rotate(0deg)'"><i class="fab fa-linkedin"></i></a>
+          <a href="https://www.instagram.com/career_redefine.ai/" class="text-white" style="transition: transform 0.3s;" onmouseover="this.style.transform='rotate(15deg)'" onmouseout="this.style.transform='rotate(0deg)'"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+
+      <div class="col-lg-2 mb-4">
+        <h6 class="fw-bold mb-3">Quick Links</h6>
+        <ul class="list-unstyled">
+          <li class="nav-item"><a class="nav-link text-white-50" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50" href="/courses">Courses</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50" href="/jobs">Jobs</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50" href="/services">Services</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50" href="/about">About</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-2 mb-4">
+        <h6 class="fw-bold mb-3">Support</h6>
+        <ul class="list-unstyled">
+          <li><a href="/support" class="text-white-50 text-decoration-none">Help Center</a></li>
+          <li><a href="/tools" class="text-white-50 text-decoration-none">Tools</a></li>
+          <li><a href="/reviews" class="text-white-50 text-decoration-none">Reviews</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-4 mb-4">
+        <h6 class="fw-bold mb-3">Contact Info</h6>
+        <p class="mb-1"><i class="fas fa-envelope me-2"></i>info@careerredefine.com</p>
+        <p class="mb-1"><i class="fas fa-phone me-2"></i>+91 9535713363</p>
+        <p class="mb-3"><i class="fas fa-map-marker-alt me-2"></i>22nd Floor, World Trade Center, Unit No 2201A, Rajajinagar, Bengaluru, India</p>
+      </div>
+    </div>
+
+    <hr class="my-4">
+
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <p class="mb-0">&copy; 2023 Career Redefine. All rights reserved.</p>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <a href="#" class="text-white-50 text-decoration-none me-3">Privacy Policy</a>
+        <a href="#" class="text-white-50 text-decoration-none">Terms of Service</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    <!-- Back to Top Button -->
+    <a href="#" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Back to top button functionality
+        const backToTopButton = document.querySelector('.back-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.add('show');
+            } else {
+                backToTopButton.classList.remove('show');
+            }
+        });
+        
+        backToTopButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 70,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Service card animation on scroll
+        const serviceCards = document.querySelectorAll('.service-card');
+        
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = 1;
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        serviceCards.forEach(card => {
+            card.style.opacity = 0;
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

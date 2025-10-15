@@ -1,0 +1,2211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Courses – Career Redefine</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Optional: Add Animate.css for 3D hover effects -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<!-- Animate.css (for animations) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+
+
+<!-- Inline keyframes -->
+<style>
+  
+  /* ATM Card Style Messages */
+  .message-card {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    width: 90%;
+    max-width: 400px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    overflow: hidden;
+  }
+
+  .message-card.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .message-card .card-content {
+    display: flex;
+    align-items: center;
+    padding: 25px;
+    position: relative;
+  }
+
+  .message-card.success {
+    border-top: 5px solid #4CAF50;
+  }
+
+  .message-card.error {
+    border-top: 5px solid #f44336;
+  }
+
+  .card-icon {
+    margin-right: 20px;
+    flex-shrink: 0;
+  }
+
+  .card-icon svg {
+    width: 50px;
+    height: 50px;
+  }
+
+  .checkmark__circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 2;
+    stroke-miterlimit: 10;
+    stroke: #4CAF50;
+    fill: none;
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+  }
+
+  .checkmark__check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    stroke: #4CAF50;
+    stroke-width: 4;
+    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+  }
+
+  .crossmark__circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 2;
+    stroke-miterlimit: 10;
+    stroke: #f44336;
+    fill: none;
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+  }
+
+  .crossmark__check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    stroke: #f44336;
+    stroke-width: 4;
+    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+  }
+
+  @keyframes stroke {
+    100% { stroke-dashoffset: 0; }
+  }
+
+  .card-details {
+    flex-grow: 1;
+  }
+
+  .card-title {
+    margin: 0 0 5px 0;
+    color: #333;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .card-message {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #999;
+    cursor: pointer;
+    padding: 5px;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+
+  .close-btn:hover {
+    color: #333;
+  }
+
+  /* Overlay */
+  .message-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s;
+  }
+
+  .message-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Loading spinner */
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .spinner {
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 3px solid #fff;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px;
+  }
+
+@keyframes pulseGlow {
+  0% { box-shadow: 0 15px 35px rgba(255,140,0,0.3); }
+  50% { box-shadow: 0 20px 45px rgba(255,140,0,0.45); }
+  100% { box-shadow: 0 15px 35px rgba(255,140,0,0.3); }
+}
+
+
+@keyframes rotateCircle {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+html { scroll-behavior: smooth; }
+.navbar { box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.course-card img { height: 200px; object-fit: cover; border-radius: 10px; }
+.module-header { cursor: pointer; background: #0d6efd; color: #fff; padding: 10px; border-radius: 6px; margin-top: 10px; }
+.module-content { display: none; padding: 10px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 6px; }
+.inquiry-form { background: #fff; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); padding: 20px; transform: perspective(1000px) rotateX(2deg); }
+
+.module-box {
+  background:#f5f5f5;
+  padding:25px;
+  border-radius:15px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.1);
+  transition: transform 0.4s, opacity 0.4s;
+}
+html {
+  scroll-behavior: smooth;
+}
+button {
+  padding:12px 15px;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  transition:0.3s;
+}
+button:hover {
+  transform: scale(1.05);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Time slot styling */
+.time-slot {
+  display: inline-block;
+  margin: 5px;
+  padding: 8px 15px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.time-slot:hover {
+  background-color: #f0f7ff;
+  border-color: #90caf9;
+}
+
+.time-slot.selected {
+  background-color: #1976d2;
+  color: white;
+  border-color: #1976d2;
+}
+
+.time-slot.booked {
+  background-color: #f5f5f5;
+  color: #9e9e9e;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav style="background: linear-gradient(145deg, #e3f2fd, #c3e0ff); padding:15px 0; box-shadow:0 8px 20px rgba(0,0,0,0.3); position:sticky; top:0; z-index:999; perspective:1000px;">
+  <div style="max-width:1200px; margin:auto; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; transform-style: preserve-3d;">
+
+    <!-- Logo -->
+    <a href="#home" style="display:flex; align-items:center; text-decoration:none; transform: translateZ(5px);">
+      <img src="cr_logo.png" alt="Logo" style="height:50px; width:auto; margin-right:10px;">
+    </a>
+
+    <!-- Hamburger Icon -->
+    <div id="menu-toggle" style="display:none; cursor:pointer;">
+      <span style="display:block; width:35px; height:4px; margin:6px 0; background:#1976d2; border-radius:2px; transition:0.3s;"></span>
+      <span style="display:block; width:35px; height:4px; margin:6px 0; background:#1976d2; border-radius:2px; transition:0.3s;"></span>
+      <span style="display:block; width:35px; height:4px; margin:6px 0; background:#1976d2; border-radius:2px; transition:0.3s;"></span>
+    </div>
+
+  
+
+  </div>
+</nav>
+
+<script>
+function adjustNavbar(){
+  const menu = document.getElementById('nav-menu');
+  const toggle = document.getElementById('menu-toggle');
+  
+  if (!menu || !toggle) return; // Exit if elements not found
+  
+  if(window.innerWidth < 768){
+    if (menu) menu.style.display = "none";
+    if (toggle) toggle.style.display = "block";
+
+    toggle.onclick = function(){
+      if (menu) menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
+        if (menu) {
+        menu.style.flexDirection = "column";
+        menu.style.width = "100%";
+        menu.style.background = "linear-gradient(145deg, #e3f2fd, #c3e0ff)";
+        menu.style.padding = "10px 0";
+        menu.style.gap = "15px";
+      }
+    }
+  } else {
+    if (menu) {
+      menu.style.display = "flex";
+      menu.style.flexDirection = "row";
+      menu.style.width = "auto";
+      menu.style.background = "transparent";
+    }
+    if (toggle) toggle.style.display = "none";
+  }
+}
+window.addEventListener('resize', adjustNavbar);
+window.addEventListener('load', adjustNavbar);
+</script>
+
+
+
+<!-- Home Section -->
+<section id="home" style="padding:60px 0; background-color:#f8f9fa;">
+  <div style="max-width:1400px; margin:auto; display:flex; flex-wrap:wrap; gap:40px; align-items:flex-start; justify-content:center;">
+
+<!-- Course Card -->
+<div style="flex:1 1 650px; background:#fff; border-radius:20px; overflow:hidden;
+            box-shadow:0 10px 30px rgba(0,0,0,0.15); transition:transform 0.4s ease, box-shadow 0.4s ease;
+            max-width:800px; margin:auto;">
+
+  <!-- Image -->
+  <div style="width:100%; overflow:hidden;">
+    <img src="dataai.jpg" alt="Data Science"
+         style="width:100%; height:auto; display:block; object-fit:contain; transition:transform 0.6s ease;" 
+         class="bg-img">
+  </div>
+
+  <!-- Content -->
+  <div style="padding:25px;">
+    <h2 style="font-weight:800; font-size:1.8rem; margin-bottom:15px; color:#0d47a1; line-height:1.3; text-align:center;">
+      Data Science with AI – Elite Career Program
+    </h2>
+    <p style="font-size:1rem; color:#555; line-height:1.7; margin-bottom:25px; text-align:center;">
+      Gain mastery in Data Science along with AI-powered workflows, hands-on projects, and industry mentorship. 
+      Transform your career with real-world case studies and personal guidance from IIT alumni.
+    </p>
+
+    <!-- Key Points -->
+    <ul style="margin:0; padding:0; list-style:none; font-size:1rem; color:#333;">
+      <li style="display:flex; align-items:center; margin-bottom:12px;">
+        <span style="color:#0d47a1; font-size:1.2rem; margin-right:10px;">⏳</span> 
+        <b>Duration:</b> 4 Months Intensive Program
+      </li>
+      <li style="display:flex; align-items:center; margin-bottom:12px;">
+        <span style="color:#0d47a1; font-size:1.2rem; margin-right:10px;">📊</span> 
+        Python, Pandas, NumPy, SQL, Tableau & Excel
+      </li>
+      <li style="display:flex; align-items:center; margin-bottom:12px;">
+        <span style="color:#0d47a1; font-size:1.2rem; margin-right:10px;">🤖</span> 
+        AI-Powered Workflows + Generative AI Automation
+      </li>
+      <li style="display:flex; align-items:center; margin-bottom:12px;">
+        <span style="color:#0d47a1; font-size:1.2rem; margin-right:10px;">📂</span> 
+        15+ Real-World Projects (Zomato, Swiggy, Amazon…)
+      </li>
+      <li style="display:flex; align-items:center; margin-bottom:12px;">
+        <span style="color:#0d47a1; font-size:1.2rem; margin-right:10px;">📝</span> 
+        Resume Building + LinkedIn & Naukri Optimization
+      </li>
+      <li style="display:flex; align-items:center; margin-bottom:12px;">
+        <span style="color:#0d47a1; font-size:1.2rem; margin-right:10px;">🎤</span> 
+        Mock Interviews with Industry Experts
+      </li>
+      <li style="display:flex; align-items:center; margin-bottom:12px;">
+        <span style="color:#e53935; font-size:1.2rem; margin-right:10px;">📌</span> 
+        <b style="color:#e53935;">Selection Process: Interview Only</b>
+      </li>
+    </ul>
+  </div>
+</div>
+
+
+    <!-- Enquiry Form (side by side, not floating) -->
+    <div style="flex:1 1 400px; background:#fff3e0; padding:35px; border-radius:20px;
+                box-shadow:0 15px 35px rgba(255,140,0,0.2); height:fit-content;">
+      <div style="text-align:center; margin-bottom:15px;">
+        <i class="bi bi-chat-dots-fill" style="font-size:2rem; color:#ff9800;"></i>
+      </div>
+      <h4 style="margin-bottom:20px; text-align:center; font-weight:700; color:#ff9800;">Enquiry Now</h4>
+      <form id="enquiryForm" action="course.php" method="POST" style="display:flex; flex-direction:column; gap:15px;">
+        <input type="hidden" name="form_type" value="enquiry">
+        <input type="text" name="name" placeholder="Name" required style="padding:14px; border-radius:8px; border:none; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+        <input type="email" name="email" placeholder="Email" required style="padding:14px; border-radius:8px; border:none; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+        <input type="text" name="phone" placeholder="Phone" required style="padding:14px; border-radius:8px; border:none; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+        <input type="text" name="qualification" placeholder="Qualification" required style="padding:14px; border-radius:8px; border:none; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+        <textarea name="message" placeholder="Message" rows="6" required style="padding:14px; border-radius:8px; border:none; box-shadow:0 2px 6px rgba(0,0,0,0.1);"></textarea>
+        <button type="submit" style="padding:16px; border:none; border-radius:10px; background:#ff9800; color:#fff; cursor:pointer; font-size:1rem; box-shadow:0 4px 12px rgba(255,140,0,0.3); transition:0.3s;" 
+          onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 15px rgba(255,140,0,0.4)';" 
+          onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(255,140,0,0.3)';">
+          Submit
+        </button>
+      </form>
+    </div>
+
+
+
+
+<!-- Success Card -->
+<div id="successCard" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:300px; background:#fffdd0; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.2);
+    padding:20px; text-align:center; z-index:9999;">
+    <div style="width:80px; height:80px; margin:auto; border-radius:50%; border:5px solid #28a745;
+        display:flex; align-items:center; justify-content:center; animation:rotateCircle 2s linear infinite;">
+        <i class="fas fa-check" style="font-size:2rem; color:#28a745;"></i>
+    </div>
+    <h5 style="margin-top:15px; color:#28a745;">Success!</h5>
+    <p>Your query has been submitted successfully.</p>
+</div>
+
+<!-- Error Card -->
+<div id="errorCard" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:300px; background:#ffe5e5; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.2);
+    padding:20px; text-align:center; z-index:9999;">
+    <div style="width:80px; height:80px; margin:auto; border-radius:50%; border:5px solid #dc3545;
+        display:flex; align-items:center; justify-content:center; animation:rotateCircle 2s linear infinite;">
+        <i class="fas fa-times" style="font-size:2rem; color:#dc3545;"></i>
+    </div>
+    <h5 style="margin-top:15px; color:#dc3545;">Error!</h5>
+    <p>Something went wrong. Please try again.</p>
+</div>
+
+<!-- Notification Overlay -->
+<div id="notificationOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; justify-content:center; align-items:center; z-index:9999;">
+  <!-- Success Notification -->
+  <div id="successNotification" class="notification-card" style="background:white; border-radius:15px; width:350px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.2); transform:scale(0.9); opacity:0; transition:all 0.3s ease;">
+    <div style="padding:30px; text-align:center;">
+      <div style="width:80px; height:80px; background:#e8f5e9; border-radius:50%; margin:0 auto 20px; display:flex; align-items:center; justify-content:center;">
+        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" style="width:50px; height:50px;">
+          <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" stroke="#4caf50" stroke-width="3"/>
+          <path class="checkmark__check" fill="none" stroke="#4caf50" stroke-width="4" stroke-linecap="round" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+        </svg>
+      </div>
+      <h3 style="margin:0 0 10px; color:#2e7d32; font-size:24px;">Success!</h3>
+      <p id="successMessage" style="margin:0 0 20px; color:#4a4a4a; font-size:16px; line-height:1.5;">Your action was completed successfully.</p>
+      <button onclick="hideNotification()" style="background:#4caf50; color:white; border:none; padding:10px 25px; border-radius:5px; cursor:pointer; font-size:16px; transition:background 0.3s;" 
+        onmouseover="this.style.background='#3d8b40'" 
+        onmouseout="this.style.background='#4caf50'">
+        OK
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Notification -->
+  <div id="errorNotification" class="notification-card" style="background:white; border-radius:15px; width:350px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.2); transform:scale(0.9); opacity:0; transition:all 0.3s ease; display:none;">
+    <div style="padding:30px; text-align:center;">
+      <div style="width:80px; height:80px; background:#ffebee; border-radius:50%; margin:0 auto 20px; display:flex; align-items:center; justify-content:center;">
+        <svg class="crossmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" style="width:50px; height:50px;">
+          <circle class="crossmark__circle" cx="26" cy="26" r="25" fill="none" stroke="#f44336" stroke-width="3"/>
+          <path class="crossmark__cross" fill="none" stroke="#f44336" stroke-width="4" stroke-linecap="round" d="M16 16l20 20 M36 16L16 36"/>
+        </svg>
+      </div>
+      <h3 style="margin:0 0 10px; color:#c62828; font-size:24px;">Error!</h3>
+      <p id="errorMessage" style="margin:0 0 20px; color:#4a4a4a; font-size:16px; line-height:1.5;">An error occurred. Please try again.</p>
+      <button onclick="hideNotification()" style="background:#f44336; color:white; border:none; padding:10px 25px; border-radius:5px; cursor:pointer; font-size:16px; transition:background 0.3s;"
+        onmouseover="this.style.background='#c62828'" 
+        onmouseout="this.style.background='#f44336'">
+        Try Again
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes draw {
+    100% { stroke-dashoffset: 0; }
+  }
+
+  .checkmark__check, .crossmark__cross {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: draw 0.5s cubic-bezier(0.65, 0, 0.45, 1) 0.3s forwards;
+  }
+
+  .notification-card.show {
+    transform: scale(1) !important;
+    opacity: 1 !important;
+  }
+
+  .notification-card.hide {
+    transform: scale(0.9) !important;
+    opacity: 0 !important;
+  }
+</style>
+
+<script>
+// Show notification function with animation
+function showNotification(type, message) {
+  const overlay = document.getElementById('notificationOverlay');
+  const successCard = document.getElementById('successNotification');
+  const errorCard = document.getElementById('errorNotification');
+  
+  // Hide both cards first
+  successCard.classList.remove('show');
+  errorCard.classList.remove('show');
+  
+  // Set the message and show the appropriate card
+  if (type === 'success') {
+    document.getElementById('successMessage').textContent = message;
+    successCard.style.display = 'block';
+    errorCard.style.display = 'none';
+  } else {
+    document.getElementById('errorMessage').textContent = message;
+    errorCard.style.display = 'block';
+    successCard.style.display = 'none';
+  }
+  
+  // Show overlay and card with animation
+  overlay.style.display = 'flex';
+  setTimeout(() => {
+    if (type === 'success') {
+      successCard.classList.add('show');
+    } else {
+      errorCard.classList.add('show');
+    }
+  }, 10);
+}
+
+// Hide notification function
+function hideNotification() {
+  const overlay = document.getElementById('notificationOverlay');
+  const cards = document.querySelectorAll('.notification-card');
+  
+  // Hide all cards with animation
+  cards.forEach(card => {
+    card.classList.remove('show');
+    card.classList.add('hide');
+  });
+  
+  // Hide overlay after animation
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    cards.forEach(card => {
+      card.classList.remove('hide');
+    });
+  }, 300);
+}
+
+// Close when clicking outside the card
+document.getElementById('notificationOverlay').addEventListener('click', function(e) {
+  if (e.target === this) {
+    hideNotification();
+  }
+});
+
+// Query Form Submission
+const queryForm = document.querySelector('form[action="course.php"]');
+if (queryForm) {
+  queryForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Show loading state
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="bi bi-arrow-repeat"></i> Sending...';
+    
+    // Get form data
+    const formData = new FormData(this);
+    const formObject = {};
+    formData.forEach((value, key) => {
+      formObject[key] = value;
+    });
+    
+    // Determine the endpoint based on form type
+    const isInterviewForm = this.querySelector('input[name="interview_date"]') !== null;
+    const endpoint = isInterviewForm 
+      ? 'http://localhost:3000/api/book-interview' 
+      : 'http://localhost:3000/api/enquiry';
+
+    // Submit to Node.js backend (robust handling like datascience.html)
+    fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formObject)
+    })
+    .then(async (response) => {
+      const contentType = response.headers.get('content-type') || '';
+      let data = null;
+      if (contentType.includes('application/json')) {
+        try { data = await response.json(); } catch (_) { data = null; }
+      }
+      return { data, status: response.status, ok: response.ok };
+    })
+    .then(({data, status, ok}) => {
+      if (!(status === 200 || status === 201)) {
+        let msg = `Request failed with status ${status}`;
+        if (data && (data.message || data.error)) {
+          msg = data.message || data.error;
+        }
+        console.error('Server error:', msg);
+        throw new Error(msg);
+      }
+      return data;
+    })
+    .then(data => {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnText;
+      
+      // Show success message in the appropriate card
+      if (isInterviewForm) {
+        // Use interview notification system
+        const msg = `Your interview has been scheduled for ${formObject.interview_date} at ${formObject.interview_time}. We've sent the details to your email.`;
+        showInterviewNotification('success', msg);
+        // Reset form and time slots for interview form
+        this.reset();
+        generateTimeSlots();
+      } else {
+        // For enquiry form, show default success notification
+        showNotification('success', 'Thank you! Your message has been sent successfully.');
+        this.reset();
+      }
+    })  
+    .catch(error => {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnText;
+      console.error('Error:', error);
+      showNotification('error', error.message || 'An error occurred. Please try again.');
+    });
+  });
+}
+</script>
+
+
+    </div>
+
+  </div>
+
+  <!-- Inline JS for animation -->
+  <script>
+    function hoverCard(card) {
+      card.style.transform = "translateY(-10px) rotateX(3deg) rotateY(3deg)";
+      card.style.boxShadow = "0 20px 40px rgba(0,0,0,0.25)";
+      let bg = card.querySelector('.bg-img');
+      bg.style.transform = "scale(1.05)";
+    }
+
+    function unhoverCard(card) {
+      card.style.transform = "translateY(0) rotateX(0) rotateY(0)";
+      card.style.boxShadow = "0 10px 25px rgba(0,0,0,0.15)";
+      let bg = card.querySelector('.bg-img');
+      bg.style.transform = "scale(1)";
+    }
+
+    // Background zoom animation
+    setInterval(() => {
+      document.querySelectorAll('.bg-img').forEach(bg => {
+        if (!bg.style.transform || bg.style.transform === "scale(1)") {
+          bg.style.transform = "scale(1.05)";
+        } else {
+          bg.style.transform = "scale(1)";
+        }
+      });
+    }, 5000);
+  </script>
+</section>
+
+<!-- Interview Booking Section -->
+<section id="interview-booking" style="padding: 70px 0; background: linear-gradient(135deg, #f5f7ff, #e8ecff);">
+  <div class="container" style="max-width: 1000px; margin: 0 auto; padding: 0 20px;">
+    <div class="section-header" style="text-align: center; margin-bottom: 50px;">
+      <h2 style="font-size: 2.5rem; color: #0d47a1; margin-bottom: 15px; font-weight: 700;">
+        <i class="bi bi-calendar-check-fill" style="margin-right: 10px;"></i>Book Your Interview Slot
+      </h2>
+      <p style="font-size: 1.1rem; color: #555; max-width: 700px; margin: 0 auto;">
+        Schedule a convenient time for your interview. Our team is available from 7:00 AM to 7:00 PM.
+      </p>
+    </div>
+
+    <div class="booking-container" style="background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); overflow: hidden; padding: 30px;">
+      <form id="interviewForm" style="max-width: 600px; margin: 0 auto;">
+        <input type="hidden" name="form_type" value="interview">
+        
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label for="name" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Full Name <span style="color: #e53935;">*</span></label>
+          <input type="text" id="name" name="name" required 
+                 style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; transition: border-color 0.3s;"
+                 placeholder="Enter your full name">
+        </div>
+        
+        <div class="form-row" style="display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px;">
+          <div class="form-group" style="flex: 1; min-width: 250px;">
+            <label for="email" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Email <span style="color: #e53935;">*</span></label>
+            <input type="email" id="email" name="email" required
+                   style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"
+                   placeholder="your.email@example.com">
+          </div>
+          
+          <div class="form-group" style="flex: 1; min-width: 250px;">
+            <label for="phone" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Phone <span style="color: #e53935;">*</span></label>
+            <input type="tel" id="phone" name="phone" required
+                   style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"
+                   placeholder="+91 9876543210">
+          </div>
+        </div>
+        
+        <div class="form-row" style="display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 25px;">
+          <div class="form-group" style="flex: 1; min-width: 250px;">
+            <label for="interview_date" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Interview Date <span style="color: #e53935;">*</span></label>
+            <input type="date" id="interview_date" name="interview_date" required
+                   style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;"
+                   min="">
+          </div>
+          
+          <div class="form-group" style="flex: 1; min-width: 250px;">
+            <label for="interview_time" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Interview Time <span style="color: #e53935;">*</span></label>
+            <select id="interview_time" name="interview_time" required
+                    style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; background-color: white;">
+              <option value="">Select a time slot</option>
+              <!-- Time slots will be populated by JavaScript -->
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-actions" style="text-align: center; margin-top: 30px;">
+          <button type="submit" id="submitBtn" 
+                  style="background: linear-gradient(45deg, #0d47a1, #1976d2); color: white; border: none; padding: 14px 40px; 
+                         font-size: 16px; font-weight: 600; border-radius: 50px; cursor: pointer; transition: all 0.3s ease;
+                         box-shadow: 0 4px 15px rgba(13, 71, 161, 0.3);">
+            <span id="submitText">Book Interview</span>
+            <div id="loadingSpinner" class="spinner" style="display: none; margin: 0 auto; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite;"></div>
+          </button>
+        </div>
+      </form>
+      
+      <!-- ATM Card Style Success Message -->
+      <div id="successCard" class="message-card success" style="display: none;">
+        <div class="card-content">
+          <div class="card-icon">
+            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+              <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+              <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+          </div>
+          <div class="card-details">
+            <h3 class="card-title">Success!</h3>
+            <p class="card-message" id="successMessage">Your request has been processed successfully.</p>
+          </div>
+          <button class="close-btn" onclick="hideMessage('success')">×</button>
+        </div>
+      </div>
+
+      <!-- ATM Card Style Error Message -->
+      <div id="errorCard" class="message-card error" style="display: none;">
+        <div class="card-content">
+          <div class="card-icon">
+            <svg class="crossmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+              <circle class="crossmark__circle" cx="26" cy="26" r="25" fill="none"/>
+              <path class="crossmark__check" fill="none" d="M16 16 36 36 M36 16 16 36"/>
+            </svg>
+          </div>
+          <div class="card-details">
+            <h3 class="card-title">Error</h3>
+            <p class="card-message" id="errorMessage">An error occurred. Please try again.</p>
+          </div>
+          <button class="close-btn" onclick="hideMessage('error')">×</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Interview Success Card -->
+<div id="interviewSuccessCard" style="
+  display:none; 
+  position:fixed; 
+  top:50%; left:50%; 
+  transform:translate(-50%,-50%) scale(0.9);
+  background:#fff; 
+  padding:30px; 
+  border-radius:15px; 
+  box-shadow:0 15px 30px rgba(0,0,0,0.2); 
+  z-index:1001;
+  text-align:center; 
+  width:350px;
+  opacity:0;
+  transition:all 0.3s ease;
+  border-top: 4px solid #4CAF50;">
+  
+  <button onclick="hideInterviewNotification('success')" style="
+    position:absolute; 
+    top:10px; 
+    right:15px; 
+    background:none; 
+    border:none; 
+    font-size:24px; 
+    cursor:pointer; 
+    color:#999;
+    line-height:1;
+    padding:5px;">×</button>
+
+  <div style="width:60px; height:60px; background:#e8f5e9; border-radius:50%; margin:0 auto 20px; display:flex; align-items:center; justify-content:center;">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <h3 style="margin:0 0 10px; font-size:20px; color:#2e7d32; font-weight:600;">
+    Interview Booked Successfully!
+  </h3>
+  <p id="interviewSuccessMessage" style="font-size:15px; color:#555; line-height:1.5; margin:0;">
+    Your interview has been scheduled. We've sent the details to your email.
+  </p>
+</div>
+
+<!-- Interview Error Card -->
+<div id="interviewErrorCard" style="
+  display:none; 
+  position:fixed; 
+  top:50%; left:50%; 
+  transform:translate(-50%,-50%) scale(0.9);
+  background:#fff; 
+  padding:30px; 
+  border-radius:15px; 
+  box-shadow:0 15px 30px rgba(0,0,0,0.2); 
+  z-index:1001;
+  text-align:center; 
+  width:350px;
+  opacity:0;
+  transition:all 0.3s ease;
+  border-top: 4px solid #f44336;">
+  
+  <button onclick="hideInterviewNotification('error')" style="
+    position:absolute; 
+    top:10px; 
+    right:15px; 
+    background:none; 
+    border:none; 
+    font-size:24px; 
+    cursor:pointer; 
+    color:#999;
+    line-height:1;
+    padding:5px;">×</button>
+
+  <div style="width:60px; height:60px; background:#ffebee; border-radius:50%; margin:0 auto 20px; display:flex; align-items:center; justify-content:center;">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 9V12M12 15H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#f44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <h3 style="margin:0 0 10px; font-size:20px; color:#c62828; font-weight:600;">
+    Booking Failed
+  </h3>
+  <p id="interviewErrorMessage" style="font-size:15px; color:#555; line-height:1.5; margin:0;">
+    An error occurred while booking your interview. Please try again.
+  </p>
+</div>
+
+<!-- Overlay for interview notifications -->
+<div id="interviewOverlay" style="
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  background:rgba(0,0,0,0.5);
+  z-index:1000;
+  opacity:0;
+  transition:opacity 0.3s ease;">
+</div>
+
+<script>
+// Show interview notification
+function showInterviewNotification(type, message) {
+  const card = document.getElementById(`interview${type === 'success' ? 'Success' : 'Error'}Card`);
+  const messageElement = document.getElementById(`interview${type === 'success' ? 'Success' : 'Error'}Message`);
+  const overlay = document.getElementById('interviewOverlay');
+  
+  if (card && messageElement && overlay) {
+    // Set message
+    if (message) {
+      messageElement.textContent = message;
+    }
+    
+    // Show overlay and card
+    overlay.style.display = 'block';
+    card.style.display = 'block';
+    
+    // Trigger animation
+    setTimeout(() => {
+      overlay.style.opacity = '1';
+      card.style.opacity = '1';
+      card.style.transform = 'translate(-50%, -50%) scale(1)';
+    }, 10);
+    
+    // Auto-hide after 5 seconds
+    const timeoutId = setTimeout(() => {
+      hideInterviewNotification(type);
+    }, 5000);
+    
+    // Store timeout ID for clearing if needed
+    card.dataset.timeoutId = timeoutId;
+  }
+}
+
+// Hide interview notification
+function hideInterviewNotification(type) {
+  const card = document.getElementById(`interview${type === 'success' ? 'Success' : 'Error'}Card`);
+  const overlay = document.getElementById('interviewOverlay');
+  
+  if (card && overlay) {
+    // Clear any pending auto-hide timeout
+    if (card.dataset.timeoutId) {
+      clearTimeout(card.dataset.timeoutId);
+    }
+    
+    // Hide with animation
+    card.style.opacity = '0';
+    card.style.transform = 'translate(-50%, -50%) scale(0.9)';
+    overlay.style.opacity = '0';
+    
+    // Remove from DOM after animation
+    setTimeout(() => {
+      card.style.display = 'none';
+      overlay.style.display = 'none';
+    }, 300);
+  }
+}
+
+// Close when clicking overlay
+document.getElementById('interviewOverlay').addEventListener('click', function() {
+  hideInterviewNotification('success');
+  hideInterviewNotification('error');
+});
+
+// Close with Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    hideInterviewNotification('success');
+    hideInterviewNotification('error');
+  }
+});
+</script>
+
+
+<div id="messageOverlay" class="message-overlay" onclick="hideAllMessages()"></div>
+
+<script>
+// Global variables
+let messageTimeout;
+
+// Show message function
+function showMessage(type, message, title = '') {
+  // Hide any existing messages first
+  hideAllMessages();
+  
+  const card = document.getElementById(`${type}Card`);
+  const messageElement = document.getElementById(`${type}Message`);
+  const overlay = document.getElementById('messageOverlay');
+  
+  if (card && messageElement) {
+    if (title) {
+      const titleElement = card.querySelector('.card-title');
+      if (titleElement) titleElement.textContent = title;
+    }
+    
+    messageElement.textContent = message;
+    
+    // Show the card and overlay
+    card.style.display = 'block';
+    overlay.classList.add('visible');
+    
+    // Trigger reflow to enable animation
+    void card.offsetWidth;
+    card.classList.add('visible');
+    
+    // Auto-hide after 5 seconds
+    if (messageTimeout) clearTimeout(messageTimeout);
+    messageTimeout = setTimeout(() => {
+      hideAllMessages();
+    }, 5000);
+  }
+}
+
+// Hide specific message
+function hideMessage(type) {
+  const card = document.getElementById(`${type}Card`);
+  const overlay = document.getElementById('messageOverlay');
+  
+  if (card) {
+    card.classList.remove('visible');
+    setTimeout(() => {
+      card.style.display = 'none';
+      // Hide overlay if no other messages are visible
+      if (!document.querySelector('.message-card.visible')) {
+        overlay.classList.remove('visible');
+      }
+    }, 300);
+  }
+}
+
+// Hide all messages
+function hideAllMessages() {
+  document.querySelectorAll('.message-card').forEach(card => {
+    card.classList.remove('visible');
+    setTimeout(() => {
+      card.style.display = 'none';
+    }, 300);
+  });
+  document.getElementById('messageOverlay').classList.remove('visible');
+  if (messageTimeout) clearTimeout(messageTimeout);
+}
+
+// Close messages with Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    hideAllMessages();
+  }
+});
+
+// Set minimum date to today
+document.addEventListener('DOMContentLoaded', function() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('interview_date').min = today;
+  
+  // Generate time slots
+  generateTimeSlots();
+  
+  // Add event listener for date change
+  const dateInput = document.getElementById('interview_date');
+  if (dateInput) {
+    dateInput.addEventListener('change', function() {
+      generateTimeSlots();
+    });
+  }
+    generateTimeSlots();
+  });
+  
+  // Show notification card function
+  function showNotification(type, message) {
+    // Handle both new and old parameter patterns
+    const notificationId = type === 'error' ? 'errorCard' : 'successCard';
+    const notification = document.getElementById(notificationId);
+    if (!notification) return; // Exit if notification element not found
+    
+    const messageElement = notification.querySelector('p');
+    if (messageElement) {
+      messageElement.textContent = message;
+    }
+    
+    // Show the notification overlay and the specific notification
+    const overlay = document.getElementById('notificationOverlay');
+    if (overlay) {
+      overlay.style.display = 'flex';
+      notification.style.display = 'block';
+      
+      // Trigger reflow to enable animation
+      void notification.offsetWidth;
+      notification.style.transform = 'scale(1)';
+      notification.style.opacity = '1';
+      
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        notification.style.transform = 'scale(0.9)';
+        notification.style.opacity = '0';
+        setTimeout(() => {
+          notification.style.display = 'none';
+          overlay.style.display = 'none';
+        }, 300);
+      }, 5000);
+    }
+  }
+
+  // Form submission
+  const form = document.getElementById('interviewForm');
+  if (form) {
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const submitText = submitBtn.querySelector('span');
+      const spinner = submitBtn.querySelector('.spinner');
+      
+      // Show loading state
+      submitBtn.disabled = true;
+      submitText.textContent = 'Scheduling...';
+      spinner.style.display = 'inline-block';
+      
+      try {
+        const formData = new FormData(form);
+        const formObject = Object.fromEntries(formData.entries());
+
+        // Submit to Node.js backend with robust 2xx handling
+        const response = await fetch('http://localhost:3000/api/book-interview', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formObject)
+        });
+
+        const contentType = response.headers.get('content-type') || '';
+        let data = null;
+        if (contentType.includes('application/json')) {
+          try { data = await response.json(); } catch (_) { data = null; }
+        }
+
+        if (!(response.status === 200 || response.status === 201)) {
+          let msg = `Request failed with status ${response.status}`;
+          if (data && (data.message || data.error)) {
+            msg = data.message || data.error;
+          }
+          throw new Error(msg);
+        }
+
+        // Success: use the interview notification system
+        const successMessage = `Your interview has been scheduled for ${formObject.interview_date} at ${formObject.interview_time}. We've sent the details to your email.`;
+        showInterviewNotification('success', successMessage);
+        // Reset and regenerate time slots
+        form.reset();
+        generateTimeSlots();
+      } catch (error) {
+        console.error('Error:', error);
+        showInterviewNotification('error', error.message || 'An error occurred while booking your interview. Please try again.');
+      } finally {
+        // Reset button state
+        submitBtn.disabled = false;
+        submitText.textContent = 'Book Interview';
+        spinner.style.display = 'none';
+      }
+    });
+  }
+
+function generateTimeSlots() {
+  const timeSelect = document.getElementById('interview_time');
+  if (!timeSelect) return;
+  
+  const selectedDate = document.getElementById('interview_date').value;
+  const today = new Date().toISOString().split('T')[0];
+  const now = new Date();
+  
+  // Clear existing options except the first one
+  while (timeSelect.options.length > 1) {
+    timeSelect.remove(1);
+  }
+  
+  // If no date selected, return
+  if (!selectedDate) return;
+  
+  // Generate time slots from 9:00 AM to 5:00 PM in 30-minute intervals
+  const startHour = 9; // 9 AM
+  const endHour = 17;  // 5 PM
+  
+  for (let hour = startHour; hour <= endHour; hour++) {
+    for (let minute of ['00', '30']) {
+      // Skip if it's the last hour and minute is 30
+      if (hour === endHour && minute === '30') continue;
+      
+      const time = new Date();
+      time.setHours(hour, parseInt(minute), 0, 0);
+      
+      // Skip past times for today
+      if (selectedDate === today && time <= now) {
+        continue;
+      }
+      
+      const displayHour = hour > 12 ? hour - 12 : hour;
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      const displayTime = `${displayHour}:${minute} ${ampm}`;
+      const valueTime = `${String(hour).padStart(2, '0')}:${minute}:00`;
+      
+      const option = document.createElement('option');
+      option.value = valueTime;
+      option.textContent = displayTime;
+      timeSelect.appendChild(option);
+    }
+  }
+}
+</script>
+
+
+
+
+<!-- Program Highlights -->
+<h2 style="text-align:center; margin:30px 0; color:#111; font-size:32px; font-weight:700;">
+  🚀 Program Highlights
+</h2>
+
+<!-- Container with perspective for 3D -->
+<div id="highlights" style="
+  display:flex; justify-content:center; gap:28px; flex-wrap:wrap; padding:32px;
+  perspective:1200px; max-width:1300px; margin:auto;
+  background:linear-gradient(135deg,#eef4ff,#ffffff);
+  border-radius:25px;
+">
+
+  <!-- Card -->
+  <div class="card3d" style="width:300px; height:280px; transform-style:preserve-3d; flex:0 0 300px;">
+    <div class="card3d-inner" style="
+      position:relative; background:linear-gradient(145deg,#ffffff,#f1f1f1);
+      padding:28px; border-radius:20px; border:2px solid #e0e0e0;
+      box-shadow:0 12px 30px rgba(0,0,0,0.12); text-align:center;
+      transition:transform .2s ease, box-shadow .2s ease; transform-style:preserve-3d;
+    ">
+      <img src="https://cdn-icons-png.flaticon.com/512/4228/4228703.png"
+           style="width:70px; margin-bottom:16px; transform:translateZ(22px);">
+      <h4 style="margin:0 0 10px; font-size:18px; font-weight:600; color:#222; transform:translateZ(18px);">
+        Convenient Learning
+      </h4>
+      <p style="font-size:15px; line-height:1.5; color:#444; margin:0; font-weight:400; transform:translateZ(12px);">
+        Learn online with expert mentors and flexible sessions.
+      </p>
+      <span class="shine" style="pointer-events:none; position:absolute; inset:0; border-radius:20px; opacity:0; transition:opacity .2s;"></span>
+    </div>
+  </div>
+
+  <!-- Card -->
+  <div class="card3d" style="width:300px; height:280px; transform-style:preserve-3d; flex:0 0 300px;">
+    <div class="card3d-inner" style="position:relative; background:linear-gradient(145deg,#ffffff,#f1f1f1);
+      padding:28px; border-radius:20px; border:2px solid #e0e0e0;
+      box-shadow:0 12px 30px rgba(0,0,0,0.12); text-align:center;
+      transition:transform .2s ease, box-shadow .2s ease; transform-style:preserve-3d;">
+      <img src="https://cdn-icons-png.flaticon.com/512/3135/3135673.png"
+           style="width:70px; margin-bottom:16px; transform:translateZ(22px);">
+      <h4 style="margin:0 0 10px; font-size:18px; font-weight:600; color:#222; transform:translateZ(18px);">
+        Career Services
+      </h4>
+      <p style="font-size:15px; line-height:1.5; color:#444; margin:0; font-weight:400; transform:translateZ(12px);">
+        Get resume prep, mock interviews & job guidance.
+      </p>
+      <span class="shine"></span>
+    </div>
+  </div>
+
+  <!-- Card -->
+  <div class="card3d" style="width:300px; height:280px; transform-style:preserve-3d; flex:0 0 300px;">
+    <div class="card3d-inner" style="position:relative; background:linear-gradient(145deg,#ffffff,#f1f1f1);
+      padding:28px; border-radius:20px; border:2px solid #e0e0e0;
+      box-shadow:0 12px 30px rgba(0,0,0,0.12); text-align:center;
+      transition:transform .2s ease, box-shadow .2s ease; transform-style:preserve-3d;">
+      <img src="https://cdn-icons-png.flaticon.com/512/3135/3135810.png"
+           style="width:70px; margin-bottom:16px; transform:translateZ(22px);">
+      <h4 style="margin:0 0 10px; font-size:18px; font-weight:600; color:#222; transform:translateZ(18px);">
+        Learn from Experts
+      </h4>
+      <p style="font-size:15px; line-height:1.5; color:#444; margin:0; font-weight:400; transform:translateZ(12px);">
+        Top faculties with proven expertise in Data Science.
+      </p>
+      <span class="shine"></span>
+    </div>
+  </div>
+
+  <!-- Card -->
+  <div class="card3d" style="width:300px; height:280px; transform-style:preserve-3d; flex:0 0 300px;">
+    <div class="card3d-inner" style="position:relative; background:linear-gradient(145deg,#ffffff,#f1f1f1);
+      padding:28px; border-radius:20px; border:2px solid #e0e0e0;
+      box-shadow:0 12px 30px rgba(0,0,0,0.12); text-align:center;
+      transition:transform .2s ease, box-shadow .2s ease; transform-style:preserve-3d;">
+      <img src="https://cdn-icons-png.flaticon.com/512/2942/2942789.png"
+           style="width:70px; margin-bottom:16px; transform:translateZ(22px);">
+      <h4 style="margin:0 0 10px; font-size:18px; font-weight:600; color:#222; transform:translateZ(18px);">
+        Structured Support
+      </h4>
+      <p style="font-size:15px; line-height:1.5; color:#444; margin:0; font-weight:400; transform:translateZ(12px);">
+        Track progress with dedicated program managers.
+      </p>
+      <span class="shine"></span>
+    </div>
+  </div>
+
+  <!-- Last Card (Fixed size same as others) -->
+  <div class="card3d" style="width:300px; height:280px; transform-style:preserve-3d; flex:0 0 300px;">
+    <div class="card3d-inner" style="position:relative; background:linear-gradient(145deg,#ffffff,#f1f1f1);
+      padding:28px; border-radius:20px; border:2px solid #e0e0e0;
+      box-shadow:0 12px 30px rgba(0,0,0,0.12); text-align:center;
+      transition:transform .2s ease, box-shadow .2s ease; transform-style:preserve-3d;">
+      <img src="https://cdn-icons-png.flaticon.com/512/1828/1828919.png"
+           style="width:70px; margin-bottom:16px; transform:translateZ(22px);">
+      <h4 style="margin:0 0 10px; font-size:18px; font-weight:600; color:#222; transform:translateZ(18px);">
+        Hands-on Learning
+      </h4>
+      <p style="font-size:15px; line-height:1.5; color:#444; margin:0; font-weight:400; transform:translateZ(12px);">
+        Work on real projects to become fully job-ready.
+      </p>
+      <span class="shine"></span>
+    </div>
+  </div>
+</div>
+
+
+<!-- What You'll Learn -->
+<h2 style="text-align:center; margin:40px 0; color:#111;">What You'll Learn</h2>
+<marquee behavior="scroll" direction="left" scrollamount="10" style="padding:20px; background:#fff; border-radius:12px; margin:20px; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+
+  <!-- NumPy -->
+  <img src="https://numpy.org/images/logo.svg" style="height:60px; margin:0 30px;">
+  
+  <!-- Pandas -->
+  <img src="https://pandas.pydata.org/static/img/pandas.svg" style="height:60px; margin:0 30px;">
+  
+  <!-- PyTorch -->
+  <img src="https://pytorch.org/assets/images/pytorch-logo.png" style="height:60px; margin:0 30px;">
+  
+  <!-- R -->
+  <img src="https://www.r-project.org/logo/Rlogo.png" style="height:60px; margin:0 30px;">
+  
+  <!-- SQL -->
+  <img src="https://www.svgrepo.com/show/331760/sql-database-generic.svg" style="height:60px; margin:0 30px;">
+  
+  <!-- Tableau -->
+  <img src="https://cdn.worldvectorlogo.com/logos/tableau-software.svg" style="height:60px; margin:0 30px;">
+  
+  <!-- VBA -->
+  <img src="https://img.icons8.com/color/452/microsoft-excel-2019--v1.png" 
+     alt="Excel Logo" 
+     style="height:60px; margin:0 30px;">
+
+  
+  <!-- Python -->
+  <img src="https://www.python.org/static/community_logos/python-logo.png" style="height:60px; margin:0 30px;">
+  
+  <!-- TensorFlow -->
+  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2d/Tensorflow_logo.svg" style="height:60px; margin:0 30px;">
+  
+  <!-- Jupyter -->
+  <img src="https://jupyter.org/assets/homepage/main-logo.svg" style="height:60px; margin:0 30px;">
+  
+  <!-- Keras -->
+  <img src="https://upload.wikimedia.org/wikipedia/commons/a/ae/Keras_logo.svg" style="height:60px; margin:0 30px;">
+
+</marquee>
+
+
+<!-- Data Science with AI - Modern 3D Cards (Mobile Responsive) -->
+<div style="max-width:1300px; margin:70px auto; background:linear-gradient(135deg,#a1c4fd,#c2e9fb);
+            padding:40px 20px; border-radius:32px; box-shadow:0 18px 40px rgba(0,0,0,0.25);
+            width:100%; box-sizing:border-box;">
+
+  <!-- Title -->
+  <h2 style="text-align:center; color:#0d47a1; font-size:clamp(28px,5vw,44px); font-weight:900; margin-bottom:55px;">
+    📊 Data Science with AI
+  </h2>
+
+  <!-- Grid Container -->
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+              gap:25px;">
+
+    <!-- Card 1 -->
+    <div style="background:linear-gradient(145deg,#ffffff,#f1f1f1); border-radius:24px; padding:28px;
+                box-shadow:0 12px 28px rgba(0,0,0,0.18); text-align:center;">
+      <i class="bi bi-bar-chart-line-fill" style="font-size:2.4rem; color:#1565c0;"></i>
+      <h4 style="margin:15px 0; font-size:22px; font-weight:800; color:#1565c0;">Uses</h4>
+      <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:12px;">
+        <span style="background:#e3f2fd; padding:8px 14px; border-radius:14px; font-size:15px;">Predictive Modeling</span>
+        <span style="background:#e3f2fd; padding:8px 14px; border-radius:14px; font-size:15px;">AI Recommendations</span>
+        <span style="background:#e3f2fd; padding:8px 14px; border-radius:14px; font-size:15px;">Fraud Detection</span>
+        <span style="background:#e3f2fd; padding:8px 14px; border-radius:14px; font-size:15px;">NLP Chatbots</span>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div style="background:linear-gradient(145deg,#ffffff,#f1f1f1); border-radius:24px; padding:28px;
+                box-shadow:0 12px 28px rgba(0,0,0,0.18); text-align:center;">
+      <i class="bi bi-lightning-fill" style="font-size:2.4rem; color:#ff6f00;"></i>
+      <h4 style="margin:15px 0; font-size:22px; font-weight:800; color:#ff6f00;">Benefits</h4>
+      <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:12px;">
+        <span style="background:#fff3e0; padding:8px 14px; border-radius:14px; font-size:15px;">Smarter Insights</span>
+        <span style="background:#fff3e0; padding:8px 14px; border-radius:14px; font-size:15px;">Faster Decisions</span>
+        <span style="background:#fff3e0; padding:8px 14px; border-radius:14px; font-size:15px;">Automation</span>
+        <span style="background:#fff3e0; padding:8px 14px; border-radius:14px; font-size:15px;">Scalable Growth</span>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div style="background:linear-gradient(145deg,#ffffff,#f1f1f1); border-radius:24px; padding:28px;
+                box-shadow:0 12px 28px rgba(0,0,0,0.18); text-align:center;">
+      <i class="bi bi-gear-fill" style="font-size:2.4rem; color:#2e7d32;"></i>
+      <h4 style="margin:15px 0; font-size:22px; font-weight:800; color:#2e7d32;">Why We Need</h4>
+      <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:12px;">
+        <span style="background:#e8f5e9; padding:8px 14px; border-radius:14px; font-size:15px;">Raw Data → Predictions</span>
+        <span style="background:#e8f5e9; padding:8px 14px; border-radius:14px; font-size:15px;">Automation</span>
+        <span style="background:#e8f5e9; padding:8px 14px; border-radius:14px; font-size:15px;">Industry Advantage</span>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div style="background:linear-gradient(145deg,#ffffff,#f1f1f1); border-radius:24px; padding:28px;
+                box-shadow:0 12px 28px rgba(0,0,0,0.18); text-align:center;">
+      <i class="bi bi-tools" style="font-size:2.4rem; color:#6a1b9a;"></i>
+      <h4 style="margin:15px 0; font-size:22px; font-weight:800; color:#6a1b9a;">Popular Tools</h4>
+      <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:12px;">
+        <span style="background:#f3e5f5; padding:8px 14px; border-radius:14px; font-size:15px;">Python</span>
+        <span style="background:#f3e5f5; padding:8px 14px; border-radius:14px; font-size:15px;">R</span>
+        <span style="background:#f3e5f5; padding:8px 14px; border-radius:14px; font-size:15px;">TensorFlow</span>
+        <span style="background:#f3e5f5; padding:8px 14px; border-radius:14px; font-size:15px;">PyTorch</span>
+        <span style="background:#f3e5f5; padding:8px 14px; border-radius:14px; font-size:15px;">Tableau</span>
+        <span style="background:#f3e5f5; padding:8px 14px; border-radius:14px; font-size:15px;">Power BI</span>
+      </div>
+    </div>
+
+    <!-- Card 5 -->
+    <div style="background:linear-gradient(145deg,#ffffff,#f1f1f1); border-radius:24px; padding:28px;
+                box-shadow:0 12px 28px rgba(0,0,0,0.18); text-align:center;">
+      <i class="bi bi-briefcase-fill" style="font-size:2.4rem; color:#d32f2f;"></i>
+      <h4 style="margin:15px 0; font-size:22px; font-weight:800; color:#d32f2f;">Career</h4>
+      <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:12px;">
+        <span style="background:#ffebee; padding:8px 14px; border-radius:14px; font-size:15px;">Data Scientist</span>
+        <span style="background:#ffebee; padding:8px 14px; border-radius:14px; font-size:15px;">AI Engineer</span>
+        <span style="background:#ffebee; padding:8px 14px; border-radius:14px; font-size:15px;">ML Engineer</span>
+        <span style="background:#ffebee; padding:8px 14px; border-radius:14px; font-size:15px;">NLP Specialist</span>
+        <span style="background:#ffebee; padding:8px 14px; border-radius:14px; font-size:15px;">CV Engineer</span>
+      </div>
+    </div>
+
+    <!-- Card 6 -->
+    <div style="background:linear-gradient(145deg,#ffffff,#f1f1f1); border-radius:24px; padding:28px;
+                box-shadow:0 12px 28px rgba(0,0,0,0.18); text-align:center;">
+      <i class="bi bi-globe2" style="font-size:2.4rem; color:#0288d1;"></i>
+      <h4 style="margin:15px 0; font-size:22px; font-weight:800; color:#0288d1;">Future Scope</h4>
+      <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:12px;">
+        <span style="background:#e1f5fe; padding:8px 14px; border-radius:14px; font-size:15px;">Healthcare AI</span>
+        <span style="background:#e1f5fe; padding:8px 14px; border-radius:14px; font-size:15px;">Finance</span>
+        <span style="background:#e1f5fe; padding:8px 14px; border-radius:14px; font-size:15px;">Robotics</span>
+        <span style="background:#e1f5fe; padding:8px 14px; border-radius:14px; font-size:15px;">Self-Driving Cars</span>
+        <span style="background:#e1f5fe; padding:8px 14px; border-radius:14px; font-size:15px;">Climate Prediction</span>
+        <span style="background:#e1f5fe; padding:8px 14px; border-radius:14px; font-size:15px;">Digital Assistants</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+<section id="courses" style="padding:70px 0; background:#f0f2f5;">
+  <div style="max-width:1300px; margin:0 auto; display:flex; flex-direction:column; gap:60px;">
+
+    <!-- Course 1 Container -->
+    <div id="course1" class="course-container" style="display:flex; flex-wrap:wrap; background:#e3f2fd; border-radius:25px; box-shadow:0 15px 40px rgba(0,0,0,0.15); overflow:hidden; perspective:1000px;">
+
+      <!-- Left: Buttons -->
+      <div class="course-buttons" style="flex:1; min-width:280px; padding:40px; display:flex; flex-direction:column; gap:25px; background:#fff;">
+        <center><h2 style="margin-bottom:20px; font-weight:800; color:#1976d2;">Data Science with AI</h2></center>
+        <button data-target="core-skills" style="padding:14px 20px; font-size:18px; border:none; border-radius:12px; background:#1976d2; color:#fff; font-weight:600; cursor:pointer; transition:0.3s;">Core Data Skills</button>
+        <button data-target="advanced-ai" style="padding:14px 20px; font-size:18px; border:none; border-radius:12px; background:#1976d2; color:#fff; font-weight:600; cursor:pointer; transition:0.3s;">Advanced Analytics & AI</button>
+        <button data-target="industry-training" style="padding:14px 20px; font-size:18px; border:none; border-radius:12px; background:#1976d2; color:#fff; font-weight:600; cursor:pointer; transition:0.3s;">Industry Training</button>
+        <button data-target="mentorship" style="padding:14px 20px; font-size:18px; border:none; border-radius:12px; background:#1976d2; color:#fff; font-weight:600; cursor:pointer; transition:0.3s;">Mentorship & Guidance</button>
+      </div>
+
+      <!-- Right: Module Content Box -->
+      <div class="course-contents" style="flex:2; min-width:400px; padding:50px; display:flex; flex-direction:column; justify-content:flex-start; align-items:center; min-height:400px; background:#fafafa;">
+
+        <!-- Added Heading -->
+        <h2 style="color:#333; font-weight:800; font-size:26px; margin-bottom:30px;">📘 Modules</h2>
+
+        <!-- Module Content -->
+        <div class="module-box" id="core-skills" style="display:block; width:100%; background:#fff; padding:35px; border-radius:20px; box-shadow:0 12px 30px rgba(0,0,0,0.12);">
+          <h3 style="color:#1976d2; font-weight:700; margin-bottom:20px;">Core Data Skills</h3>
+          <ul style="list-style:none; padding:0; font-size:18px; line-height:1.8;">
+            <li style="margin:10px 0;">✅ Python Programming & Data Analysis – Pandas, NumPy</li>
+            <li style="margin:10px 0;">✅ SQL – Joins, Subqueries, Advanced DB Management</li>
+            <li style="margin:10px 0;">✅ Tableau + Excel – Business Dashboards</li>
+            <li style="margin:10px 0;">✅ Probability & Statistics – Strong AI/ML foundation</li>
+          </ul>
+        </div>
+
+        <div class="module-box" id="advanced-ai" style="display:none; width:100%; background:#fff; padding:35px; border-radius:20px; box-shadow:0 12px 30px rgba(0,0,0,0.12);">
+          <h3 style="color:#1976d2; font-weight:700; margin-bottom:20px;">Advanced Analytics & AI</h3>
+          <ul style="list-style:none; padding:0; font-size:18px; line-height:1.8;">
+            <li>✅ Advanced Data Analytics – Insight Generation</li>
+            <li>✅ Product Analysis – Real-World Case Studies</li>
+            <li>✅ AI-Powered Workflows – Automation with GenAI</li>
+            <li>✅ Product Analytics – Data-Driven Decisions</li>
+          </ul>
+        </div>
+
+        <div class="module-box" id="industry-training" style="display:none; width:100%; background:#fff; padding:35px; border-radius:20px; box-shadow:0 12px 30px rgba(0,0,0,0.12);">
+          <h3 style="color:#1976d2; font-weight:700; margin-bottom:20px;">Industry Training</h3>
+          <ul style="list-style:none; padding:0; font-size:18px; line-height:1.8;">
+            <li>✅ 15+ Real-World Projects – Hands-On</li>
+            <li>✅ 10 Case Studies – Zomato, Ola, Swiggy, Amazon</li>
+            <li>✅ Aptitude & Puzzle Training</li>
+            <li>✅ Resume, LinkedIn, Mock Interviews</li>
+          </ul>
+        </div>
+
+        <div class="module-box" id="mentorship" style="display:none; width:100%; background:#fff; padding:35px; border-radius:20px; box-shadow:0 12px 30px rgba(0,0,0,0.12);">
+          <h3 style="color:#1976d2; font-weight:700; margin-bottom:20px;">Mentorship & Guidance</h3>
+          <ul style="list-style:none; padding:0; font-size:18px; line-height:1.8;">
+            <li>✅ 1-on-1 Personal Mentorship</li>
+            <li>✅ Access to IIT Alumni & Ex-Scaler Instructor</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+document.querySelectorAll(".course-buttons button").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    let target = btn.getAttribute("data-target");
+    document.querySelectorAll(".module-box").forEach(box=>{
+      box.style.display = "none";
+    });
+    document.getElementById(target).style.display = "block";
+  });
+});
+</script>
+
+
+
+
+<!-- Features Section -->
+<section id="features" style="padding:100px 0; background:#f5f7ff; perspective:1000px;">
+  <div style="max-width:1300px; margin:auto; text-align:center;">
+    <h2 style="font-size:2.8rem; font-weight:800; margin-bottom:15px; color:#222;">Boost Your Skills With Our Program</h2>
+    <p style="font-size:1.25rem; color:#555; margin-bottom:70px;">A comprehensive program to elevate your tech and career skills.</p>
+
+    <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:35px;">
+
+      <!-- Feature Card -->
+      <div style="flex:1 1 280px; max-width:280px; background:#6c63ff; color:white; padding:40px 30px; border-radius:25px; box-shadow:0 18px 40px rgba(0,0,0,0.2); transition:transform 0.4s ease, box-shadow 0.4s ease; transform-style:preserve-3d; cursor:pointer; text-align:center;"
+        onmouseover="this.style.transform='translateY(-15px) scale(1.05)'; this.style.boxShadow='0 28px 50px rgba(0,0,0,0.25)';" 
+        onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 18px 40px rgba(0,0,0,0.2)';">
+        <div style="background:rgba(255,255,255,0.25); width:80px; height:80px; display:flex; align-items:center; justify-content:center; border-radius:50%; margin:auto; margin-bottom:20px; font-size:36px;">
+          <i class="fas fa-clock"></i>
+        </div>
+        <h4 style="margin-bottom:15px; font-weight:700; font-size:1.4rem;">100+ Hours Learning</h4>
+        <p style="font-size:1.05rem; line-height:1.6;">Interactive sessions covering modern technologies and tools.</p>
+      </div>
+
+      <!-- Feature Card -->
+      <div style="flex:1 1 280px; max-width:280px; background:#ff6584; color:white; padding:40px 30px; border-radius:25px; box-shadow:0 18px 40px rgba(0,0,0,0.2); transition:transform 0.4s ease, box-shadow 0.4s ease; transform-style:preserve-3d; cursor:pointer; text-align:center;"
+        onmouseover="this.style.transform='translateY(-15px) scale(1.05)'; this.style.boxShadow='0 28px 50px rgba(0,0,0,0.25)';" 
+        onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 18px 40px rgba(0,0,0,0.2)';">
+        <div style="background:rgba(255,255,255,0.25); width:80px; height:80px; display:flex; align-items:center; justify-content:center; border-radius:50%; margin:auto; margin-bottom:20px; font-size:36px;">
+          <i class="fas fa-user-tie"></i>
+        </div>
+        <h4 style="margin-bottom:15px; font-weight:700; font-size:1.4rem;">6 Months Mentorship</h4>
+        <p style="font-size:1.05rem; line-height:1.6;">Get guidance from industry experts and accelerate your career growth.</p>
+      </div>
+
+      <!-- Feature Card -->
+      <div style="flex:1 1 280px; max-width:280px; background:#00b894; color:white; padding:40px 30px; border-radius:25px; box-shadow:0 18px 40px rgba(0,0,0,0.2); transition:transform 0.4s ease, box-shadow 0.4s ease; transform-style:preserve-3d; cursor:pointer; text-align:center;"
+        onmouseover="this.style.transform='translateY(-15px) scale(1.05)'; this.style.boxShadow='0 28px 50px rgba(0,0,0,0.25)';" 
+        onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 18px 40px rgba(0,0,0,0.2)';">
+        <div style="background:rgba(255,255,255,0.25); width:80px; height:80px; display:flex; align-items:center; justify-content:center; border-radius:50%; margin:auto; margin-bottom:20px; font-size:36px;">
+          <i class="fas fa-project-diagram"></i>
+        </div>
+        <h4 style="margin-bottom:15px; font-weight:700; font-size:1.4rem;">Project-Based Learning</h4>
+        <p style="font-size:1.05rem; line-height:1.6;">Hands-on projects to build a strong portfolio for real-world applications.</p>
+      </div>
+
+      <!-- Feature Card -->
+      <div style="flex:1 1 280px; max-width:280px; background:#fdcb6e; color:white; padding:40px 30px; border-radius:25px; box-shadow:0 18px 40px rgba(0,0,0,0.2); transition:transform 0.4s ease, box-shadow 0.4s ease; transform-style:preserve-3d; cursor:pointer; text-align:center;"
+        onmouseover="this.style.transform='translateY(-15px) scale(1.05)'; this.style.boxShadow='0 28px 50px rgba(0,0,0,0.25)';" 
+        onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 18px 40px rgba(0,0,0,0.2)';">
+        <div style="background:rgba(255,255,255,0.25); width:80px; height:80px; display:flex; align-items:center; justify-content:center; border-radius:50%; margin:auto; margin-bottom:20px; font-size:36px;">
+          <i class="fas fa-briefcase"></i>
+        </div>
+        <h4 style="margin-bottom:15px; font-weight:700; font-size:1.4rem;">Career Prep & Interviews</h4>
+        <p style="font-size:1.05rem; line-height:1.6;">Resume building, mock interviews, and placement guidance to succeed.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+
+
+<section style="padding: 70px 20px; text-align: center; background: #f5f5ff;">
+  <h2 style="font-size: 36px; font-weight: bold; margin-bottom: 15px; color:#1a003d;">🚀 Explore Our Specialized Tracks</h2>
+  <p style="color: #444; margin-bottom: 50px; font-size:18px;">Choose the learning path that fits your career goals and start mastering new skills today.</p>
+
+  <!-- Grid -->
+  <div id="trackGrid" 
+       style="display: grid; grid-template-columns: 1fr; gap: 30px; max-width: 1000px; margin: auto;">
+    
+    <!-- Card 1 -->
+    <div class="track-card" style="display: flex; align-items: center; background: linear-gradient(145deg, #4c00ff, #1a003d); color: white; border-radius: 20px; padding: 30px; gap: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); opacity:0; transform: translateY(40px); transition: all 1s;">
+      <div style="font-size: 55px; background: rgba(255,255,255,0.15); padding: 20px; border-radius: 50%; box-shadow: inset 0 0 10px rgba(255,255,255,0.2);">
+        <i class="fas fa-robot"></i>
+      </div>
+      <div style="text-align: left;">
+        <h4 style="margin: 0; font-size: 22px;">AI Engineers</h4>
+        <p style="margin: 8px 0 0; font-size: 16px; color: #ddd;">Dive into deep learning, NLP, and AI-driven solutions.</p>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="track-card" style="display: flex; align-items: center; background: linear-gradient(145deg, #4c00ff, #1a003d); color: white; border-radius: 20px; padding: 30px; gap: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); opacity:0; transform: translateY(40px); transition: all 1s;">
+      <div style="font-size: 55px; background: rgba(255,255,255,0.15); padding: 20px; border-radius: 50%; box-shadow: inset 0 0 10px rgba(255,255,255,0.2);">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <div style="text-align: left;">
+        <h4 style="margin: 0; font-size: 22px;">Data Analysts</h4>
+        <p style="margin: 8px 0 0; font-size: 16px; color: #ddd;">Master data visualization, dashboards, and analytics.</p>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="track-card" style="display: flex; align-items: center; background: linear-gradient(145deg, #4c00ff, #1a003d); color: white; border-radius: 20px; padding: 30px; gap: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); opacity:0; transform: translateY(40px); transition: all 1s;">
+      <div style="font-size: 55px; background: rgba(255,255,255,0.15); padding: 20px; border-radius: 50%; box-shadow: inset 0 0 10px rgba(255,255,255,0.2);">
+        <i class="fas fa-code"></i>
+      </div>
+      <div style="text-align: left;">
+        <h4 style="margin: 0; font-size: 22px;">Full-Stack Developers</h4>
+        <p style="margin: 8px 0 0; font-size: 16px; color: #ddd;">Build scalable apps with modern front-end & back-end stacks.</p>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="track-card" style="display: flex; align-items: center; background: linear-gradient(145deg, #4c00ff, #1a003d); color: white; border-radius: 20px; padding: 30px; gap: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); opacity:0; transform: translateY(40px); transition: all 1s;">
+      <div style="font-size: 55px; background: rgba(255,255,255,0.15); padding: 20px; border-radius: 50%; box-shadow: inset 0 0 10px rgba(255,255,255,0.2);">
+        <i class="fas fa-network-wired"></i>
+      </div>
+      <div style="text-align: left;">
+        <h4 style="margin: 0; font-size: 22px;">Cloud Architects</h4>
+        <p style="margin: 8px 0 0; font-size: 16px; color: #ddd;">Design and deploy secure, scalable cloud infrastructures.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Animation Script -->
+  <script>
+    function fadeInCards(){
+      document.querySelectorAll('.track-card').forEach((card, i) => {
+        setTimeout(() => {
+          card.style.opacity = "1";
+          card.style.transform = "translateY(0)";
+        }, i * 300);
+      });
+    }
+    window.addEventListener('load', fadeInCards);
+ 
+  function adjustGrid() {
+    const grid = document.getElementById('trackGrid');
+    if(window.innerWidth < 700){
+      // 📱 Mobile: 1 by 1 list view
+      grid.style.gridTemplateColumns = '1fr';
+    } else {
+      // 💻 PC / Tablet: 2 columns
+      grid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+    }
+  }
+
+  function fadeInCards(){
+    document.querySelectorAll('.track-card').forEach((card, i) => {
+      setTimeout(() => {
+        card.style.opacity = "1";
+        card.style.transform = "translateY(0)";
+      }, i * 300); // Staggered animation
+    });
+  }
+
+  window.addEventListener('resize', adjustGrid);
+  window.addEventListener('load', () => {
+    adjustGrid();
+    fadeInCards();
+  });
+</script>
+
+
+  <!-- Responsive CSS -->
+  <style>
+    @media (min-width: 700px) {
+      #trackGrid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</section>
+
+<!-- Mentor Profile 3D Card -->
+<section style="padding:80px 20px; background:linear-gradient(135deg,#eef4ff,#ffffff); font-family:Arial, sans-serif;">
+  <div style="max-width:1100px; margin:auto; text-align:center;">
+    <h2 style="font-size:42px; margin-bottom:25px; color:#111; font-weight:700; text-shadow:1px 1px 3px rgba(0,0,0,0.1);">
+      Your Mentor
+    </h2>
+    <p style="font-size:20px; margin-bottom:40px; color:#444;">
+      Learn <b>Data Science with AI</b> from an 
+      <span style="color:#2563eb;font-weight:600;">IIT Alumni</span> & 
+      <span style="color:#16a34a;font-weight:600;">Ex-Scaler</span>
+    </p>
+
+    <!-- Responsive Container -->
+    <div id="mentorCard" 
+         style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:40px; 
+                background:#fff; border-radius:25px; padding:40px; min-height:350px;
+                box-shadow:0 25px 60px rgba(0,0,0,0.2), inset 0 0 20px rgba(0,0,0,0.05);
+                transform-style:preserve-3d; 
+                transform:perspective(1200px) rotateX(0deg) rotateY(0deg);
+                transition:transform .3s ease, box-shadow .3s ease;">
+
+      <!-- Mentor Image -->
+      <div style="flex-shrink:0; text-align:center; width:100%; max-width:250px;">
+        <img src="https://randomuser.me/api/portraits/men/32.jpg" 
+             alt="Mentor Profile"
+             style="width:100%; max-width:220px; height:220px; border-radius:50%; object-fit:cover; 
+                    border:6px solid #e2e8f0; background:#fff; 
+                    box-shadow:0 10px 25px rgba(0,0,0,0.15); margin:auto;">
+      </div>
+
+      <!-- Mentor Info -->
+      <div style="flex:1; min-width:280px; text-align:left;">
+        <h3 style="margin:0 0 15px; font-size:28px; color:#111; font-weight:700; text-align:center;">
+          Dr. Arjun Mehta
+        </h3>
+        <p style="margin:0 0 20px; font-size:17px; color:#555; line-height:1.6; text-align:center;">
+  <span style="font-weight:900; font-size:19px; color:white; background:#e53935; padding:3px 10px; border-radius:12px;">
+    🎓 IIT Alumni
+  </span> 
+  | <b>Ex-Scaler</b> | <b>12+ Years of Industry Experience</b>
+</p>
+
+        <p style="font-size:16px; color:#333; line-height:1.7; margin:0; text-align:justify;">
+          Dr. Mehta has guided <b>5000+ students</b> in their journey through 
+          <b>Data Science, Artificial Intelligence, and Machine Learning</b>.  
+          With a career spanning over a decade, he specializes in transforming learners into 
+          <span style="color:#2563eb;font-weight:600;">job-ready professionals</span> by 
+          blending <b>theory</b> with <b>hands-on project expertise</b>.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Smooth 3D Tilt Script -->
+  <script>
+    (function(){
+      const card = document.getElementById('mentorCard');
+      let ax = 0, ay = 0, rx = 0, ry = 0;
+
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        ry = x * 5;
+        rx = -y * 5;
+      });
+
+      card.addEventListener('mouseleave', () => { rx = 0; ry = 0; });
+
+      function animate(){
+        ax += (rx - ax) * 0.1;
+        ay += (ry - ay) * 0.1;
+        card.style.transform = `perspective(1200px) rotateX(${ax}deg) rotateY(${ay}deg)`;
+        requestAnimationFrame(animate);
+      }
+      animate();
+    })();
+  </script>
+</section>
+
+
+
+<!-- Why Choose Our Programs -->
+<section style="padding: 100px 20px; background: linear-gradient(135deg, #e8edf5, #f8faff); text-align: center;">
+  <h2 style="font-size: 38px; font-weight: 800; margin-bottom: 70px; color:#111; text-shadow:2px 2px 6px rgba(0,0,0,0.1);">
+    Why Choose Our Programs?
+  </h2>
+
+  <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; max-width: 1200px; margin: auto; padding:60px; 
+              border-radius:30px; background: linear-gradient(135deg,#ffffff,#f0f4ff); 
+              box-shadow:0 25px 60px rgba(0,0,0,0.15), inset 0 0 15px rgba(0,0,0,0.05);">
+
+    <!-- Card 1 -->
+    <div class="card-3d" style="flex:1 1 320px; max-width:350px; background: #fff; border-radius:20px; padding:35px; 
+                                 box-shadow:0 20px 40px rgba(0,0,0,0.12); transition:transform 0.4s, box-shadow 0.4s;">
+      <div style="background: linear-gradient(135deg, #8c6cf7, #5b3af7); 
+                  color: white; width: 90px; height: 90px; margin: auto; 
+                  display: flex; align-items: center; justify-content: center; 
+                  border-radius: 50%; font-size: 34px; margin-bottom: 25px; 
+                  box-shadow:0 8px 20px rgba(0,0,0,0.2);">
+        <i class="fas fa-briefcase"></i>
+      </div>
+      <h3 style="margin-bottom: 15px; font-size: 24px; color:#222; font-weight:700; letter-spacing:0.5px;">Industry Relevance</h3>
+      <p style="color: #555; font-size: 17px; line-height:1.8; padding:0 10px; word-break:keep-all; white-space:normal;">
+        <span style="color:#5b3af7;font-weight:600;">Curriculum co-created</span> with tech giants like 
+        <b>Amazon, Google, Microsoft</b> ensuring you master the exact skills top companies demand.
+      </p>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="card-3d" style="flex:1 1 320px; max-width:350px; background: #fff; border-radius:20px; padding:35px; 
+                                 box-shadow:0 20px 40px rgba(0,0,0,0.12); transition:transform 0.4s, box-shadow 0.4s;">
+      <div style="background: linear-gradient(135deg, #4CAF50, #2e7d32); 
+                  color: white; width: 90px; height: 90px; margin: auto; 
+                  display: flex; align-items: center; justify-content: center; 
+                  border-radius: 50%; font-size: 34px; margin-bottom: 25px; 
+                  box-shadow:0 8px 20px rgba(0,0,0,0.2);">
+        <i class="fas fa-users"></i>
+      </div>
+      <h3 style="margin-bottom: 15px; font-size: 24px; color:#222; font-weight:700; letter-spacing:0.5px;">Expert Mentorship</h3>
+      <p style="color: #555; font-size: 17px; line-height:1.8; padding:0 10px; word-break:keep-all; white-space:normal;">
+        Learn directly from <span style="color:#2e7d32;font-weight:600;">IIT Alumni & Industry Experts</span> 
+        with <b>10–20 years</b> of real-world experience in AI & Data Science.
+      </p>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="card-3d" style="flex:1 1 320px; max-width:350px; background: #fff; border-radius:20px; padding:35px; 
+                                 box-shadow:0 20px 40px rgba(0,0,0,0.12); transition:transform 0.4s, box-shadow 0.4s;">
+      <div style="background: linear-gradient(135deg, #ff9800, #e65100); 
+                  color: white; width: 90px; height: 90px; margin: auto; 
+                  display: flex; align-items: center; justify-content: center; 
+                  border-radius: 50%; font-size: 34px; margin-bottom: 25px; 
+                  box-shadow:0 8px 20px rgba(0,0,0,0.2);">
+        <i class="fas fa-rocket"></i>
+      </div>
+      <h3 style="margin-bottom: 15px; font-size: 24px; color:#222; font-weight:700; letter-spacing:0.5px;">Career Acceleration</h3>
+      <p style="color: #555; font-size: 17px; line-height:1.8; padding:0 10px; word-break:keep-all; white-space:normal;">
+        From <b>resume building</b> to <b>mock interviews</b>, we ensure you’re 
+        <span style="color:#e65100;font-weight:600;">job-ready</span> with complete placement support.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- About Section -->
+<section id="about" style="background:linear-gradient(135deg,#f0f4f8,#ffffff); padding:100px 20px;">
+  <div style="max-width:1200px; margin:auto; text-align:center; padding:60px; 
+              background: linear-gradient(135deg,#ffffff,#eef3ff); border-radius:30px; 
+              box-shadow:0 25px 60px rgba(0,0,0,0.15), inset 0 0 15px rgba(0,0,0,0.05);">
+    <h2 style="color:#1976d2; font-size:36px; margin-bottom:20px; font-weight:800;">About Career Redefine</h2>
+    <p style="color:#444; font-size:18px; margin-bottom:60px; max-width:900px; margin:auto; line-height:1.8; word-break:keep-all; white-space:normal;">
+      Empowering professionals and students to achieve their career goals through <b>hands-on training</b>, 
+      <span style="color:#1976d2;font-weight:600;">mentorship</span>, and 
+      <b>industry-relevant programs</b>.
+    </p>
+
+    <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:50px;">
+
+      <!-- Mission -->
+      <div class="card-3d" style="flex:1 1 320px; max-width:350px; background:#fff; border-radius:20px; padding:35px; 
+                                   box-shadow:0 20px 40px rgba(0,0,0,0.12);">
+        <h3 style="color:#1976d2; margin-bottom:20px; font-size:22px; font-weight:700;">
+          <i class="fas fa-bullseye me-2"></i> Our Mission
+        </h3>
+        <p style="color:#555; font-size:16px; line-height:1.8; word-break:keep-all; white-space:normal;">
+          Transform careers through <b>innovative learning programs</b>, 
+          <span style="color:#1976d2;font-weight:600;">real-world projects</span>, 
+          and expert mentorship.
+        </p>
+      </div>
+
+      <!-- Vision -->
+      <div class="card-3d" style="flex:1 1 320px; max-width:350px; background:#fff; border-radius:20px; padding:35px; 
+                                   box-shadow:0 20px 40px rgba(0,0,0,0.12);">
+        <h3 style="color:#1976d2; margin-bottom:20px; font-size:22px; font-weight:700;">
+          <i class="fas fa-eye me-2"></i> Our Vision
+        </h3>
+        <p style="color:#555; font-size:16px; line-height:1.8; word-break:keep-all; white-space:normal;">
+          To be a <b>global platform</b> bridging education & industry, preparing 
+          <span style="color:#1976d2;font-weight:600;">future-ready professionals</span>.
+        </p>
+      </div>
+
+      <!-- Values -->
+      <div class="card-3d" style="flex:1 1 320px; max-width:350px; background:#fff; border-radius:20px; padding:35px; 
+                                   box-shadow:0 20px 40px rgba(0,0,0,0.12);">
+        <h3 style="color:#1976d2; margin-bottom:20px; font-size:22px; font-weight:700;">
+          <i class="fas fa-heart me-2"></i> Our Values
+        </h3>
+        <p style="color:#555; font-size:16px; line-height:1.8; word-break:keep-all; white-space:normal;">
+          <b>Innovation, Excellence, Mentorship, Industry-Relevance</b> & 
+          <span style="color:#1976d2;font-weight:600;">student success</span> drive everything we do.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- 3D Hover Effect -->
+<script>
+  function apply3DEffect(element) {
+    element.addEventListener('mousemove', e => {
+      const rect = element.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const midX = rect.width / 2;
+      const midY = rect.height / 2;
+      const rotateX = ((y - midY) / midY) * 6;
+      const rotateY = ((x - midX) / midX) * 6;
+      element.style.transform = `rotateX(${ -rotateX }deg) rotateY(${ rotateY }deg)`;
+      element.style.boxShadow = `${-rotateY*2}px ${rotateX*2}px 40px rgba(0,0,0,0.2)`;
+    });
+
+    element.addEventListener('mouseleave', () => {
+      element.style.transform = 'rotateX(0deg) rotateY(0deg)';
+      element.style.boxShadow = '0 20px 40px rgba(0,0,0,0.12)';
+    });
+  }
+
+  document.querySelectorAll('.card-3d').forEach(card => apply3DEffect(card));
+</script>
+
+
+
+
+<section id="ds-faq" style="max-width:960px; margin:50px auto; font-family:Inter, Arial, sans-serif;">
+  <h2 style="text-align:center; margin:0 0 22px; font-size:28px; color:#111;">Frequently Asked Questions</h2>
+
+  <div id="faqWrap" style="
+      background:linear-gradient(135deg,#f7f7f7,#f1f1f1);
+      border:1px solid #e6e6e6; border-radius:16px; overflow:hidden;
+      box-shadow:0 14px 30px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.6);">
+
+    <!-- 1 -->
+    <div onclick="faqToggle(this)" style="background:linear-gradient(180deg,#ffffff,#fafafa); padding:18px 20px; cursor:pointer; border-bottom:1px solid #e9e9e9; transition:all .35s ease;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-weight:700; color:#111; font-size:16px;">
+          1) What topics are covered in the Data Science with AI program?
+        </span>
+        <span class="caret" style="margin-left:auto; transition:transform .35s;">▾</span>
+      </div>
+      <div class="ans" style="max-height:0; overflow:hidden; opacity:0; transition:all .4s ease; color:#0d6efd; padding:0 2px;">
+        <div style="padding-top:10px; line-height:1.6;">
+          Python, Pandas, NumPy, SQL, Tableau, Excel, Statistics, Machine Learning, Generative AI workflows, and product analytics.
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div onclick="faqToggle(this)" style="background:linear-gradient(180deg,#ffffff,#fafafa); padding:18px 20px; cursor:pointer; border-bottom:1px solid #e9e9e9; transition:all .35s ease;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-weight:700; color:#111; font-size:16px;">
+          2) Do I need prior AI or programming experience?
+        </span>
+        <span class="caret" style="margin-left:auto; transition:transform .35s;">▾</span>
+      </div>
+      <div class="ans" style="max-height:0; overflow:hidden; opacity:0; transition:all .4s ease; color:#0d6efd; padding:0 2px;">
+        <div style="padding-top:10px; line-height:1.6;">
+          No, the program starts from the basics and gradually progresses into advanced Data Science and AI concepts.
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div onclick="faqToggle(this)" style="background:linear-gradient(180deg,#ffffff,#fafafa); padding:18px 20px; cursor:pointer; border-bottom:1px solid #e9e9e9; transition:all .35s ease;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-weight:700; color:#111; font-size:16px;">
+          3) How long does the Data Science with AI course run?
+        </span>
+        <span class="caret" style="margin-left:auto; transition:transform .35s;">▾</span>
+      </div>
+      <div class="ans" style="max-height:0; overflow:hidden; opacity:0; transition:all .4s ease; color:#0d6efd; padding:0 2px;">
+        <div style="padding-top:10px; line-height:1.6;">
+          The complete program duration is 4 months with structured weekend and weekday sessions.
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div onclick="faqToggle(this)" style="background:linear-gradient(180deg,#ffffff,#fafafa); padding:18px 20px; cursor:pointer; border-bottom:1px solid #e9e9e9; transition:all .35s ease;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-weight:700; color:#111; font-size:16px;">
+          4) Will I work on real AI and Data Science projects?
+        </span>
+        <span class="caret" style="margin-left:auto; transition:transform .35s;">▾</span>
+      </div>
+      <div class="ans" style="max-height:0; overflow:hidden; opacity:0; transition:all .4s ease; color:#0d6efd; padding:0 2px;">
+        <div style="padding-top:10px; line-height:1.6;">
+          Yes, you’ll complete 15+ projects and 10 case studies using AI-powered Data Science workflows from industries like e-commerce and mobility.
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div onclick="faqToggle(this)" style="background:linear-gradient(180deg,#ffffff,#fafafa); padding:18px 20px; cursor:pointer; border-bottom:1px solid #e9e9e9; transition:all .35s ease;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-weight:700; color:#111; font-size:16px;">
+          5) What career support is provided for AI/Data Science roles?
+        </span>
+        <span class="caret" style="margin-left:auto; transition:transform .35s;">▾</span>
+      </div>
+      <div class="ans" style="max-height:0; overflow:hidden; opacity:0; transition:all .4s ease; color:#0d6efd; padding:0 2px;">
+        <div style="padding-top:10px; line-height:1.6;">
+          Resume building, LinkedIn/Naukri profile optimization, mock interviews, and 100% placement assistance for AI/Data Science roles.
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div onclick="faqToggle(this)" style="background:linear-gradient(180deg,#ffffff,#fafafa); padding:18px 20px; cursor:pointer; border-bottom:1px solid #e9e9e9; transition:all .35s ease;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-weight:700; color:#111; font-size:16px;">
+          6) Is mentorship specific to Data Science with AI included?
+        </span>
+        <span class="caret" style="margin-left:auto; transition:transform .35s;">▾</span>
+      </div>
+      <div class="ans" style="max-height:0; overflow:hidden; opacity:0; transition:all .4s ease; color:#0d6efd; padding:0 2px;">
+        <div style="padding-top:10px; line-height:1.6;">
+          Yes, you’ll receive 1-on-1 mentorship from IIT alumni and ex-Scaler instructors specializing in AI and Data Science.
+        </div>
+      </div>
+    </div>
+
+    <!-- 7 -->
+    <div onclick="faqToggle(this)" style="background:linear-gradient(180deg,#ffffff,#fafafa); padding:18px 20px; cursor:pointer; border-bottom:1px solid #e9e9e9; transition:all .35s ease;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-weight:700; color:#111; font-size:16px;">
+          7) What tools and AI frameworks are taught?
+        </span>
+        <span class="caret" style="margin-left:auto; transition:transform .35s;">▾</span>
+      </div>
+      <div class="ans" style="max-height:0; overflow:hidden; opacity:0; transition:all .4s ease; color:#0d6efd; padding:0 2px;">
+        <div style="padding-top:10px; line-height:1.6;">
+          Tools include Python, SQL, Tableau, TensorFlow, Scikit-learn, and Generative AI platforms integrated into workflows.
+        </div>
+      </div>
+    </div>
+
+    <!-- 8 -->
+    <div onclick="faqToggle(this)" style="background:linear-gradient(180deg,#ffffff,#fafafa); padding:18px 20px; cursor:pointer; border-bottom:1px solid #e9e9e9; transition:all .35s ease;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-weight:700; color:#111; font-size:16px;">
+          8) Will I get a Data Science with AI certificate?
+        </span>
+        <span class="caret" style="margin-left:auto; transition:transform .35s;">▾</span>
+      </div>
+      <div class="ans" style="max-height:0; overflow:hidden; opacity:0; transition:all .4s ease; color:#0d6efd; padding:0 2px;">
+        <div style="padding-top:10px; line-height:1.6;">
+          Yes, after successfully completing all AI modules, projects, and assessments, you’ll receive a verified certificate.
+        </div>
+      </div>
+    </div>
+
+    <!-- 9 -->
+    <div onclick="faqToggle(this)" style="background:linear-gradient(180deg,#ffffff,#fafafa); padding:18px 20px; cursor:pointer; transition:all .35s ease;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-weight:700; color:#111; font-size:16px;">
+          9) How do I enroll in the Data Science with AI program?
+        </span>
+        <span class="caret" style="margin-left:auto; transition:transform .35s;">▾</span>
+      </div>
+      <div class="ans" style="max-height:0; overflow:hidden; opacity:0; transition:all .4s ease; color:#0d6efd; padding:0 2px;">
+        <div style="padding-top:10px; line-height:1.6;">
+          Enrollment is through a 1-on-1 interview with IIT alumni. Fill the registration form or contact our support team for guidance.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  function faqToggle(item) {
+    var items = document.querySelectorAll('#faqWrap > div');
+    items.forEach(function (it) {
+      if (it !== item) {
+        var a = it.querySelector('.ans');
+        var c = it.querySelector('.caret');
+        it.style.transform = 'perspective(900px) rotateX(0deg) translateZ(0)';
+        it.style.boxShadow = '';
+        if (a) { a.style.maxHeight = 0; a.style.opacity = 0; }
+        if (c) { c.style.transform = 'rotate(0deg)'; }
+      }
+    });
+    var ans = item.querySelector('.ans');
+    var caret = item.querySelector('.caret');
+    var open = ans.style.maxHeight && ans.style.maxHeight !== '0px';
+    if (open) {
+      ans.style.maxHeight = 0; ans.style.opacity = 0;
+      item.style.transform = 'perspective(900px) rotateX(0deg) translateZ(0)';
+      item.style.boxShadow = '';
+      if (caret) caret.style.transform = 'rotate(0deg)';
+    } else {
+      ans.style.maxHeight = ans.scrollHeight + 'px';
+      ans.style.opacity = 1;
+      item.style.transform = 'perspective(900px) rotateX(3deg) translateZ(8px)';
+      item.style.boxShadow = '0 16px 28px rgba(0,0,0,0.18)';
+      if (caret) caret.style.transform = 'rotate(180deg)';
+    }
+  }
+</script>
+
+<!-- Footer -->
+<footer class="bg-primary text-white py-5" style="perspective:1000px;">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 mb-4">
+        <h5 class="fw-bold mb-3" style="transform-style:preserve-3d; transition: transform 0.5s;" onmouseover="this.style.transform='rotateY(15deg)'" onmouseout="this.style.transform='rotateY(0deg)'">
+          <i class="fas fa-rocket me-2"></i>Career Redefine
+        </h5>
+        <p class="mb-3">Transforming careers through innovative learning and professional development.</p>
+        <div class="social-links">
+          <a href="https://www.facebook.com/profile.php?id=61564699643555" class="text-white me-3" style="transition: transform 0.3s;" onmouseover="this.style.transform='rotate(15deg)'" onmouseout="this.style.transform='rotate(0deg)'"><i class="fab fa-facebook"></i></a>
+          <a href="#" class="text-white me-3" style="transition: transform 0.3s;" onmouseover="this.style.transform='rotate(15deg)'" onmouseout="this.style.transform='rotate(0deg)'"><i class="fab fa-twitter"></i></a>
+          <a href="https://www.linkedin.com/company/career-redefine/" class="text-white me-3" style="transition: transform 0.3s;" onmouseover="this.style.transform='rotate(15deg)'" onmouseout="this.style.transform='rotate(0deg)'"><i class="fab fa-linkedin"></i></a>
+          <a href="https://www.instagram.com/career_redefine.ai/" class="text-white" style="transition: transform 0.3s;" onmouseover="this.style.transform='rotate(15deg)'" onmouseout="this.style.transform='rotate(0deg)'"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+
+      <div class="col-lg-2 mb-4">
+        <h6 class="fw-bold mb-3">Quick Links</h6>
+        <ul class="list-unstyled">
+          <li class="nav-item"><a class="nav-link text-white-50" href="#home">Home</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50" href="#courses">Courses</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50" href="#syllabus">Syllabus</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50" href="#faq">FAQ</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50" href="#about">About</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-2 mb-4">
+        <h6 class="fw-bold mb-3">Support</h6>
+        <ul class="list-unstyled">
+          <li><a href="#support" class="text-white-50 text-decoration-none">Help Center</a></li>
+          <li><a href="#tools" class="text-white-50 text-decoration-none">Tools</a></li>
+          <li><a href="#reviews" class="text-white-50 text-decoration-none">Reviews</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-4 mb-4">
+        <h6 class="fw-bold mb-3">Contact Info</h6>
+        <p class="mb-1"><i class="fas fa-envelope me-2"></i>info@careerredefine.com</p>
+        <p class="mb-1"><i class="fas fa-phone me-2"></i>+91 9535713363</p>
+        <p class="mb-3"><i class="fas fa-map-marker-alt me-2"></i>22nd Floor, World Trade Center, Unit No 2201A, Rajajinagar, Bengaluru, India</p>
+      </div>
+    </div>
+
+    <hr class="my-4">
+
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <p class="mb-0">&copy; 2023 Career Redefine. All rights reserved.</p>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <a href="#" class="text-white-50 text-decoration-none me-3">Privacy Policy</a>
+        <a href="#" class="text-white-50 text-decoration-none">Terms of Service</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+<script>
+  // Optional JS for subtle 3D hover effect on all links
+  document.querySelectorAll('.nav-link, .social-links a').forEach(el=>{
+    el.addEventListener('mouseenter', ()=>{ el.classList.add('animate__animated','animate__pulse'); });
+    el.addEventListener('mouseleave', ()=>{ el.classList.remove('animate__animated','animate__pulse'); });
+  });
+</script>
+
+
+<!-- JS Module Switching -->
+<!-- JS Module Switching -->
+<script>
+document.querySelectorAll('.course-container').forEach(course => {
+  const buttons = course.querySelectorAll('.course-buttons button');
+  const contents = course.querySelectorAll('.course-contents .module-box');
+
+  // Set default active button (first one)
+  buttons.forEach((b, idx) => {
+    if(idx === 0){
+      b.style.background = b.dataset.target.includes('2') ? '#fb8c00':'#1976d2';
+      b.style.color = '#fff';
+    } else {
+      b.style.background = b.dataset.target.includes('2') ? '#ffa726':'#64b5f6'; // better neutral color
+      b.style.color = '#000';
+    }
+  });
+
+  // Set content visibility
+  contents.forEach((c, idx) => {
+    c.style.display = idx===0?'block':'none';
+  });
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.target;
+
+      // Update button colors
+      buttons.forEach(b=>{
+        if(b===btn){
+          b.style.background = b.dataset.target.includes('2') ? '#fb8c00':'#1976d2';
+          b.style.color='#fff';
+        } else {
+          b.style.background = b.dataset.target.includes('2') ? '#ffa726':'#64b5f6';
+          b.style.color='#000';
+        }
+      });
+
+      // Show/hide content
+      contents.forEach(c=>{
+        if(c.id === target){
+          c.style.display='block';
+          c.style.opacity='1';
+          c.style.transform='translateX(0)';
+        } else {
+          c.style.display='none';
+          c.style.opacity='0';
+          c.style.transform='translateX(50px)';
+        }
+      });
+    });
+  });
+});
+
+document.querySelectorAll('.module-header').forEach(header => {
+  header.addEventListener('click', () => {
+    const content = header.nextElementSibling;
+    content.style.display = (content.style.display === 'block') ? 'none' : 'block';
+  });
+});
+</script>
+
+</body>
+</html>

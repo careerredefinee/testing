@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Redefine - College Workshops</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="servicegap.js"></script>
+    <style>
+       
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+        }
+        
+        .intro-section {
+            background-color: #f8f9fa;
+            padding: 80px 0;
+        }
+        
+                .service-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 30px;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .service-icon {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+        
+        .process-step {
+            text-align: center;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background: var(--secondary);
+            color: white;
+            border-radius: 50%;
+            line-height: 50px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--secondary);
+            display: block;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .content-image {
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .feature-list li {
+            margin-bottom: 10px;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .feature-list li:before {
+            content: '\f00c';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            color: var(--success);
+            position: absolute;
+            left: 0;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, var(--secondary), #2980b9);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        .explanation-section {
+            background-color: var(--primary);
+            color: white;
+            padding: 80px 0;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        footer {
+            background-color: #1a252f;
+            color: white;
+            padding: 50px 0 20px;
+        }
+        
+        .footer-links a {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .social-icons a {
+            color: white;
+            font-size: 1.2rem;
+            margin-right: 15px;
+            transition: color 0.3s ease;
+        }
+        
+        .social-icons a:hover {
+            color: var(--secondary);
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--secondary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .back-to-top.show {
+            opacity: 1;
+        }
+        
+        .stats-section {
+            background-color: #f8f9fa;
+            padding: 80px 0;
+        }
+        
+        .image-section {
+            padding: 80px 0;
+        }
+        
+        .testimonial-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+        
+        .testimonial-author {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .testimonial-role {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        /* New styles for workshop cards */
+        .workshop-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 30px;
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        .workshop-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .workshop-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .workshop-content {
+            padding: 20px;
+        }
+        
+        .workshop-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .workshop-location {
+            color: var(--secondary);
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        
+        .workshop-year {
+            background-color: var(--accent);
+            color: white;
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-bottom: 15px;
+        }
+        .workshop-location {
+    font-weight: 500;
+    color: #0d6efd; /* Bootstrap primary blue */
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  .workshop-location:hover {
+    color: #0a58ca; /* Darker blue on hover */
+    text-decoration: underline;
+  }
+    </style>
+</head>
+<body>
+  <!-- Navbar -->
+<nav style="background:#ffffff; padding:10px 0; box-shadow:0 2px 8px rgba(0,0,0,0.08); position:sticky; top:0; z-index:999;">
+    <div style="max-width:1200px; margin:0 auto; padding:0 12px; display:flex; align-items:center;">
+      <!-- Logo left -->
+      <a href="/" style="display:flex; align-items:center; text-decoration:none; margin-left:8px;">
+        <img src="/cr_logo.png" alt="Career Redefine" style="height:40px; width:auto;">
+      </a>
+      <!-- Links right -->
+      <div id="nav-menu" style="margin-left:auto; margin-right:8px; display:flex; gap:20px; align-items:center;">
+        <a href="/" style="text-decoration:none; color:#1f2937; font-weight:600;">Home</a>
+        <a href="/services" style="text-decoration:none; color:#1f2937; font-weight:600;">Services</a>
+        <a href="/courses" style="text-decoration:none; color:#1f2937; font-weight:600;">Courses</a>
+        <a href="/tools" style="text-decoration:none; color:#1f2937; font-weight:600;">Tools</a>
+        <a href="/support" style="text-decoration:none; color:#1f2937; font-weight:600;">Support</a>
+        <a href="/jobs" style="text-decoration:none; color:#1f2937; font-weight:600;">Jobs</a>
+        <a href="/reviews" style="text-decoration:none; color:#1f2937; font-weight:600;">Reviews</a>
+        <a href="/about" style="text-decoration:none; color:#1f2937; font-weight:600;">About</a>
+      </div>
+    </div>
+  </nav>
+<script>
+    const menuToggle = document.getElementById("menu-toggle");
+    const navMenu = document.getElementById("nav-menu");
+  
+    function handleResize() {
+      if (window.innerWidth <= 768) {
+        menuToggle.style.display = "block"; // show hamburger
+  
+        // Left-side drawer (full height, half width)
+        navMenu.style.position = "fixed";
+        navMenu.style.top = "0";
+        navMenu.style.left = "-50%"; // hidden initially
+        navMenu.style.height = "100vh";  // full screen height
+        navMenu.style.width = "50%";     // half screen width
+        navMenu.style.background = "linear-gradient(145deg, #e3f2fd, #c3e0ff)";
+        navMenu.style.flexDirection = "column";
+        navMenu.style.alignItems = "flex-start";
+        navMenu.style.padding = "60px 20px";
+        navMenu.style.gap = "20px";
+        navMenu.style.transition = "left 0.3s ease";
+        navMenu.style.boxShadow = "2px 0 15px rgba(0,0,0,0.3)";
+        navMenu.style.borderRadius = "0 8px 8px 0";
+  
+        // style links bigger for mobile
+        Array.from(navMenu.getElementsByTagName("a")).forEach(a => {
+          a.style.display = "block";
+          a.style.fontSize = "18px";
+          a.style.width = "100%";
+          a.style.padding = "8px 0";
+          a.style.color = "#0d47a1";
+        });
+  
+      } else {
+        menuToggle.style.display = "none"; // hide hamburger
+        navMenu.style.position = "static";
+        navMenu.style.flexDirection = "row";
+        navMenu.style.height = "auto";
+        navMenu.style.width = "auto";
+        navMenu.style.padding = "0";
+        navMenu.style.background = "transparent";
+        navMenu.style.left = "0";
+        navMenu.style.boxShadow = "none";
+  
+        // reset link style for desktop
+        Array.from(navMenu.getElementsByTagName("a")).forEach(a => {
+          a.style.fontSize = "16px";
+          a.style.padding = "0";
+        });
+      }
+    }
+  
+    // toggle open/close
+    let isOpen = false;
+    menuToggle.addEventListener("click", () => {
+      if (!isOpen) {
+        navMenu.style.left = "0";   // slide in from left
+        isOpen = true;
+      } else {
+        navMenu.style.left = "-50%"; // slide out
+        isOpen = false;
+      }
+    });
+  
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("load", handleResize);
+  </script>
+  
+
+    <!-- Introduction Section -->
+    <section class="intro-section" id="intro">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-5 fw-bold mb-4">College Workshops: Empowering Students for Career Success</h1>
+                    <p class="lead mb-4">We partner with colleges to deliver impactful workshops on career readiness, technical skills, and industry insights for students.</p>
+                    <p>Our workshops are designed to bridge the gap between academic learning and industry requirements, providing students with practical skills, career guidance, and exposure to real-world challenges.</p>
+                    <a href="#workshops" class="btn btn-primary btn-lg mt-3">Explore Our Workshops</a>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img src="https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=600" alt="College Workshop" class="img-fluid rounded" style="max-height: 400px;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Workshops Section -->
+    <section id="featured-workshops" class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="section-title center-title">Featured Workshops</h2>
+                    <p class="lead">Recent successful workshops conducted at various colleges</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <!-- Workshop 1 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="workshop-card">
+                        <img src="sksvma.jpg" alt="Career Development Program" class="workshop-image">
+                        <div class="workshop-content">
+                            <div class="workshop-year">2024</div>
+                            <h3 class="workshop-title">Inauguration of Career Development Program</h3>
+                            <a href="https://maps.app.goo.gl/AVwGvzeyveWcJK577?g_st=ipc" target="_blank" class="workshop-location d-inline-flex align-items-center">
+                                <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                SKSVMA College of Engineering, Lakshmeshwar
+                              </a>
+                            <p>Inaugurated the 5-Day "Career Development Week" program at SKSVMA College of Engineering, Lakshmeshwar, in collaboration with Career Redefine. The program aimed to guide students in skill development, career planning, and professional growth.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Workshop 2 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="workshop-card">
+                        <img src="amc.jpg" alt="World Entrepreneurship Day" class="workshop-image">
+                        <div class="workshop-content">
+                            <div class="workshop-year">2025</div>
+                            <h3 class="workshop-title">Guest Speaker for World Entrepreneurship Day</h3>
+                            <a href="https://maps.app.goo.gl/kC9wPyYNjEnnQV9c8?g_st=ipc" target="_blank" class="workshop-location d-inline-flex align-items-center">
+                                <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                AMC Engineering College, Bangalore
+                              </a>
+                            <p>Invited as a guest speaker to address students on the topic of "The Future of Entrepreneurship and AI" during the World Entrepreneurship Day program. The session focused on emerging opportunities in the entrepreneurial landscape.</p>
+                        </div>
+                    </div>
+                </div>
+                
+            
+                <!-- Workshop 3 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="workshop-card">
+                        <img src="pragathi.jpg" alt="Career Counselling Session" class="workshop-image">
+                        <div class="workshop-content">
+                            <div class="workshop-year">2024</div>
+                            <h3 class="workshop-title">Guest Speaker – Career Counselling & Corporate Practices</h3>
+                            <a href="https://maps.app.goo.gl/XiigLXiZdhBv9f17A?g_st=ipc" target="_blank" class="workshop-location d-inline-flex align-items-center">
+                                <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                Pragati PU College, Bangalore
+                              </a>
+                              
+                            <p>Invited as a Guest Speaker at Pragati PU College, Bangalore for a session on Career Counselling & Corporate Practices. Spoke to students about career choices, AI, data science, emerging technologies, digital habits, and leadership mindset.</p>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- workshop4-->
+                 <div class="col-lg-4 col-md-6">
+                    <div class="workshop-card">
+                        <img src="pa.jpg" alt="AI in Law Enforcement – Karnataka Police Academy" class="workshop-image">
+                        <div class="workshop-content">
+                            <div class="workshop-year">2025</div>
+                            <h3 class="workshop-title">Session on AI in Law Enforcement – Karnataka Police Academy</h3>
+                            <a href="https://maps.app.goo.gl/NUxPN5rhnJX8QSmB8?g_st=ipc" target="_blank" class="workshop-location d-inline-flex align-items-center">
+                                <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                Karnataka Police Academy
+                              </a>
+                              
+                            <p>Delivered a session on AI and its significance and challenges in law enforcement to PSI trainees at the Karnataka Police Academy. Participated in a panel discussion on “AI Transforming Law Enforcement: The Impact of AI,” sharing insights alongside experts and the academy’s director, Chennabasavanna IPS. Discussions like these highlight how emerging technologies are reshaping policing in the 21st century.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+<script>
+  const workshopImages = [
+    [
+      'sksvma.jpg',
+      's1.jpg',
+      's2.jpg',
+      's3.jpg',
+      's4.jpg'
+    ],
+    [
+      'amc.jpg',
+      'a1.jpg',
+      'a2.jpg',
+      'a3.jpg',
+      'a4.jpg',
+      'a5.jpg',
+      'a6.jpg'
+    ],
+    [
+      'pragathi.jpg',
+      'p1.jpg',
+      'p2.jpg',
+      'p3.jpg',
+      'p4.jpg',
+      'p5.jpg'
+    ],
+    [
+      'pa1.jpg',
+      'pa2.jpg',
+      'pa3.jpg',
+      'pa4.jpg',
+      'pa5.jpg',
+      'pa6.jpg',
+      'pa7.jpg'
+    ]
+  ];
+
+  const animations = [
+    'fade', 'zoom-in', 'zoom-out', 'slide-left', 'slide-right',
+    'slide-top', 'slide-bottom', 'rotate', 'flip', 'scale-bounce'
+  ];
+
+  const workshopCards = document.querySelectorAll('.workshop-card');
+
+  // Helper to get random animation but not same as previous
+  function getNextAnimation(prevIndex) {
+    let next;
+    do {
+      next = Math.floor(Math.random() * animations.length);
+    } while (next === prevIndex);
+    return next;
+  }
+
+  workshopCards.forEach((card, index) => {
+    const img = card.querySelector('img.workshop-image');
+    let currentImage = 0;
+    let prevAnimation = -1;
+
+    img.style.borderRadius = '15px';
+    img.style.transition = 'all 1s ease-in-out';
+    img.style.objectFit = 'cover';
+
+    setInterval(() => {
+      // Choose a new animation
+      const animIndex = getNextAnimation(prevAnimation);
+      const effect = animations[animIndex];
+      prevAnimation = animIndex;
+
+      // Apply initial state for animation
+      switch(effect) {
+        case 'fade':
+          img.style.opacity = '0';
+          break;
+        case 'zoom-in':
+          img.style.transform = 'scale(0.5)';
+          img.style.opacity = '0';
+          break;
+        case 'zoom-out':
+          img.style.transform = 'scale(1.5)';
+          img.style.opacity = '0';
+          break;
+        case 'slide-left':
+          img.style.transform = 'translateX(-100%)';
+          img.style.opacity = '0';
+          break;
+        case 'slide-right':
+          img.style.transform = 'translateX(100%)';
+          img.style.opacity = '0';
+          break;
+        case 'slide-top':
+          img.style.transform = 'translateY(-100%)';
+          img.style.opacity = '0';
+          break;
+        case 'slide-bottom':
+          img.style.transform = 'translateY(100%)';
+          img.style.opacity = '0';
+          break;
+        case 'rotate':
+          img.style.transform = 'rotate(180deg)';
+          img.style.opacity = '0';
+          break;
+        case 'flip':
+          img.style.transform = 'rotateY(180deg)';
+          img.style.opacity = '0';
+          break;
+        case 'scale-bounce':
+          img.style.transform = 'scale(0)';
+          img.style.opacity = '0';
+          break;
+      }
+
+      // Change image after fade-out/transition
+      setTimeout(() => {
+        currentImage = (currentImage + 1) % workshopImages[index].length;
+        img.src = workshopImages[index][currentImage];
+
+        // Animate in
+        switch(effect) {
+          case 'fade':
+            img.style.opacity = '1';
+            img.style.transform = 'scale(1) translate(0,0) rotate(0)';
+            break;
+          case 'zoom-in':
+          case 'zoom-out':
+          case 'scale-bounce':
+            img.style.transform = 'scale(1)';
+            img.style.opacity = '1';
+            break;
+          case 'slide-left':
+          case 'slide-right':
+          case 'slide-top':
+          case 'slide-bottom':
+          case 'rotate':
+          case 'flip':
+            img.style.transform = 'translate(0,0) rotate(0)';
+            img.style.opacity = '1';
+            break;
+        }
+      }, 500);
+
+    }, 2000); // every 2s
+  });
+</script>
+
+
+
+    <!-- Workshops Section -->
+    <section id="workshops" class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class=" center-title">Our College Workshop Programs</h2>
+                    <p class="lead">Comprehensive workshops to prepare students for successful careers</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <div class="card service-card">
+                        <div class="card-body">
+                            <div class="service-icon">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <h4 class="card-title">Career Readiness</h4>
+                            <p class="card-text">Prepare students for the job market with essential career-building skills.</p>
+                            <ul class="feature-list">
+                                <li>Resume writing and optimization</li>
+                                <li>Interview preparation techniques</li>
+                                <li>Professional networking strategies</li>
+                                <li>Personal branding for job search</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="card service-card">
+                        <div class="card-body">
+                            <div class="service-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <h4 class="card-title">Technical Skills Development</h4>
+                            <p class="card-text">Hands-on workshops to build in-demand technical competencies.</p>
+                            <ul class="feature-list">
+                                <li>Programming fundamentals</li>
+                                <li>Web development basics</li>
+                                <li>Data analysis with Python</li>
+                                <li>Cloud computing essentials</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="card service-card">
+                        <div class="card-body">
+                            <div class="service-icon">
+                                <i class="fas fa-industry"></i>
+                            </div>
+                            <h4 class="card-title">Industry Insights</h4>
+                            <p class="card-text">Expose students to current industry trends and practices.</p>
+                            <ul class="feature-list">
+                                <li>Emerging technology trends</li>
+                                <li>Industry-specific challenges</li>
+                                <li>Future job market predictions</li>
+                                <li>Corporate culture expectations</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="card service-card">
+                        <div class="card-body">
+                            <div class="service-icon">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <h4 class="card-title">Soft Skills Enhancement</h4>
+                            <p class="card-text">Develop essential interpersonal and communication skills.</p>
+                            <ul class="feature-list">
+                                <li>Effective communication techniques</li>
+                                <li>Team collaboration strategies</li>
+                                <li>Problem-solving approaches</li>
+                                <li>Time management and organization</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="card service-card">
+                        <div class="card-body">
+                            <div class="service-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <h4 class="card-title">Entrepreneurship & Innovation</h4>
+                            <p class="card-text">Foster entrepreneurial mindset and innovation capabilities.</p>
+                            <ul class="feature-list">
+                                <li>Ideation and validation processes</li>
+                                <li>Business model development</li>
+                                <li>Pitching and presentation skills</li>
+                                <li>Design thinking methodologies</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="card service-card">
+                        <div class="card-body">
+                            <div class="service-icon">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <h4 class="card-title">Professional Development</h4>
+                            <p class="card-text">Prepare students for workplace success and career growth.</p>
+                            <ul class="feature-list">
+                                <li>Workplace etiquette and ethics</li>
+                                <li>Leadership fundamentals</li>
+                                <li>Project management basics</li>
+                                <li>Career path planning</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class=" center-title">Our Impact on Students</h2>
+                    <p class="lead">Transformative results for students across colleges</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number">95%</span>
+                        <h5>Student Satisfaction</h5>
+                        <p>Participants rate our workshops as highly valuable for career preparation</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number">87%</span>
+                        <h5>Placement Improvement</h5>
+                        <p>Students report better placement opportunities after attending workshops</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number">200+</span>
+                        <h5>Colleges Partnered</h5>
+                        <p>We've successfully delivered workshops across diverse educational institutions</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number">50K+</span>
+                        <h5>Students Impacted</h5>
+                        <p>Our workshops have transformed the career readiness of thousands of students</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section id="process" class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class=" center-title">Our 4-Step Workshop Process</h2>
+                    <p class="lead">A structured approach to student development</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="process-step">
+                        <div class="step-number">1</div>
+                        <h4>Needs Assessment</h4>
+                        <p>We begin by understanding the specific needs and goals of your student population.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="process-step">
+                        <div class="step-number">2</div>
+                        <h4>Customized Workshop Design</h4>
+                        <p>Based on assessment results, we create tailored workshop content and delivery methods.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="process-step">
+                        <div class="step-number">3</div>
+                        <h4>Interactive Delivery</h4>
+                        <p>Our expert facilitators deliver engaging, hands-on workshops with practical applications.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="process-step">
+                        <div class="step-number">4</div>
+                        <h4>Impact Evaluation</h4>
+                        <p>We measure outcomes and provide recommendations for continued student development.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+   
+    <!-- Image & Content Section -->
+    <section class="image-section bg-light">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <img src="https://images.pexels.com/photos/3184306/pexels-photo-3184306.jpeg?auto=compress&cs=tinysrgb&w=600" alt="College Workshop" class="content-image">
+                </div>
+                <div class="col-lg-6">
+                    <h2 class="section-title">Why College Workshops Matter</h2>
+                    <p>In today's competitive job market, academic knowledge alone is insufficient for career success. Research shows that students who participate in skill-building workshops are 2.3 times more likely to secure their desired jobs.</p>
+                    <p>Our workshops are designed to address the unique challenges students face when transitioning from academia to industry, from technical skill gaps to professional communication barriers.</p>
+                    
+                    <div class="highlight-box">
+                        <h4><i class="fas fa-lightbulb me-2"></i> Key Insight</h4>
+                        <p>Colleges that integrate career-focused workshops see 40% higher placement rates. The ROI extends beyond individual students to impact institutional reputation through improved employability outcomes and industry partnerships.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Explanation Section -->
+    <section class="explanation-section" id="explanation">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="section-title center-title" style="color: white;">How Our College Workshops Work</h2>
+                    <p class="lead" style="color: #ecf0f1;">A detailed breakdown of our approach to student development</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-6">
+                    <h3 class="mb-4">Addressing the Education-Industry Gap</h3>
+                    <p>The transition from college to career has become increasingly challenging with rapid technological changes and evolving industry requirements. Today's students need more than theoretical knowledge to succeed.</p>
+                    <p>Our workshops are designed to bridge this gap by focusing on three core areas: practical skill development, industry exposure, and career readiness.</p>
+                    
+                    <h4 class="mt-4">Practical Skill Development</h4>
+                    <p>Students need hands-on experience with tools and technologies used in the workplace. We provide practical training that complements academic learning.</p>
+                    <ul class="feature-list" style="color: white;">
+                        <li>Real-world project experience</li>
+                        <li>Industry-standard tools and platforms</li>
+                        <li>Problem-solving with actual case studies</li>
+                        <li>Collaborative team projects</li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-6">
+                    <h3 class="mb-4">Industry Exposure & Insights</h3>
+                    <p>Understanding industry expectations and trends is crucial for career planning. We connect students with industry professionals and current practices.</p>
+                    <p>Our workshops provide insights into various career paths, industry challenges, and future opportunities across different sectors.</p>
+                    
+                    <h4 class="mt-4">Career Readiness & Professional Development</h4>
+                    <p>Technical skills alone don't guarantee career success. We help students develop the professional competencies needed to thrive in workplace environments.</p>
+                    <ul class="feature-list" style="color: white;">
+                        <li>Effective communication in professional settings</li>
+                        <li>Workplace etiquette and corporate culture</li>
+                        <li>Interview techniques and resume building</li>
+                        <li>Networking and personal branding</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="highlight-box" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
+                        <h4><i class="fas fa-star me-2"></i> Our Commitment to Student Success</h4>
+                        <p>We believe that every student deserves the opportunity to build a successful career. Our team of industry experts and educators is dedicated to providing practical, engaging, and transformative workshop experiences. Whether students are preparing for their first internship or planning their long-term career path, we have the expertise and resources to support their development journey.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+   <!-- Footer -->
+<footer class="bg-primary text-white py-5" style="perspective:1000px;">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 mb-4">
+        <h5 class="fw-bold mb-3" style="transform-style:preserve-3d; transition: transform 0.5s;" onmouseover="this.style.transform='rotateY(15deg)'" onmouseout="this.style.transform='rotateY(0deg)'">
+          <i class="fas fa-rocket me-2"></i>Career Redefine
+        </h5>
+        <p class="mb-3">Transforming careers through innovative learning and professional development.</p>
+        <div class="social-links">
+          <a href="https://www.facebook.com/profile.php?id=61564699643555" class="text-white me-3" style="transition: transform 0.3s;" onmouseover="this.style.transform='rotate(15deg)'" onmouseout="this.style.transform='rotate(0deg)'"><i class="fab fa-facebook"></i></a>
+          <a href="#" class="text-white me-3" style="transition: transform 0.3s;" onmouseover="this.style.transform='rotate(15deg)'" onmouseout="this.style.transform='rotate(0deg)'"><i class="fab fa-twitter"></i></a>
+          <a href="https://www.linkedin.com/company/career-redefine/" class="text-white me-3" style="transition: transform 0.3s;" onmouseover="this.style.transform='rotate(15deg)'" onmouseout="this.style.transform='rotate(0deg)'"><i class="fab fa-linkedin"></i></a>
+          <a href="https://www.instagram.com/career_redefine.ai/" class="text-white" style="transition: transform 0.3s;" onmouseover="this.style.transform='rotate(15deg)'" onmouseout="this.style.transform='rotate(0deg)'"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+
+      <div class="col-lg-2 mb-4">
+        <h6 class="fw-bold mb-3">Quick Links</h6>
+        <ul class="list-unstyled">
+          <li class="nav-item"><a class="nav-link text-white-50" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50" href="/courses">Courses</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50" href="/support">Support</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50" href="/services">Services</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50" href="/about">About</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-2 mb-4">
+        <h6 class="fw-bold mb-3">Support</h6>
+        <ul class="list-unstyled">
+          <li><a href="/support" class="text-white-50 text-decoration-none">Help Center</a></li>
+          <li><a href="/tools" class="text-white-50 text-decoration-none">Tools</a></li>
+          <li><a href="/reviews" class="text-white-50 text-decoration-none">Reviews</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-4 mb-4">
+        <h6 class="fw-bold mb-3">Contact Info</h6>
+        <p class="mb-1"><i class="fas fa-envelope me-2"></i>info@careerredefine.com</p>
+        <p class="mb-1"><i class="fas fa-phone me-2"></i>+91 9535713363</p>
+        <p class="mb-3"><i class="fas fa-map-marker-alt me-2"></i>22nd Floor, World Trade Center, Unit No 2201A, Rajajinagar, Bengaluru, India</p>
+      </div>
+    </div>
+
+    <hr class="my-4">
+
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <p class="mb-0">&copy; 2023 Career Redefine. All rights reserved.</p>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <a href="#" class="text-white-50 text-decoration-none me-3">Privacy Policy</a>
+        <a href="#" class="text-white-50 text-decoration-none">Terms of Service</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    <!-- Back to Top Button -->
+    <a href="#" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Back to top button functionality
+        const backToTopButton = document.querySelector('.back-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.add('show');
+            } else {
+                backToTopButton.classList.remove('show');
+            }
+        });
+        
+        backToTopButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 70,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Service card animation on scroll
+        const serviceCards = document.querySelectorAll('.service-card');
+        
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = 1;
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        serviceCards.forEach(card => {
+            card.style.opacity = 0;
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

@@ -115,20 +115,25 @@ export const sendOTP = async (req, res, next) => {
       });
     }
 
-    // 3) Send OTP via email (fire-and-forget to avoid blocking the response)
-    const verificationUrl = `${req.protocol}://${req.get('host')}/verify-email?otp=${otp}&email=${encodeURIComponent(email)}`;
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('[AUTH] sendOTP sending email (async)', { to: email, verificationUrl });
-    }
-    Promise.resolve()
-      .then(() => new Email(user, verificationUrl, otp).sendOTP())
-      .catch((err) => console.error('[AUTH] sendOTP email error:', err?.message));
+    // 3) Send OTP via email
+    try {
+      const verificationUrl = `${req.protocol}://${req.get('host')}/verify-email?otp=${otp}&email=${encodeURIComponent(email)}`;
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('[AUTH] sendOTP sending email', { to: email, verificationUrl });
+      }
+      await new Email(user, verificationUrl, otp).sendOTP();
 
-    // Respond immediately
-    res.status(200).json({
-      status: 'success',
-      message: 'OTP sent successfully',
-    });
+      res.status(200).json({
+        status: 'success',
+        message: 'OTP sent successfully',
+      });
+    } catch (err) {
+      console.error('[AUTH] sendOTP email error:', err?.message);
+      return res.status(500).json({
+        status: 'error',
+        message: 'There was an error sending the OTP. Please try again later.',
+      });
+    }
   } catch (err) {
     console.error('[AUTH] sendOTP handler error:', err?.message);
     res.status(500).json({
@@ -209,20 +214,37 @@ export const signup = async (req, res, next) => {
       otpExpires,
     });
 
-        // 5) Send verification email with OTP (fire-and-forget)
-    const verificationUrl2 = `${req.protocol}://${req.get('host')}/verify-email?otp=${otp}&email=${encodeURIComponent(email)}`;
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('[AUTH] signup new user -> sending email (async)', { to: email, verificationUrl: verificationUrl2 });
-    }
-    Promise.resolve()
-      .then(() => new Email(newUser, verificationUrl2, otp).sendOTP())
-      .catch((err) => console.error('[AUTH] signup new user email error:', err?.message));
+        // 5) Send verification email with OTP
+    const verificationUrl = `${req.protocol}://${req.get('host')}/verify-email?otp=${otp}&email=${encodeURIComponent(email)}`;
+    
+    try {
+      const verificationUrl = `${req.protocol}://${req.get('host')}/verify-email?otp=${otp}&email=${encodeURIComponent(email)}`;
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('[AUTH] signup new user -> sending email', { to: email, verificationUrl });
+      }
+      await new Email(newUser, verificationUrl, otp).sendOTP();
+      
 
-    // Respond immediately to avoid client timeout
-    res.status(201).json({
-      status: 'success',
-      message: 'OTP sent to your email. Please verify your account.',
-    });
+      res.status(201).json({
+        status: 'success',
+        message: 'OTP sent to your email. Please verify your account.',
+      });
+    } catch (err) {
+      // If email sending fails
+      console.error('[AUTH] signup new user email error:', err?.message);
+      return res.status(500).json({
+        status: 'error',
+        message: 'There was an error sending the OTP email.',
+        error: err.message
+      });
+      
+      // Production: revert user creation and report failure
+      await User.findByIdAndDelete(newUser._id);
+      return res.status(500).json({
+        status: 'error',
+        message: 'There was an error sending the email. Please try again later.',
+      });
+    }
   } catch (err) {
     console.error('[AUTH] signup handler error:', err?.message);
     res.status(400).json({
@@ -356,35 +378,17 @@ export const login = async (req, res, next) => {
       });
     }
 
-    // 2) Normalize email and fetch user regardless of active to give clearer messages
-    const normalizedEmail = String(email).trim().toLowerCase();
-    const user = await User.findOne({ email: normalizedEmail }).select('+password +role +active');
+    // 2) Check if user exists && password is correct
+    const user = await User.findOne({ email, active: true }).select('+password +role');
 
-    if (!user) {
+    if (!user || !(await user.correctPassword(password, user.password))) {
       return res.status(401).json({
         status: 'fail',
         message: 'Incorrect email or password',
       });
     }
 
-    // 3) Check if user is active
-    if (user.active === false) {
-      return res.status(401).json({
-        status: 'fail',
-        message: 'Your account has been deactivated. Please contact support.',
-      });
-    }
-
-    // 4) Check password correctness
-    const passwordOk = await user.correctPassword(password, user.password);
-    if (!passwordOk) {
-      return res.status(401).json({
-        status: 'fail',
-        message: 'Incorrect email or password',
-      });
-    }
-
-    // 5) Check if user is verified
+    // 3) Check if user is verified
     if (!user.isVerified) {
       return res.status(401).json({
         status: 'fail',
@@ -392,7 +396,7 @@ export const login = async (req, res, next) => {
       });
     }
 
-    // 6) Generate session ID for tracking
+    // 4) Generate session ID for tracking
     const sessionId = crypto.randomBytes(16).toString('hex');
     user.activeSessions = user.activeSessions || [];
     user.activeSessions.push({
@@ -409,7 +413,7 @@ export const login = async (req, res, next) => {
 
     await user.save({ validateBeforeSave: false });
 
-    // 7) Set session cookie
+    // 5) Set session cookie
     if (rememberMe) {
       // Set longer expiry for 'remember me' (30 days)
       req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -418,11 +422,11 @@ export const login = async (req, res, next) => {
       req.session.cookie.expires = false;
     }
 
-    // 8) Store user info in session
+    // 6) Store user info in session
     req.session.userId = user._id;
     req.session.sessionId = sessionId;
 
-    // 9) Send token to client
+    // 7) Send token to client
     createSendToken(user, 200, req, res);
   } catch (err) {
     console.error('Login error details:', {
@@ -618,19 +622,12 @@ export const logout = (req, res) => {
 // Refresh token - verify existing cookie and issue a fresh JWT
 export const refreshToken = async (req, res) => {
   try {
-    // Prefer cookie, but accept Authorization: Bearer <token> or body.token as fallback
-    let token = req.cookies?.jwt;
+    const token = req.cookies?.jwt;
     if (!token) {
-      const auth = req.headers.authorization || req.headers.Authorization;
-      if (auth && /^Bearer\s+/i.test(auth)) token = auth.split(/\s+/)[1];
-      if (!token && req.body?.token) token = String(req.body.token);
-      if (!token && process.env.DEBUG_COOKIES === 'true') {
-        console.warn('[AUTH] refreshToken: no jwt cookie and no bearer token found');
-      }
-    }
-
-    if (!token) {
-      return res.status(401).json({ status: 'fail', message: 'Not authenticated' });
+      return res.status(401).json({
+        status: 'fail',
+        message: 'Not authenticated',
+      });
     }
 
     // Verify token
@@ -638,19 +635,28 @@ export const refreshToken = async (req, res) => {
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch (err) {
-      return res.status(401).json({ status: 'fail', message: 'Invalid or expired token' });
+      return res.status(401).json({
+        status: 'fail',
+        message: 'Invalid or expired token',
+      });
     }
 
-    // Ensure user exists and is active (active is select:false by default)
-    const user = await User.findById(decoded.id).select('+role +active');
-    if (!user || user.active === false) {
-      return res.status(401).json({ status: 'fail', message: 'User not found or inactive' });
+    // Ensure user exists and is active
+    const user = await User.findById(decoded.id).select('+role');
+    if (!user || !user.active) {
+      return res.status(401).json({
+        status: 'fail',
+        message: 'User not found or inactive',
+      });
     }
 
     // Issue fresh token and set cookie
     createSendToken(user, 200, req, res);
   } catch (error) {
-    res.status(500).json({ status: 'error', message: 'Could not refresh token' });
+    res.status(500).json({
+      status: 'error',
+      message: 'Could not refresh token',
+    });
   }
 };
 
