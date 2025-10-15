@@ -1,0 +1,54 @@
+import React, { useState } from 'react';
+import BASE_URL from '../../config';
+
+const SalaryToolPage: React.FC = () => {
+  const [role, setRole] = useState('Software Engineer');
+  const [location, setLocation] = useState('Bengaluru');
+  const [years, setYears] = useState(2);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [reply, setReply] = useState('');
+
+  const submit = async () => {
+    setError(''); setReply(''); setLoading(true);
+    try {
+      const resp = await fetch(`${BASE_URL}/api/v1/tools/chat`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: `Estimate salary for ${role} in ${location} with ${years} years experience. Add negotiation script.`, tool: 'salary', context: 'Salary Advisor' })
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data?.message || 'Request failed');
+      setReply(data?.data?.reply || '');
+    } catch (e:any) { setError(e.message || 'Failed'); } finally { setLoading(false); }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="max-w-5xl mx-auto bg-white border rounded-xl p-6">
+        <h1 className="text-2xl font-bold mb-2">Salary Negotiation Advisor</h1>
+        <p className="text-gray-600 mb-4">Get market range estimates and scripts using Gemini.</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <div>
+              <label className="text-sm text-gray-700">Role</label>
+              <input className="w-full border rounded-md px-3 py-2" value={role} onChange={(e)=> setRole(e.target.value)} />
+            </div>
+            <div>
+              <label className="text-sm text-gray-700">Location</label>
+              <input className="w-full border rounded-md px-3 py-2" value={location} onChange={(e)=> setLocation(e.target.value)} />
+            </div>
+            <div>
+              <label className="text-sm text-gray-700">Years</label>
+              <input type="number" min={0} className="w-full border rounded-md px-3 py-2" value={years} onChange={(e)=> setYears(parseInt(e.target.value||'0',10))} />
+            </div>
+            <button onClick={submit} disabled={loading} className={`px-4 py-2 rounded-md text-white ${loading?'bg-amber-300':'bg-amber-600 hover:bg-amber-700'}`}>{loading?'Estimating…':'Estimate & Script'}</button>
+            {error && <p className="text-sm text-red-600">{error}</p>}
+          </div>
+          <div className="border rounded-md p-4 min-h-[320px] whitespace-pre-wrap">{reply || 'Output will appear here.'}</div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SalaryToolPage;

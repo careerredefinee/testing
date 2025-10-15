@@ -1,0 +1,31 @@
+extends baseEmail
+
+block content
+  p Hi #{firstName},
+  p Your booking has been confirmed! Here are the details:
+  
+  table(style='width: 100%; border-collapse: collapse; margin: 20px 0;')
+    tr
+      td(style='padding: 8px; border: 1px solid #ddd;') Booking ID
+      td(style='padding: 8px; border: 1px solid #ddd;')= bookingId
+    tr
+      td(style='padding: 8px; border: 1px solid #ddd;') Date
+      td(style='padding: 8px; border: 1px solid #ddd;')= date
+    tr
+      td(style='padding: 8px; border: 1px solid #ddd;') Time
+      td(style='padding: 8px; border: 1px solid #ddd;')= time
+    tr
+      td(style='padding: 8px; border: 1px solid #ddd;') Duration
+      td(style='padding: 8px; border: 1px solid #ddd;')= duration
+    tr
+      td(style='padding: 8px; border: 1px solid #ddd;') Meeting Type
+      td(style='padding: 8px; border: 1px solid #ddd;')= type
+  
+  if meetingLink
+    p 
+      strong Meeting Link: 
+      a(href=meetingLink)= meetingLink
+  
+  p If you need to reschedule or cancel your booking, please do so at least 24 hours in advance.
+  p We look forward to seeing you!
+  p - The careerRedefine Team

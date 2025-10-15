@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Password Reset</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 500px; 
+            margin: 40px auto; 
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group { 
+            margin-bottom: 20px;
+        }
+        label { 
+            display: block; 
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button { 
+            width: 100%;
+            padding: 12px; 
+            background: #4CAF50; 
+            color: white; 
+            border: none; 
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover { 
+            background: #45a049;
+        }
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        #message { 
+            margin-top: 20px; 
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .success { 
+            background: #dff0d8; 
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+        }
+        .error { 
+            background: #f2dede; 
+            color: #a94442;
+            border: 1px solid #ebccd1;
+        }
+        .info {
+            background: #d9edf7;
+            color: #31708f;
+            border: 1px solid #bce8f1;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Access Reset</h1>
+        
+        <div class="info">
+            <p>Use this form to reset the admin password if you're having trouble accessing the admin panel.</p>
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Admin Email:</label>
+            <input type="email" id="email" value="shannu@admin.com" readonly>
+        </div>
+        <div class="form-group">
+            <label for="password">New Password:</label>
+            <input type="password" id="password" value="667700">
+        </div>
+        <button id="resetBtn" onclick="resetAdminPassword()">Reset Admin Password</button>
+        <div id="message"></div>
+    </div>
+
+    <script>
+    async function resetAdminPassword() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const messageEl = document.getElementById('message');
+        const btn = document.getElementById('resetBtn');
+        
+        // Validate input
+        if (!password || password.length < 6) {
+            messageEl.className = 'error';
+            messageEl.textContent = 'Password must be at least 6 characters long';
+            return;
+        }
+        
+        // Disable button to prevent multiple clicks
+        btn.disabled = true;
+        btn.textContent = 'Processing...';
+        messageEl.textContent = '';
+        
+        try {
+            // Try to update the admin user
+            const response = await axios({
+                method: 'PATCH',
+                url: '/api/v1/auth/update-password',
+                data: {
+                    email: email,
+                    password: password,
+                    passwordConfirm: password
+                },
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            messageEl.className = 'success';
+            messageEl.innerHTML = `
+                ✅ Admin password updated successfully!<br><br>
+                You can now log in with:<br>
+                <strong>Email:</strong> ${email}<br>
+                <strong>Password:</strong> ${password}
+                <br><br>
+                <a href="/login" style="color: #3c763d; text-decoration: underline;">Go to Login Page</a>
+            `;
+            
+        } catch (error) {
+            console.error('Error:', error);
+            messageEl.className = 'error';
+            
+            if (error.response) {
+                // Server responded with error status
+                if (error.response.status === 404) {
+                    messageEl.textContent = 'User not found. The admin user may not exist yet.';
+                } else if (error.response.data && error.response.data.message) {
+                    messageEl.textContent = error.response.data.message;
+                } else {
+                    messageEl.textContent = `Server error: ${error.response.status}`;
+                }
+            } else if (error.request) {
+                // Request was made but no response received
+                messageEl.textContent = 'No response from server. Please check your connection.';
+            } else {
+                // Other errors
+                messageEl.textContent = `Error: ${error.message}`;
+            }
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Reset Admin Password';
+        }
+    }
+    </script>
+</body>
+</html>

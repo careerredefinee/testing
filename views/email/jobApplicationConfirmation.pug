@@ -1,0 +1,27 @@
+extends baseEmail
+
+block content
+  p Hi #{name},
+  p Thank you for applying for the position of "#{jobTitle}" at careerRedefine.
+  p We've received your application and our team will review it shortly.
+  
+  .application-details
+    h3 Application Details
+    p 
+      strong Position: 
+      | #{jobTitle}
+    p 
+      strong Application ID: 
+      | #{applicationId}
+    p 
+      strong Applied on: 
+      | #{applicationDate}
+  
+  p You can track the status of your application by logging into your account.
+  p We appreciate your interest in joining our team and will be in touch soon!
+  p Best regards,
+  p The careerRedefine Hiring Team
+  p 
+    small 
+      | Application ID: #{applicationId} | 
+      a(href=`${process.env.FRONTEND_URL}/jobs/my-applications`) View My Applications

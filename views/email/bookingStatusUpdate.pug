@@ -1,0 +1,37 @@
+extends baseEmail
+
+block content
+  p Hi #{firstName},
+  p The status of your booking has been updated to: 
+    strong(style='text-transform: capitalize;')= status
+  
+  table(style='width: 100%; border-collapse: collapse; margin: 20px 0;')
+    tr
+      td(style='padding: 8px; border: 1px solid #ddd;') Booking ID
+      td(style='padding: 8px; border: 1px solid #ddd;')= bookingId
+    tr
+      td(style='padding: 8px; border: 1px solid #ddd;') Date
+      td(style='padding: 8px; border: 1px solid #ddd;')= date
+    tr
+      td(style='padding: 8px; border: 1px solid #ddd;') Time
+      td(style='padding: 8px; border: 1px solid #ddd;')= time
+    tr
+      td(style='padding: 8px; border: 1px solid #ddd;') Status
+      td(style='padding: 8px; border: 1px solid #ddd;')
+        span(style=`color: ${
+          status === 'confirmed' ? '#4CAF50' : 
+          status === 'cancelled' ? '#f44336' : 
+          status === 'completed' ? '#2196F3' : '#FFC107'
+        }; font-weight: bold;`)= status
+  
+  if adminNotes
+    h3(style='margin-top: 20px;') Admin Notes:
+    p(style='background-color: #f8f9fa; padding: 10px; border-left: 4px solid #4CAF50;')= adminNotes
+  
+  if status === 'confirmed' && meetingLink
+    p 
+      strong Meeting Link: 
+      a(href=meetingLink)= meetingLink
+  
+  p If you have any questions, please don't hesitate to contact us.
+  p - The careerRedefine Team
