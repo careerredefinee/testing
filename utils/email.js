@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import fetch from 'node-fetch';
 import pug from 'pug';
 import { htmlToText } from 'html-to-text';
 import { fileURLToPath } from 'url';
@@ -42,31 +43,31 @@ class Email {
 
   // Send the actual email
   async send(template, subject, context = {}) {
+    // 1) Render HTML based on a pug template
+    const templatePath = join(
+      dirname(__dirname),
+      'views',
+      'email',
+      `${template}.pug`
+    );
+
+    const html = pug.renderFile(templatePath, {
+      firstName: this.firstName,
+      url: this.url,
+      subject,
+      ...context,
+    });
+
+    // 2) Define email options
+    const mailOptions = {
+      from: this.from,
+      to: this.to,
+      subject,
+      html,
+      text: htmlToText(html),
+    };
+
     try {
-      // 1) Render HTML based on a pug template
-      const templatePath = join(
-        dirname(__dirname),
-        'views',
-        'email',
-        `${template}.pug`
-      );
-
-      const html = pug.renderFile(templatePath, {
-        firstName: this.firstName,
-        url: this.url,
-        subject,
-        ...context,
-      });
-
-      // 2) Define email options
-      const mailOptions = {
-        from: this.from,
-        to: this.to,
-        subject,
-        html,
-        text: htmlToText(html),
-      };
-
       // 3) Create a transport and send email
       const transporter = await this.newTransport();
       const info = await transporter.sendMail(mailOptions);
@@ -79,13 +80,63 @@ class Email {
         }
       }
     } catch (err) {
-      console.error('Error sending email:', err);
-      if (process.env.NODE_ENV === 'production') {
-        throw new Error('There was an error sending the email. Please try again later.');
-      } else {
-        // In development, do not block the flow if email fails
-        console.warn('Email send failed in development. Continuing without email.');
-        return;
+      try {
+        console.error('SMTP send failed:', {
+          message: err?.message,
+          code: err?.code,
+          command: err?.command
+        });
+
+        const resendKey = process.env.RESEND_API || process.env.resend_api;
+        if (!resendKey) {
+          if (process.env.NODE_ENV === 'production') {
+            throw new Error('Email sending failed via SMTP, and RESEND_API is not configured.');
+          } else {
+            console.warn('SMTP failed and RESEND_API not set. Skipping email in non-production.');
+            return;
+          }
+        }
+
+        const from = this.from;
+        const to = this.to;
+        const body = {
+          from,
+          to,
+          subject,
+          html,
+          text: htmlToText(html)
+        };
+
+        const resp = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${resendKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        });
+
+        if (!resp.ok) {
+          const errorText = await resp.text().catch(() => '');
+          console.error('Resend API error:', resp.status, errorText);
+          if (process.env.NODE_ENV === 'production') {
+            throw new Error('Email sending failed via SMTP and Resend.');
+          } else {
+            console.warn('Email send failed via both SMTP and Resend in non-production. Continuing.');
+            return;
+          }
+        }
+
+        const json = await resp.json().catch(() => ({}));
+        console.log('Email sent via Resend fallback:', json?.id || 'no-id');
+      } catch (fallbackErr) {
+        console.error('Email send error (final):', fallbackErr?.message || fallbackErr);
+        if (process.env.NODE_ENV === 'production') {
+          throw new Error('There was an error sending the email. Please try again later.');
+        } else {
+          console.warn('Email send failed in development. Continuing without email.');
+          return;
+        }
       }
     }
   }
