@@ -2,8 +2,11 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 // Base URL strategy:
 // - Prefer explicit VITE_API_URL when set (staging/production)
-// - Otherwise force http://localhost:3000 so dev calls always hit the Node server directly
-const API_URL: string = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3000';
+// - Otherwise, in browser use window.location.origin (same-origin in prod)
+// - Fallback to http://localhost:3000 for local dev in non-browser contexts
+const API_URL: string = (import.meta as any).env?.VITE_API_URL
+  || (typeof window !== 'undefined' && window.location?.origin)
+  || 'http://localhost:3000';
 
 interface FailedRequest {
   resolve: (value: unknown) => void;
