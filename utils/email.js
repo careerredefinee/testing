@@ -14,8 +14,8 @@ class Email {
     this.url = url;
     this.otp = otp;
     // Prefer authenticated Gmail user as the from address to avoid Gmail rejection
-    const gmailUser = process.env.EMAIL_USER || process.env.GMAIL_USER || '';
-    const emailUser = process.env.EMAIL_USERNAME || process.env.EMAIL_USER || '';
+    const gmailUser = process.env.GMAIL_USER || '';
+    const emailUser = process.env.EMAIL_USERNAME || '';
     const configuredFrom = process.env.EMAIL_FROM || '';
     const fromName = process.env.EMAIL_FROM_NAME || 'careerRedefine';
 
@@ -41,29 +41,28 @@ class Email {
       // Explicit Gmail support in production
       if (
         ((process.env.EMAIL_HOST || '').includes('gmail')) ||
-        (process.env.EMAIL_USER && process.env.EMAIL_PASS) ||
         (process.env.GMAIL_USER && process.env.GMAIL_PASS)
       ) {
         const tx = nodemailer.createTransport({
           service: 'gmail',
           auth: {
-            user: process.env.EMAIL_USER || process.env.GMAIL_USER || process.env.EMAIL_USERNAME,
-            pass: process.env.EMAIL_PASS || process.env.GMAIL_PASS || process.env.EMAIL_PASSWORD,
+            user: process.env.GMAIL_USER || process.env.EMAIL_USERNAME,
+            pass: process.env.GMAIL_PASS || process.env.EMAIL_PASSWORD,
           },
         });
         if (process.env.NODE_ENV !== 'production') console.log('📧 Using Gmail transport (production branch)');
         return tx;
       }
       // Fallback to generic SMTP in production if explicitly provided
-      if (process.env.EMAIL_HOST && (process.env.EMAIL_USERNAME || process.env.EMAIL_USER) && (process.env.EMAIL_PASSWORD || process.env.EMAIL_PASS)) {
+      if (process.env.EMAIL_HOST && process.env.EMAIL_USERNAME && process.env.EMAIL_PASSWORD) {
         const port = Number(process.env.EMAIL_PORT || 587);
         const tx = nodemailer.createTransport({
           host: process.env.EMAIL_HOST,
           port,
           secure: port === 465, // true for 465, false for others
           auth: {
-            user: process.env.EMAIL_USERNAME || process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASSWORD || process.env.EMAIL_PASS,
+            user: process.env.EMAIL_USERNAME,
+            pass: process.env.EMAIL_PASSWORD,
           },
         });
         if (process.env.NODE_ENV !== 'production') console.log(`📧 Using SMTP transport ${process.env.EMAIL_HOST}:${port} (production branch)`);
@@ -89,14 +88,13 @@ class Email {
     // Development: If Gmail creds present, prefer them
     if (
       ((process.env.EMAIL_HOST || '').includes('gmail')) ||
-      (process.env.EMAIL_USER && process.env.EMAIL_PASS) ||
       (process.env.GMAIL_USER && process.env.GMAIL_PASS)
     ) {
       const tx = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: process.env.EMAIL_USER || process.env.GMAIL_USER || process.env.EMAIL_USERNAME,
-          pass: process.env.EMAIL_PASS || process.env.GMAIL_PASS || process.env.EMAIL_PASSWORD,
+          user: process.env.GMAIL_USER || process.env.EMAIL_USERNAME,
+          pass: process.env.GMAIL_PASS || process.env.EMAIL_PASSWORD,
         },
       });
       if (process.env.NODE_ENV !== 'production') console.log('📧 Using Gmail transport (development branch)');
@@ -104,15 +102,15 @@ class Email {
     }
 
     // Development: If SMTP creds present (e.g., Mailtrap or other SMTP), use them
-    if (process.env.EMAIL_HOST && (process.env.EMAIL_USERNAME || process.env.EMAIL_USER) && (process.env.EMAIL_PASSWORD || process.env.EMAIL_PASS)) {
+    if (process.env.EMAIL_HOST && process.env.EMAIL_USERNAME && process.env.EMAIL_PASSWORD) {
       const port = Number(process.env.EMAIL_PORT || 587);
       const tx = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
         port,
         secure: port === 465,
         auth: {
-          user: process.env.EMAIL_USERNAME || process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASSWORD || process.env.EMAIL_PASS,
+          user: process.env.EMAIL_USERNAME,
+          pass: process.env.EMAIL_PASSWORD,
         },
       });
       if (process.env.NODE_ENV !== 'production') console.log(`📧 Using SMTP transport ${process.env.EMAIL_HOST}:${port} (development branch)`);
