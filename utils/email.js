@@ -13,13 +13,11 @@ class Email {
     this.firstName = user.name?.split(' ')[0] || 'User';
     this.url = url;
     this.otp = otp;
-    // Prefer authenticated Gmail user as the from address to avoid Gmail rejection
     const gmailUser = process.env.GMAIL_USER || '';
     const emailUser = process.env.EMAIL_USERNAME || '';
     const configuredFrom = process.env.EMAIL_FROM || '';
     const fromName = process.env.EMAIL_FROM_NAME || 'careerRedefine';
 
-    // If using Gmail, force from to be the authenticated account
     const likelyGmail = (process.env.EMAIL_HOST || '').includes('gmail') || gmailUser;
     const fromAddress = likelyGmail ? (gmailUser || emailUser) : (configuredFrom || emailUser || 'no-reply@example.com');
     this.from = `"${fromName}" <${fromAddress}>`;
@@ -27,84 +25,22 @@ class Email {
 
   // Create a transporter
   async newTransport() {
-    // Production: prefer SendGrid if configured
-    if (process.env.NODE_ENV === 'production') {
-      if (process.env.SENDGRID_USERNAME && process.env.SENDGRID_PASSWORD) {
-        return nodemailer.createTransport({
-          service: 'SendGrid',
-          auth: {
-            user: process.env.SENDGRID_USERNAME,
-            pass: process.env.SENDGRID_PASSWORD,
-          },
-        });
-      }
-      // Explicit Gmail support in production
-      if (
-        ((process.env.EMAIL_HOST || '').includes('gmail')) ||
-        (process.env.GMAIL_USER && process.env.GMAIL_PASS)
-      ) {
-        const tx = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            user: process.env.GMAIL_USER || process.env.EMAIL_USERNAME,
-            pass: process.env.GMAIL_PASS || process.env.EMAIL_PASSWORD,
-          },
-        });
-        if (process.env.NODE_ENV !== 'production') console.log('📧 Using Gmail transport (production branch)');
-        return tx;
-      }
-      // Fallback to generic SMTP in production if explicitly provided
-      if (process.env.EMAIL_HOST && process.env.EMAIL_USERNAME && process.env.EMAIL_PASSWORD) {
-        const port = Number(process.env.EMAIL_PORT || 587);
-        const tx = nodemailer.createTransport({
-          host: process.env.EMAIL_HOST,
-          port,
-          secure: port === 465, // true for 465, false for others
-          auth: {
-            user: process.env.EMAIL_USERNAME,
-            pass: process.env.EMAIL_PASSWORD,
-          },
-        });
-        if (process.env.NODE_ENV !== 'production') console.log(`📧 Using SMTP transport ${process.env.EMAIL_HOST}:${port} (production branch)`);
-        return tx;
-      }
-      // If nothing configured in production, throw
-      throw new Error('Email transport is not configured for production');
-    }
-
-    // Development: optional override to force Ethereal regardless of creds
-    if (process.env.NODE_ENV !== 'production' && process.env.USE_ETHEREAL === 'true') {
-      const testAccount = await nodemailer.createTestAccount();
-      const tx = nodemailer.createTransport({
-        host: 'smtp.ethereal.email',
-        port: 587,
-        secure: false,
-        auth: { user: testAccount.user, pass: testAccount.pass },
-      });
-      if (process.env.NODE_ENV !== 'production') console.log('📧 Using Ethereal test transport (forced by USE_ETHEREAL=true)');
-      return tx;
-    }
-
-    // Development: If Gmail creds present, prefer them
     if (
       ((process.env.EMAIL_HOST || '').includes('gmail')) ||
       (process.env.GMAIL_USER && process.env.GMAIL_PASS)
     ) {
-      const tx = nodemailer.createTransport({
+      return nodemailer.createTransport({
         service: 'gmail',
         auth: {
           user: process.env.GMAIL_USER || process.env.EMAIL_USERNAME,
           pass: process.env.GMAIL_PASS || process.env.EMAIL_PASSWORD,
         },
       });
-      if (process.env.NODE_ENV !== 'production') console.log('📧 Using Gmail transport (development branch)');
-      return tx;
     }
 
-    // Development: If SMTP creds present (e.g., Mailtrap or other SMTP), use them
     if (process.env.EMAIL_HOST && process.env.EMAIL_USERNAME && process.env.EMAIL_PASSWORD) {
       const port = Number(process.env.EMAIL_PORT || 587);
-      const tx = nodemailer.createTransport({
+      return nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
         port,
         secure: port === 465,
@@ -113,23 +49,9 @@ class Email {
           pass: process.env.EMAIL_PASSWORD,
         },
       });
-      if (process.env.NODE_ENV !== 'production') console.log(`📧 Using SMTP transport ${process.env.EMAIL_HOST}:${port} (development branch)`);
-      return tx;
     }
 
-    // Development fallback: Ethereal test account (no real emails sent)
-    const testAccount = await nodemailer.createTestAccount();
-    const tx = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
-      port: 587,
-      secure: false,
-      auth: {
-        user: testAccount.user,
-        pass: testAccount.pass,
-      },
-    });
-    if (process.env.NODE_ENV !== 'production') console.log('📧 Using Ethereal test transport (development fallback)');
-    return tx;
+    throw new Error('Email transport is not configured');
   }
 
   // Send the actual email

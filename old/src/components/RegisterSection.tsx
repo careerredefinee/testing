@@ -251,7 +251,7 @@ const RegisterSection: React.FC = () => {
                   value={formData.name}
                   onChange={handleChange}
                   className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  placeholder="John Doe"
+                  placeholder="user name"
                 />
               </div>
             </div>

@@ -16,8 +16,8 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"name\": \"John Doe\",
-    \"email\": \"john@example.com\",
+              "raw": "{\n    \"name\": \"user name\",
+    \"email\": \"shannu@gmail.com\",
     \"password\": \"password123\",
     \"passwordConfirm\": \"password123\"
 }"
@@ -39,7 +39,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"email\": \"john@example.com\",
+              "raw": "{\n    \"email\": \"shannu@gmail.com\",
     \"password\": \"password123\"
 }"
             },
