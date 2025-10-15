@@ -70,9 +70,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const token = localStorage.getItem('token');
+        let token = localStorage.getItem('token');
         if (!token) {
-          // Try silent refresh using HTTP-only cookie (if present)
           try {
             const newToken = await refreshToken();
             if (!newToken) {
@@ -80,6 +79,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               setUser(null);
               return;
             }
+            token = newToken;
           } catch (e) {
             setIsAuthenticated(false);
             setUser(null);
@@ -87,12 +87,30 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           }
         }
 
-        // Set auth header and fetch current user
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        const { data } = await api.get('/api/v1/auth/me');
-        const userData = (data as any)?.data?.user ?? (data as any)?.data;
-        setUser(userData);
-        setIsAuthenticated(true);
+        try {
+          const { data } = await api.get('/api/v1/auth/me');
+          const userData = (data as any)?.data?.user ?? (data as any)?.data;
+          setUser(userData);
+          setIsAuthenticated(true);
+        } catch (err: any) {
+          if (err?.response?.status === 401) {
+            const newToken = await refreshToken();
+            if (newToken) {
+              api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+              const { data } = await api.get('/api/v1/auth/me');
+              const userData = (data as any)?.data?.user ?? (data as any)?.data;
+              setUser(userData);
+              setIsAuthenticated(true);
+            } else {
+              setIsAuthenticated(false);
+              setUser(null);
+            }
+          } else {
+            setIsAuthenticated(false);
+            setUser(null);
+          }
+        }
       } catch (error) {
         console.error('Auth check failed:', error);
         setIsAuthenticated(false);

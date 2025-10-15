@@ -90,6 +90,16 @@ const createSendToken = (user, statusCode, req, res) => {
 // Protect routes - user must be logged in
 export const protect = async (req, res, next) => {
   try {
+    const url = String(req.originalUrl || req.url || '');
+    const method = String(req.method || 'GET').toUpperCase();
+    const isPublicAuthRoute = (
+      /^\/api\/v1\/auth\/(login|signup|send-otp|verify-otp|resend-otp|forgot-password|reset-password\/.+|forgot-password-otp|reset-password-otp|google-auth|refresh-token|logout)(\?.*)?$/i
+        .test(url)
+    );
+    if (isPublicAuthRoute) {
+      return next();
+    }
+
     // 1) Get token and check if it exists
     let token;
     const authHeader = req.headers.authorization || req.headers.Authorization;

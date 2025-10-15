@@ -15,7 +15,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAuthenticated, logout, user } = useAuth();
+  const { isAuthenticated, logout, user, isLoading } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -139,7 +139,7 @@ const Navbar = () => {
               )}
             </div>
             <div className="flex items-center space-x-4">
-              {isAuthenticated ? (
+              {isLoading ? null : isAuthenticated ? (
                 <div className="flex items-center space-x-4">
                   <ProfileDropdown />
                 </div>
@@ -189,7 +189,7 @@ const Navbar = () => {
             
             {/* Auth section - always visible */}
             <div className="pt-3 border-t border-gray-200">
-              {isAuthenticated ? (
+              {isLoading ? null : isAuthenticated ? (
                 <>
                   <Link 
                     to="/profile" 

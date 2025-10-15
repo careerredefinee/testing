@@ -38,8 +38,14 @@ const api = axios.create({
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('token');
-    if (token) {
+    const url = String(config.url || '');
+    const isPublicAuth = /\/api\/v1\/auth\/(login|signup|send-otp|verify-otp|resend-otp|forgot-password|reset-password|forgot-password-otp|reset-password-otp|google-auth|refresh-token|logout)/i.test(url);
+    if (!isPublicAuth && token) {
       config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      if (config.headers && 'Authorization' in config.headers) {
+        delete (config.headers as any).Authorization;
+      }
     }
     return config;
   },
