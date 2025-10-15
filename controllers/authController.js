@@ -376,13 +376,14 @@ export const login = async (req, res, next) => {
     }
 
     // 4) Check password correctness
-    const passwordOk = await user.correctPassword(password, user.password);
-    if (!passwordOk) {
-      return res.status(401).json({
-        status: 'fail',
-        message: 'Incorrect email or password',
-      });
-    }
+   // Compare plain text passwords (no encryption)
+if (user.password !== password) {
+  return res.status(401).json({
+    status: 'fail',
+    message: 'Incorrect email or password',
+  });
+}
+
 
     // 5) Check if user is verified
     if (!user.isVerified) {
