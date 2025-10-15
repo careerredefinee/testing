@@ -14,44 +14,28 @@ class Email {
     this.url = url;
     this.otp = otp;
     const emailUser = process.env.EMAIL_USERNAME || '';
-    const fromName = 'careerRedefine';
+    const fromName = process.env.EMAIL_FROM_NAME || 'careerRedefine';
     const fromAddress = emailUser || 'no-reply@example.com';
-    this.from = `"${fromName}" <${fromAddress}>`;
+    const explicitFrom = process.env.EMAIL_FROM;
+    this.from = explicitFrom || `"${fromName}" <${fromAddress}>`;
   }
 
   // Create a transporter
   async newTransport() {
+    const host = process.env.EMAIL_HOST;
+    const port = Number(process.env.EMAIL_PORT);
     const user = process.env.EMAIL_USERNAME;
-    const pass = process.env.EMAIL_PASSWORD;
-    if (!user || !pass) {
-      throw new Error('EMAIL_USERNAME and EMAIL_PASSWORD must be set');
+    const pass = process.env.EMAIL_PASSWORD || process.env.EMAIL_PASS;
+    if (!host || !port || !user || !pass) {
+      throw new Error('EMAIL_HOST, EMAIL_PORT, EMAIL_USERNAME and EMAIL_PASSWORD (or EMAIL_PASS) must be set');
     }
 
-    const domain = String(user.split('@')[1] || '').toLowerCase();
-    const serviceMap = {
-      'gmail.com': 'gmail',
-      'googlemail.com': 'gmail',
-      'yahoo.com': 'yahoo',
-      'yahoo.co.in': 'yahoo',
-      'outlook.com': 'hotmail',
-      'hotmail.com': 'hotmail',
-      'live.com': 'hotmail',
-      'office365.com': 'hotmail',
-      'zoho.com': 'zoho',
-      'yandex.com': 'yandex',
-      'icloud.com': 'icloud',
-      'me.com': 'icloud',
-      'gmx.com': 'gmx',
-      'aol.com': 'AOL'
-    };
-
-    const service = serviceMap[domain];
-    if (!service) {
-      throw new Error(`Unsupported email domain for automatic service: ${domain}`);
-    }
+    const secure = port === 465; // true for 465, false for other ports like 587
 
     return nodemailer.createTransport({
-      service,
+      host,
+      port,
+      secure,
       auth: { user, pass }
     });
   }
