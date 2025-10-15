@@ -13,45 +13,47 @@ class Email {
     this.firstName = user.name?.split(' ')[0] || 'User';
     this.url = url;
     this.otp = otp;
-    const gmailUser = process.env.GMAIL_USER || '';
     const emailUser = process.env.EMAIL_USERNAME || '';
-    const configuredFrom = process.env.EMAIL_FROM || '';
-    const fromName = process.env.EMAIL_FROM_NAME || 'careerRedefine';
-
-    const likelyGmail = (process.env.EMAIL_HOST || '').includes('gmail') || gmailUser;
-    const fromAddress = likelyGmail ? (gmailUser || emailUser) : (configuredFrom || emailUser || 'no-reply@example.com');
+    const fromName = 'careerRedefine';
+    const fromAddress = emailUser || 'no-reply@example.com';
     this.from = `"${fromName}" <${fromAddress}>`;
   }
 
   // Create a transporter
   async newTransport() {
-    if (
-      ((process.env.EMAIL_HOST || '').includes('gmail')) ||
-      (process.env.GMAIL_USER && process.env.GMAIL_PASS)
-    ) {
-      return nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: process.env.GMAIL_USER || process.env.EMAIL_USERNAME,
-          pass: process.env.GMAIL_PASS || process.env.EMAIL_PASSWORD,
-        },
-      });
+    const user = process.env.EMAIL_USERNAME;
+    const pass = process.env.EMAIL_PASSWORD;
+    if (!user || !pass) {
+      throw new Error('EMAIL_USERNAME and EMAIL_PASSWORD must be set');
     }
 
-    if (process.env.EMAIL_HOST && process.env.EMAIL_USERNAME && process.env.EMAIL_PASSWORD) {
-      const port = Number(process.env.EMAIL_PORT || 587);
-      return nodemailer.createTransport({
-        host: process.env.EMAIL_HOST,
-        port,
-        secure: port === 465,
-        auth: {
-          user: process.env.EMAIL_USERNAME,
-          pass: process.env.EMAIL_PASSWORD,
-        },
-      });
+    const domain = String(user.split('@')[1] || '').toLowerCase();
+    const serviceMap = {
+      'gmail.com': 'gmail',
+      'googlemail.com': 'gmail',
+      'yahoo.com': 'yahoo',
+      'yahoo.co.in': 'yahoo',
+      'outlook.com': 'hotmail',
+      'hotmail.com': 'hotmail',
+      'live.com': 'hotmail',
+      'office365.com': 'hotmail',
+      'zoho.com': 'zoho',
+      'yandex.com': 'yandex',
+      'icloud.com': 'icloud',
+      'me.com': 'icloud',
+      'gmx.com': 'gmx',
+      'aol.com': 'AOL'
+    };
+
+    const service = serviceMap[domain];
+    if (!service) {
+      throw new Error(`Unsupported email domain for automatic service: ${domain}`);
     }
 
-    throw new Error('Email transport is not configured');
+    return nodemailer.createTransport({
+      service,
+      auth: { user, pass }
+    });
   }
 
   // Send the actual email
