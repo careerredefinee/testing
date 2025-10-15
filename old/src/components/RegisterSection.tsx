@@ -272,7 +272,7 @@ const RegisterSection: React.FC = () => {
                   value={formData.email}
                   onChange={handleChange}
                   className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  placeholder="you@gmail.com"
+                  placeholder="shannu@gmail.com"
                 />
               </div>
             </div>
