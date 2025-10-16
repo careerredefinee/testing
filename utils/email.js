@@ -71,13 +71,28 @@ class Email {
 
     try {
       const transporter = await this.newTransport();
+      try {
+        await transporter.verify();
+        const host = process.env.EMAIL_HOST || process.env.SMTP_HOST;
+        const port = Number(process.env.EMAIL_PORT || process.env.SMTP_PORT || 587);
+        const secure = port === 465;
+        console.log('Nodemailer connected', { host, port, secure });
+      } catch (verifyErr) {
+        console.error('Nodemailer not working (verify failed)', {
+          message: verifyErr?.message,
+          code: verifyErr?.code
+        });
+        throw verifyErr;
+      }
+
       const info = await transporter.sendMail(mailOptions);
+      console.log('Nodemailer send success', { messageId: info?.messageId, response: info?.response });
       if (process.env.NODE_ENV !== 'production') {
         const previewUrl = nodemailer.getTestMessageUrl(info);
         if (previewUrl) console.log(`📧 Email preview URL: ${previewUrl}`);
       }
     } catch (smtpErr) {
-      console.error('SMTP send failed:', {
+      console.error('Nodemailer not working (send failed)', {
         message: smtpErr?.message,
         code: smtpErr?.code,
         command: smtpErr?.command
