@@ -296,10 +296,11 @@ export const googleAuth = async (req, res, next) => {
   }
 };
 
-// Forgot password
+
+
+// Forgot password (via reset link)
 export const forgotPassword = async (req, res, next) => {
   try {
-    // 1) Get user based on POSTed email
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
       return res.status(404).json({
@@ -308,13 +309,33 @@ export const forgotPassword = async (req, res, next) => {
       });
     }
 
-    // 2) Generate the random reset token
+    // Generate the random reset token
     const resetToken = user.createPasswordResetToken();
     await user.save({ validateBeforeSave: false });
-    // 3) Return the token in the API response (email disabled)
+
+    // Create reset URL
     const resetURL = `${req.protocol}://${req.get('host')}/reset-password/${resetToken}`;
-    return res.status(200).json({ status: 'success', resetToken, resetURL });
+
+    // Send email (using your Email class)
+    try {
+      await new Email(user, resetURL).sendPasswordReset();
+      return res.status(200).json({
+        status: 'success',
+        message: 'Password reset link sent to your email!',
+      });
+    } catch (emailErr) {
+      console.error('Email sending failed:', emailErr.message);
+      user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
+      await user.save({ validateBeforeSave: false });
+
+      return res.status(500).json({
+        status: 'error',
+        message: 'There was an error sending the email. Try again later.',
+      });
+    }
   } catch (err) {
+    console.error('Forgot password error:', err);
     res.status(500).json({
       status: 'error',
       message: 'Error processing your request',
@@ -322,10 +343,9 @@ export const forgotPassword = async (req, res, next) => {
   }
 };
 
-// Reset password
+// Reset password (via token link)
 export const resetPassword = async (req, res, next) => {
   try {
-    // 1) Get user based on the token
     const hashedToken = crypto
       .createHash('sha256')
       .update(req.params.token)
@@ -336,7 +356,6 @@ export const resetPassword = async (req, res, next) => {
       passwordResetExpires: { $gt: Date.now() },
     });
 
-    // 2) If token has not expired, and there is user, set the new password
     if (!user) {
       return res.status(400).json({
         status: 'fail',
@@ -344,16 +363,15 @@ export const resetPassword = async (req, res, next) => {
       });
     }
 
-    // 3) Update password and clear reset token
     user.password = req.body.password;
     user.passwordConfirm = req.body.passwordConfirm;
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
     await user.save();
 
-    // 4) Log the user in, send JWT
     createSendToken(user, 200, req, res);
   } catch (err) {
+    console.error('Reset password error:', err);
     res.status(500).json({
       status: 'error',
       message: 'Error resetting password',
@@ -361,13 +379,87 @@ export const resetPassword = async (req, res, next) => {
   }
 };
 
+// Forgot password via OTP
+export const forgotPasswordOTP = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ status: 'fail', message: 'Please provide your email' });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ status: 'fail', message: 'No user found with that email' });
+    }
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.otp = otp;
+    user.otpExpires = Date.now() + 10 * 60 * 1000; // valid 10 min
+    await user.save({ validateBeforeSave: false });
+
+    // Send email with OTP
+    await new Email(user, null, otp).sendPasswordResetOTP();
+
+    return res.status(200).json({
+      status: 'success',
+      message: 'OTP sent to your email for password reset',
+    });
+  } catch (err) {
+    console.error('Forgot Password OTP Error:', err);
+    res.status(500).json({
+      status: 'error',
+      message: 'Error sending OTP. Try again later.',
+    });
+  }
+};
+
+// Reset password using OTP
+export const resetPasswordByOTP = async (req, res, next) => {
+  try {
+    const { email, otp, newPassword, newPasswordConfirm } = req.body;
+
+    if (!email || !otp || !newPassword || !newPasswordConfirm) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'Missing required fields',
+      });
+    }
+
+    const user = await User.findOne({
+      email,
+      otp,
+      otpExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'Invalid or expired OTP',
+      });
+    }
+
+    user.password = newPassword;
+    user.passwordConfirm = newPasswordConfirm;
+    user.otp = undefined;
+    user.otpExpires = undefined;
+    await user.save();
+
+    createSendToken(user, 200, req, res);
+  } catch (err) {
+    console.error('Reset Password by OTP Error:', err);
+    res.status(500).json({
+      status: 'error',
+      message: 'Error resetting password using OTP',
+    });
+  }
+};
+
 // Update password (for logged-in users)
 export const updatePassword = async (req, res, next) => {
   try {
-    // 1) Get user from collection
     const user = await User.findById(req.user.id).select('+password');
 
-    // 2) Check if POSTed current password is correct
     if (!(await user.correctPassword(req.body.currentPassword, user.password))) {
       return res.status(401).json({
         status: 'fail',
@@ -375,20 +467,20 @@ export const updatePassword = async (req, res, next) => {
       });
     }
 
-    // 3) If so, update password
     user.password = req.body.newPassword;
     user.passwordConfirm = req.body.newPasswordConfirm;
     await user.save();
 
-    // 4) Log user in, send JWT
     createSendToken(user, 200, req, res);
   } catch (err) {
+    console.error('Update Password Error:', err);
     res.status(500).json({
       status: 'error',
       message: 'Error updating password',
     });
   }
 };
+
 
 // Logout user
 export const logout = (req, res) => {
