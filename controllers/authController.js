@@ -3,7 +3,6 @@ import { promisify } from 'util';
 import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
 import User from '../models/User.js';
-import Email from '../utils/email.js';
 import { createSendToken, signToken } from '../middleware/auth.js';
 
 // Generate OTP
@@ -13,129 +12,17 @@ const generateOTP = () => {
 
 // Forgot password via OTP (Step 1: send OTP)
 export const forgotPasswordOTP = async (req, res, next) => {
-  try {
-    const { email } = req.body;
-    if (!email) {
-      return res.status(400).json({ status: 'fail', message: 'Please provide email' });
-    }
-
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ status: 'fail', message: 'There is no user with that email address' });
-    }
-
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    user.otp = otp;
-    user.otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
-    await user.save({ validateBeforeSave: false });
-
-    try {
-      const url = `${req.protocol}://${req.get('host')}/reset-password-otp`; // informational
-      await new Email(user, url, otp).sendPasswordResetOTP();
-      return res.status(200).json({ status: 'success', message: 'OTP sent to email' });
-    } catch (err) {
-      return res.status(500).json({ status: 'error', message: 'Error sending OTP email. Try again later!' });
-    }
-  } catch (err) {
-    return res.status(500).json({ status: 'error', message: 'Error processing your request' });
-  }
+  return res.status(410).json({ status: 'fail', message: 'OTP-based password reset is disabled' });
 };
 
 // Reset password using OTP (Step 2: verify OTP and set new password)
 export const resetPasswordByOTP = async (req, res, next) => {
-  try {
-    const { email, otp, password, passwordConfirm } = req.body;
-    if (!email || !otp || !password || !passwordConfirm) {
-      return res.status(400).json({ status: 'fail', message: 'Email, OTP, password and passwordConfirm are required' });
-    }
-
-    if (password !== passwordConfirm) {
-      return res.status(400).json({ status: 'fail', message: 'Passwords do not match' });
-    }
-
-    const user = await User.findOne({ email, otp, otpExpires: { $gt: Date.now() } }).select('+password');
-    if (!user) {
-      return res.status(400).json({ status: 'fail', message: 'Invalid or expired OTP' });
-    }
-
-    user.password = password;
-    user.passwordConfirm = passwordConfirm;
-    user.otp = undefined;
-    user.otpExpires = undefined;
-    await user.save();
-
-    return res.status(200).json({ status: 'success', message: 'Password reset successful' });
-  } catch (err) {
-    return res.status(500).json({ status: 'error', message: 'Error resetting password' });
-  }
+  return res.status(410).json({ status: 'fail', message: 'OTP-based password reset is disabled' });
 };
 
 // Send OTP for email verification
 export const sendOTP = async (req, res, next) => {
-  try {
-    const { email, name } = req.body;
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('[AUTH] sendOTP called', { email, name });
-    }
-
-    // 1) Check if email exists
-    if (!email) {
-      return res.status(400).json({
-        status: 'fail',
-        message: 'Please provide an email address',
-      });
-    }
-
-    // 2) Check if user already exists
-    let user = await User.findOne({ email });
-    
-    // Generate OTP
-    const otp = generateOTP();
-    const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('[AUTH] sendOTP generated', { email, otp, otpExpires });
-    }
-
-    if (user) {
-      // Update existing user with new OTP
-      user.otp = otp;
-      user.otpExpires = otpExpires;
-      await user.save({ validateBeforeSave: false });
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('[AUTH] verifyOTP success', { email });
-    }
-    } else {
-      // Create temporary user if not exists
-      user = await User.create({
-        email,
-        name: name || 'New User',
-        otp,
-        otpExpires,
-        isVerified: false
-      });
-    }
-
-    // 3) Send OTP via email (fire-and-forget to avoid blocking the response)
-    const verificationUrl = `${req.protocol}://${req.get('host')}/verify-email?otp=${otp}&email=${encodeURIComponent(email)}`;
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('[AUTH] sendOTP sending email (async)', { to: email, verificationUrl });
-    }
-    Promise.resolve()
-      .then(() => new Email(user, verificationUrl, otp).sendOTP())
-      .catch((err) => console.error('[AUTH] sendOTP email error:', err?.message));
-
-    // Respond immediately
-    res.status(200).json({
-      status: 'success',
-      message: 'OTP sent successfully',
-    });
-  } catch (err) {
-    console.error('[AUTH] sendOTP handler error:', err?.message);
-    res.status(500).json({
-      status: 'error',
-      message: 'An error occurred while processing your request',
-    });
-  }
+  return res.status(410).json({ status: 'fail', message: 'Email/OTP verification is disabled' });
 };
 
 // Signup a new user
@@ -157,37 +44,6 @@ export const signup = async (req, res, next) => {
     // 2) Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      // If user exists but is not verified, resend OTP
-      if (!existingUser.isVerified) {
-        const otp = generateOTP();
-        existingUser.otp = otp;
-        existingUser.otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
-        await existingUser.save({ validateBeforeSave: false });
-        if (process.env.NODE_ENV !== 'production') {
-          console.log('[AUTH] signup existing unverified user -> OTP regenerated', { email, otp });
-        }
-        
-        // Send new OTP
-        const verificationUrl = `${req.protocol}://${req.get('host')}/verify-email?otp=${otp}&email=${encodeURIComponent(email)}`;
-        try {
-          if (process.env.NODE_ENV !== 'production') {
-            console.log('[AUTH] signup resend OTP sending email', { to: email, verificationUrl });
-          }
-          await new Email(existingUser, verificationUrl, otp).sendOTP();
-          return res.status(200).json({
-            status: 'success',
-            message: 'Account not verified. New OTP sent to your email.',
-          });
-        } catch (e) {
-          console.error('[AUTH] signup resend OTP email error:', e?.message);
-          // Production: report failure
-          return res.status(500).json({
-            status: 'error',
-            message: 'There was an error sending the OTP. Please try again later.',
-          });
-        }
-      }
-      
       // If user exists and is verified
       return res.status(400).json({
         status: 'fail',
@@ -195,34 +51,16 @@ export const signup = async (req, res, next) => {
       });
     }
 
-    // 3) Generate OTP
-    const otp = generateOTP();
-    const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
-
-    // 4) Create new user (not verified yet)
+    // 3) Create new user (auto-verified, no email)
     const newUser = await User.create({
       name,
       email,
       password,
       phone,
-      otp,
-      otpExpires,
+      isVerified: true,
     });
-
-        // 5) Send verification email with OTP (fire-and-forget)
-    const verificationUrl2 = `${req.protocol}://${req.get('host')}/verify-email?otp=${otp}&email=${encodeURIComponent(email)}`;
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('[AUTH] signup new user -> sending email (async)', { to: email, verificationUrl: verificationUrl2 });
-    }
-    Promise.resolve()
-      .then(() => new Email(newUser, verificationUrl2, otp).sendOTP())
-      .catch((err) => console.error('[AUTH] signup new user email error:', err?.message));
-
-    // Respond immediately to avoid client timeout
-    res.status(201).json({
-      status: 'success',
-      message: 'OTP sent to your email. Please verify your account.',
-    });
+    // Log user in immediately
+    createSendToken(newUser, 201, req, res);
   } catch (err) {
     console.error('[AUTH] signup handler error:', err?.message);
     res.status(400).json({
@@ -234,113 +72,12 @@ export const signup = async (req, res, next) => {
 
 // Verify OTP
 export const verifyOTP = async (req, res, next) => {
-  try {
-    const { email, otp } = req.body;
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('[AUTH] verifyOTP called', { email, otp });
-    }
-
-    // 1) Find user by email and check if OTP matches and is not expired
-    const user = await User.findOne({
-      email,
-      otp,
-      otpExpires: { $gt: Date.now() }
-    });
-
-    // 2) If OTP is invalid or expired
-    if (!user) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('[AUTH] verifyOTP invalid or expired', { email, otp });
-      }
-      return res.status(400).json({
-        status: 'fail',
-        message: 'Invalid or expired OTP',
-      });
-    }
-
-    // 3) Mark user as verified and clear OTP fields
-    user.isVerified = true;
-    user.otp = undefined;
-    user.otpExpires = undefined;
-    await user.save({ validateBeforeSave: false });
-
-    // 4) Send welcome email (best-effort)
-    try {
-      const url = `${req.protocol}://${req.get('host')}`;
-      await new Email(user, url).sendWelcome();
-    } catch (e) {
-      // do not fail verification if email fails
-      console.warn('Welcome email failed:', e?.message);
-    }
-
-    // 5) Send success response without token
-    return res.status(200).json({ success: true, message: 'OTP verified successfully' });
-  } catch (err) {
-    console.error('[AUTH] verifyOTP handler error:', err?.message);
-    res.status(500).json({
-      status: 'error',
-      message: 'Error verifying OTP',
-      error: err.message,
-    });
-  }
+  return res.status(410).json({ status: 'fail', message: 'Email/OTP verification is disabled' });
 };
 
 // Resend OTP
 export const resendOTP = async (req, res, next) => {
-  try {
-    const { email } = req.body;
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('[AUTH] resendOTP called', { email });
-    }
-    
-    // 1) Find user by email
-    const user = await User.findOne({ email });
-    
-    if (!user) {
-      return res.status(404).json({
-        status: 'fail',
-        message: 'No user found with this email',
-      });
-    }
-
-    // 2) Generate new OTP
-    const otp = generateOTP();
-    const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
-
-    // 3) Update user with new OTP
-    user.otp = otp;
-    user.otpExpires = otpExpires;
-    await user.save({ validateBeforeSave: false });
-
-    // 4) Send new OTP email
-    try {
-      const verificationUrl = `${req.protocol}://${req.get('host')}/verify-email?otp=${otp}&email=${encodeURIComponent(email)}`;
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('[AUTH] resendOTP sending email', { to: email, verificationUrl });
-      }
-      await new Email(user, verificationUrl, otp).sendOTP();
-
-      res.status(200).json({
-        status: 'success',
-        message: 'OTP resent successfully',
-      });
-    } catch (err) {
-      // If email sending fails, still respond with success but log the error
-      console.error('[AUTH] resendOTP email error:', err?.message);
-      
-      res.status(200).json({
-        status: 'success',
-        message: 'OTP generated but email could not be sent',
-        otp: process.env.NODE_ENV === 'development' ? otp : undefined,
-      });
-    }
-  } catch (err) {
-    console.error('[AUTH] resendOTP handler error:', err?.message);
-    res.status(500).json({
-      status: 'error',
-      message: 'Error sending OTP. Please try again.',
-    });
-  }
+  return res.status(410).json({ status: 'fail', message: 'Email/OTP verification is disabled' });
 };
 
 // Login user
@@ -384,14 +121,7 @@ if (user.password !== password) {
   });
 }
 
-
-    // 5) Check if user is verified
-    if (!user.isVerified) {
-      return res.status(401).json({
-        status: 'fail',
-        message: 'Please verify your email address first',
-      });
-    }
+    // No email verification required
 
     // 6) Generate session ID for tracking
     const sessionId = crypto.randomBytes(16).toString('hex');
@@ -509,27 +239,9 @@ export const forgotPassword = async (req, res, next) => {
     // 2) Generate the random reset token
     const resetToken = user.createPasswordResetToken();
     await user.save({ validateBeforeSave: false });
-
-    // 3) Send it to user's email
-    try {
-      const resetURL = `${req.protocol}://${req.get('host')}/reset-password/${resetToken}`;
-      
-      await new Email(user, resetURL).sendPasswordReset();
-
-      res.status(200).json({
-        status: 'success',
-        message: 'Token sent to email!',
-      });
-    } catch (err) {
-      user.passwordResetToken = undefined;
-      user.passwordResetExpires = undefined;
-      await user.save({ validateBeforeSave: false });
-
-      return res.status(500).json({
-        status: 'error',
-        message: 'There was an error sending the email. Try again later!',
-      });
-    }
+    // 3) Return the token in the API response (email disabled)
+    const resetURL = `${req.protocol}://${req.get('host')}/reset-password/${resetToken}`;
+    return res.status(200).json({ status: 'success', resetToken, resetURL });
   } catch (err) {
     res.status(500).json({
       status: 'error',
