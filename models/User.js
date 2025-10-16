@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import validator from 'validator';
-import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 
 const userSchema = new mongoose.Schema(
@@ -76,16 +75,9 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// Hash password before saving
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
-  this.password = await bcrypt.hash(this.password, 12);
-  next();
-});
-
-// Check if password is correct
+// Plain-text password check (no hashing)
 userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
-  return await bcrypt.compare(candidatePassword, userPassword);
+  return candidatePassword === userPassword;
 };
 
 // Check if password was changed after token was issued

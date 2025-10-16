@@ -3,6 +3,7 @@ import { promisify } from 'util';
 import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
 import User from '../models/User.js';
+import Email from '../utils/email.js';
 import { createSendToken, signToken } from '../middleware/auth.js';
 
 // Generate OTP
@@ -22,7 +23,37 @@ export const resetPasswordByOTP = async (req, res, next) => {
 
 // Send OTP for email verification
 export const sendOTP = async (req, res, next) => {
-  return res.status(410).json({ status: 'fail', message: 'Email/OTP verification is disabled' });
+  try {
+    const { email, name } = req.body || {};
+    if (!email) {
+      return res.status(400).json({ status: 'fail', message: 'Please provide an email address' });
+    }
+
+    let user = await User.findOne({ email });
+    const otp = generateOTP();
+    const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+    if (user) {
+      user.otp = otp;
+      user.otpExpires = otpExpires;
+      await user.save({ validateBeforeSave: false });
+    } else {
+      user = await User.create({
+        email,
+        name: name || 'New User',
+        otp,
+        otpExpires,
+        isVerified: false
+      });
+    }
+
+    const verificationUrl = `${req.protocol}://${req.get('host')}/verify-email?otp=${otp}&email=${encodeURIComponent(email)}`;
+    await new Email(user, verificationUrl, otp).sendOTP();
+    return res.status(200).json({ status: 'success', message: 'OTP sent to email' });
+  } catch (err) {
+    console.error('[AUTH] sendOTP error:', err?.message);
+    return res.status(500).json({ status: 'error', message: 'Failed to send OTP' });
+  }
 };
 
 // Signup a new user
@@ -51,16 +82,21 @@ export const signup = async (req, res, next) => {
       });
     }
 
-    // 3) Create new user (auto-verified, no email)
+    // 3) Create new user (not verified), send OTP
+    const otp = generateOTP();
+    const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
     const newUser = await User.create({
       name,
       email,
       password,
       phone,
-      isVerified: true,
+      otp,
+      otpExpires,
+      isVerified: false
     });
-    // Log user in immediately
-    createSendToken(newUser, 201, req, res);
+    const verifyUrl = `${req.protocol}://${req.get('host')}/verify-email?otp=${otp}&email=${encodeURIComponent(email)}`;
+    await new Email(newUser, verifyUrl, otp).sendOTP();
+    return res.status(201).json({ status: 'success', message: 'OTP sent to your email. Please verify your account.' });
   } catch (err) {
     console.error('[AUTH] signup handler error:', err?.message);
     res.status(400).json({
@@ -72,12 +108,45 @@ export const signup = async (req, res, next) => {
 
 // Verify OTP
 export const verifyOTP = async (req, res, next) => {
-  return res.status(410).json({ status: 'fail', message: 'Email/OTP verification is disabled' });
+  try {
+    const { email, otp } = req.body || {};
+    if (!email || !otp) {
+      return res.status(400).json({ status: 'fail', message: 'Email and OTP are required' });
+    }
+    const user = await User.findOne({ email, otp, otpExpires: { $gt: Date.now() } });
+    if (!user) {
+      return res.status(400).json({ status: 'fail', message: 'Invalid or expired OTP' });
+    }
+    user.isVerified = true;
+    user.otp = undefined;
+    user.otpExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+    // Auto-login upon successful verification
+    return createSendToken(user, 200, req, res);
+  } catch (err) {
+    console.error('[AUTH] verifyOTP error:', err?.message);
+    return res.status(500).json({ status: 'error', message: 'Error verifying OTP' });
+  }
 };
 
 // Resend OTP
 export const resendOTP = async (req, res, next) => {
-  return res.status(410).json({ status: 'fail', message: 'Email/OTP verification is disabled' });
+  try {
+    const { email } = req.body || {};
+    if (!email) return res.status(400).json({ status: 'fail', message: 'Email is required' });
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ status: 'fail', message: 'No user found with this email' });
+    const otp = generateOTP();
+    user.otp = otp;
+    user.otpExpires = Date.now() + 10 * 60 * 1000;
+    await user.save({ validateBeforeSave: false });
+    const verificationUrl = `${req.protocol}://${req.get('host')}/verify-email?otp=${otp}&email=${encodeURIComponent(email)}`;
+    await new Email(user, verificationUrl, otp).sendOTP();
+    return res.status(200).json({ status: 'success', message: 'OTP resent successfully' });
+  } catch (err) {
+    console.error('[AUTH] resendOTP error:', err?.message);
+    return res.status(500).json({ status: 'error', message: 'Failed to resend OTP' });
+  }
 };
 
 // Login user
@@ -121,7 +190,10 @@ if (user.password !== password) {
   });
 }
 
-    // No email verification required
+    // Require email verification before login
+  if (!user.isVerified) {
+    return res.status(401).json({ status: 'fail', message: 'Please verify your email address first' });
+  }
 
     // 6) Generate session ID for tracking
     const sessionId = crypto.randomBytes(16).toString('hex');
