@@ -3,6 +3,7 @@ import pug from 'pug';
 import { htmlToText } from 'html-to-text';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import SibApiV3Sdk from 'sib-api-v3-sdk';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -13,18 +14,20 @@ class Email {
     this.firstName = user.name?.split(' ')[0] || 'User';
     this.url = url;
     this.otp = otp;
-    const emailUser = process.env.EMAIL_USERNAME || '';
-    const fromName = process.env.EMAIL_FROM_NAME || 'careerRedefine';
-    const fromAddress = emailUser || 'no-reply@example.com';
+    // From details and sender info
+    const emailUser = process.env.EMAIL_USERNAME || process.env.EMAIL_USER || '';
+    this.fromName = process.env.EMAIL_FROM_NAME || 'careerRedefine';
+    this.fromAddress = process.env.EMAIL_FROM_ADDRESS || emailUser || 'no-reply@example.com';
     const explicitFrom = process.env.EMAIL_FROM;
-    this.from = explicitFrom || `"${fromName}" <${fromAddress}>`;
+    this.from = explicitFrom || `"${this.fromName}" <${this.fromAddress}>`;
   }
 
   // Create a transporter
   async newTransport() {
-    const host = process.env.EMAIL_HOST;
-    const port = Number(process.env.EMAIL_PORT);
-    const user = process.env.EMAIL_USERNAME;
+    // Support both EMAIL_* and SMTP_* variable names
+    const host = process.env.EMAIL_HOST || process.env.SMTP_HOST;
+    const port = Number(process.env.EMAIL_PORT || process.env.SMTP_PORT || 587);
+    const user = process.env.EMAIL_USERNAME || process.env.EMAIL_USER;
     const pass = process.env.EMAIL_PASSWORD || process.env.EMAIL_PASS;
     if (!host || !port || !user || !pass) {
       throw new Error('EMAIL_HOST, EMAIL_PORT, EMAIL_USERNAME and EMAIL_PASSWORD (or EMAIL_PASS) must be set');
@@ -79,11 +82,42 @@ class Email {
         code: smtpErr?.code,
         command: smtpErr?.command
       });
-      if (process.env.NODE_ENV === 'production') {
-        throw new Error('There was an error sending the email. Please try again later.');
-      } else {
-        console.warn('Email send failed in development. Continuing without email.');
-        return;
+
+      // Brevo fallback if API key provided
+      const brevoKey = process.env.BREVO_API_KEY || process.env.SIB_API_KEY || process.env.SENDINBLUE_API_KEY;
+      if (!brevoKey) {
+        if (process.env.NODE_ENV === 'production') {
+          throw new Error('Email sending failed and no Brevo API key is configured for fallback.');
+        } else {
+          console.warn('Email send failed in development and no Brevo key. Continuing without email.');
+          return;
+        }
+      }
+
+      try {
+        const defaultClient = SibApiV3Sdk.ApiClient.instance;
+        defaultClient.authentications['api-key'].apiKey = brevoKey;
+        const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+        const sendSmtpEmail = {
+          sender: { name: this.fromName, email: this.fromAddress },
+          to: [{ email: this.to, name: this.firstName }],
+          subject,
+          htmlContent: html,
+          textContent: htmlToText(html),
+        };
+        await apiInstance.sendTransacEmail(sendSmtpEmail);
+        console.log('Brevo fallback email sent successfully');
+      } catch (brevoErr) {
+        console.error('Brevo fallback failed:', {
+          message: brevoErr?.message,
+          status: brevoErr?.status,
+        });
+        if (process.env.NODE_ENV === 'production') {
+          throw new Error('There was an error sending the email via SMTP and Brevo. Please try again later.');
+        } else {
+          console.warn('Both SMTP and Brevo failed in development. Continuing without email.');
+          return;
+        }
       }
     }
   }
