@@ -16,6 +16,15 @@ class Email {
       port,
       secure: port === 465,
       auth: { user, pass },
+      pool: true,
+      maxConnections: 1,
+      maxMessages: 50,
+      connectionTimeout: parseInt(process.env.SMTP_CONNECTION_TIMEOUT || '15000', 10),
+      socketTimeout: parseInt(process.env.SMTP_SOCKET_TIMEOUT || '20000', 10),
+      greetingTimeout: parseInt(process.env.SMTP_GREETING_TIMEOUT || '10000', 10),
+      tls: {
+        minVersion: 'TLSv1.2',
+      },
     });
   }
 
@@ -23,14 +32,31 @@ class Email {
     try {
       // Try Gmail first
       if (process.env.EMAIL_USERNAME && process.env.EMAIL_PASSWORD) {
-        const gmailTransport = await this.createTransporter(
-          process.env.EMAIL_HOST || "smtp.gmail.com",
-          process.env.EMAIL_USERNAME,
-          process.env.EMAIL_PASSWORD
-        );
-        await gmailTransport.verify();
-        console.log("✅ Gmail transporter ready");
-        return gmailTransport;
+        const host = process.env.EMAIL_HOST || "smtp.gmail.com";
+        const primaryPort = parseInt(process.env.EMAIL_PORT || '587', 10);
+        // Attempt primary port first (default 587 STARTTLS)
+        try {
+          const txPrimary = await this.createTransporter(host, process.env.EMAIL_USERNAME, process.env.EMAIL_PASSWORD, primaryPort);
+          await txPrimary.verify();
+          console.log(`✅ SMTP transporter ready on ${host}:${primaryPort}`);
+          return txPrimary;
+        } catch (e1) {
+          console.error(`❌ SMTP verify failed on ${host}:${primaryPort} ->`, e1?.code || e1?.name || 'Error', e1?.message);
+          // If 587 failed, try implicit TLS on 465 as fallback
+          const fallbackPort = 465;
+          if (primaryPort !== fallbackPort) {
+            try {
+              const txTLS = await this.createTransporter(host, process.env.EMAIL_USERNAME, process.env.EMAIL_PASSWORD, fallbackPort);
+              await txTLS.verify();
+              console.log(`✅ SMTP transporter ready on ${host}:${fallbackPort}`);
+              return txTLS;
+            } catch (e2) {
+              console.error(`❌ SMTP verify failed on ${host}:${fallbackPort} ->`, e2?.code || e2?.name || 'Error', e2?.message);
+              throw e2;
+            }
+          }
+          throw e1;
+        }
       }
       throw new Error("Gmail creds missing");
     } catch (err) {
@@ -48,7 +74,38 @@ class Email {
     }
   }
 
+  async sendHTTP(subject, html, text) {
+    const apiKey = process.env.BREVO_API_KEY;
+    const senderEmail = this.fromAddress;
+    const senderName = process.env.EMAIL_SENDER_NAME || "No Reply";
+    const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "api-key": String(apiKey || ""),
+      },
+      body: JSON.stringify({
+        sender: { email: senderEmail, name: senderName },
+        to: [{ email: this.to }],
+        subject,
+        htmlContent: html,
+        textContent: text,
+      }),
+    });
+    if (!res.ok) {
+      const msg = await res.text();
+      throw new Error(`Brevo HTTP error ${res.status}: ${msg}`);
+    }
+  }
+
   async send(subject, html, text) {
+    const useHttp = String(process.env.USE_BREVO_HTTP || "").toLowerCase() === "true";
+    const canHttp = Boolean(process.env.BREVO_API_KEY);
+    if (useHttp && canHttp) {
+      await this.sendHTTP(subject, html, text);
+      console.log(`📨 Email sent to ${this.to}`);
+      return;
+    }
     const mailOptions = {
       from: this.fromAddress,
       to: this.to,
@@ -57,8 +114,13 @@ class Email {
       text,
     };
     const tx = await this.transporter();
-    await tx.sendMail(mailOptions);
-    console.log(`📨 Email sent to ${this.to}`);
+    try {
+      await tx.sendMail(mailOptions);
+      console.log(`📨 Email sent to ${this.to}`);
+    } catch (e) {
+      console.error('❌ Nodemailer sendMail failed:', e?.code || e?.name || 'Error', e?.message);
+      throw e;
+    }
   }
 
   async sendOTP() {
