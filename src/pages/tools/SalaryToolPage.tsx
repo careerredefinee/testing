@@ -9,16 +9,29 @@ const SalaryToolPage: React.FC = () => {
   const [error, setError] = useState('');
   const [reply, setReply] = useState('');
 
+  const cleanupResponse = (text: string): string => {
+    return text
+      .replace(/^#{1,6}\s+/gm, '')
+      .replace(/\*\*(.*?)\*\*/g, '$1')
+      .replace(/\*(.*?)\*/g, '$1')
+      .replace(/```[\s\S]*?```/g, '')
+      .replace(/`([^`]+)`/g, '$1')
+      .replace(/^---+$/gm, '')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  };
+
   const submit = async () => {
     setError(''); setReply(''); setLoading(true);
     try {
       const resp = await fetch(`${BASE_URL}/api/v1/tools/chat`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: `Estimate salary for ${role} in ${location} with ${years} years experience. Add negotiation script.`, tool: 'salary', context: 'Salary Advisor' })
+        body: JSON.stringify({ message: `Estimate salary range for ${role} in ${location} with ${years} years experience. Include negotiation tips and script. Format as clean bullet points with no markdown.`, tool: 'salary', context: 'Salary Advisor' })
       });
       const data = await resp.json();
       if (!resp.ok) throw new Error(data?.message || 'Request failed');
-      setReply(data?.data?.reply || '');
+      const rawReply = data?.data?.reply || '';
+      setReply(cleanupResponse(rawReply));
     } catch (e:any) { setError(e.message || 'Failed'); } finally { setLoading(false); }
   };
 
@@ -44,7 +57,30 @@ const SalaryToolPage: React.FC = () => {
             <button onClick={submit} disabled={loading} className={`px-4 py-2 rounded-md text-white ${loading?'bg-amber-300':'bg-amber-600 hover:bg-amber-700'}`}>{loading?'Estimating…':'Estimate & Script'}</button>
             {error && <p className="text-sm text-red-600">{error}</p>}
           </div>
-          <div className="border rounded-md p-4 min-h-[320px] whitespace-pre-wrap">{reply || 'Output will appear here.'}</div>
+          <div className="border rounded-md p-4 min-h-[320px] overflow-y-auto">
+            {reply ? (
+              <div className="space-y-2">
+                {reply.split('\n').map((line, index) => {
+                  if (line.trim() === '') return <div key={index} className="h-2"></div>;
+                  if (line.includes('Salary') || line.includes('Range:')) {
+                    return <div key={index} className="font-semibold text-green-600 mt-4">{line}</div>;
+                  }
+                  if (line.includes('Negotiation') || line.includes('Script:') || line.includes('Tips:')) {
+                    return <div key={index} className="font-medium text-blue-700 mt-3">{line}</div>;
+                  }
+                  if (line.includes('Say:') || line.includes('Response:')) {
+                    return <div key={index} className="font-medium text-purple-700 mt-2">{line}</div>;
+                  }
+                  if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
+                    return <div key={index} className="ml-4 text-gray-700">{line}</div>;
+                  }
+                  return <div key={index} className="text-gray-800">{line}</div>;
+                })}
+              </div>
+            ) : (
+              <div className="text-gray-500 italic">Output will appear here.</div>
+            )}
+          </div>
         </div>
       </div>
     </div>

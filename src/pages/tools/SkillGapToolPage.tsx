@@ -8,16 +8,29 @@ const SkillGapToolPage: React.FC = () => {
   const [error, setError] = useState('');
   const [reply, setReply] = useState('');
 
+  const cleanupResponse = (text: string): string => {
+    return text
+      .replace(/^#{1,6}\s+/gm, '')
+      .replace(/\*\*(.*?)\*\*/g, '$1')
+      .replace(/\*(.*?)\*/g, '$1')
+      .replace(/```[\s\S]*?```/g, '')
+      .replace(/`([^`]+)`/g, '$1')
+      .replace(/^---+$/gm, '')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  };
+
   const submit = async () => {
     setError(''); setReply(''); setLoading(true);
     try {
       const resp = await fetch(`${BASE_URL}/api/v1/tools/chat`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: `Target role: ${targetRole}. Current skills: ${currentSkills}. Identify gaps and propose a 4-week plan.`, tool: 'skill-gap', context: 'Skill Gap' })
+        body: JSON.stringify({ message: `Target role: ${targetRole}. Current skills: ${currentSkills}. Identify skill gaps and create a clean 4-week learning plan. Format as simple bullet points with no markdown or complex formatting.`, tool: 'skill-gap', context: 'Skill Gap' })
       });
       const data = await resp.json();
       if (!resp.ok) throw new Error(data?.message || 'Request failed');
-      setReply(data?.data?.reply || '');
+      const rawReply = data?.data?.reply || '';
+      setReply(cleanupResponse(rawReply));
     } catch (e:any) { setError(e.message || 'Failed'); } finally { setLoading(false); }
   };
 
@@ -39,7 +52,30 @@ const SkillGapToolPage: React.FC = () => {
             <button onClick={submit} disabled={loading} className={`px-4 py-2 rounded-md text-white ${loading?'bg-purple-300':'bg-purple-600 hover:bg-purple-700'}`}>{loading?'Analyzing…':'Analyze Gaps'}</button>
             {error && <p className="text-sm text-red-600">{error}</p>}
           </div>
-          <div className="border rounded-md p-4 min-h-[320px] whitespace-pre-wrap">{reply || 'Output will appear here.'}</div>
+          <div className="border rounded-md p-4 min-h-[320px] overflow-y-auto">
+            {reply ? (
+              <div className="space-y-2">
+                {reply.split('\n').map((line, index) => {
+                  if (line.trim() === '') return <div key={index} className="h-2"></div>;
+                  if (line.includes('Gap:') || line.includes('Missing:')) {
+                    return <div key={index} className="font-semibold text-red-600 mt-4">{line}</div>;
+                  }
+                  if (line.includes('Week') || line.includes('Plan:')) {
+                    return <div key={index} className="font-medium text-blue-700 mt-3">{line}</div>;
+                  }
+                  if (line.includes('Resources:') || line.includes('Action:')) {
+                    return <div key={index} className="font-medium text-green-700 mt-2">{line}</div>;
+                  }
+                  if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
+                    return <div key={index} className="ml-4 text-gray-700">{line}</div>;
+                  }
+                  return <div key={index} className="text-gray-800">{line}</div>;
+                })}
+              </div>
+            ) : (
+              <div className="text-gray-500 italic">Output will appear here.</div>
+            )}
+          </div>
         </div>
       </div>
     </div>

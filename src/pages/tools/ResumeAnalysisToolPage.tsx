@@ -8,6 +8,18 @@ const ResumeAnalysisToolPage: React.FC = () => {
   const [error, setError] = useState('');
   const [analysis, setAnalysis] = useState('');
 
+  const cleanupResponse = (text: string): string => {
+    return text
+      .replace(/^#{1,6}\s+/gm, '')
+      .replace(/\*\*(.*?)\*\*/g, '$1')
+      .replace(/\*(.*?)\*/g, '$1')
+      .replace(/```[\s\S]*?```/g, '')
+      .replace(/`([^`]+)`/g, '$1')
+      .replace(/^---+$/gm, '')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  };
+
   const submitFile = async () => {
     if (!file) return;
     setError(''); setAnalysis(''); setLoading(true);
@@ -21,7 +33,8 @@ const ResumeAnalysisToolPage: React.FC = () => {
       });
       const data = await resp.json();
       if (!resp.ok) throw new Error(data?.message || 'Upload failed');
-      setAnalysis(data?.data?.analysis || '');
+      const rawAnalysis = data?.data?.analysis || '';
+      setAnalysis(cleanupResponse(rawAnalysis));
     } catch (e:any) { setError(e.message || 'Failed'); } finally { setLoading(false); }
   };
 
@@ -37,7 +50,8 @@ const ResumeAnalysisToolPage: React.FC = () => {
       });
       const data = await resp.json();
       if (!resp.ok) throw new Error(data?.message || 'Request failed');
-      setAnalysis(data?.data?.analysis || '');
+      const rawAnalysis = data?.data?.analysis || '';
+      setAnalysis(cleanupResponse(rawAnalysis));
     } catch (e:any) { setError(e.message || 'Failed'); } finally { setLoading(false); }
   };
 
@@ -63,7 +77,33 @@ const ResumeAnalysisToolPage: React.FC = () => {
             {error && <p className="text-sm text-red-600">{error}</p>}
           </div>
           {/* Output */}
-          <div className="border rounded-md p-4 min-h-[360px] whitespace-pre-wrap">{analysis || 'Analysis output will appear here.'}</div>
+          <div className="border rounded-md p-4 min-h-[360px] overflow-y-auto">
+            {analysis ? (
+              <div className="space-y-2">
+                {analysis.split('\n').map((line, index) => {
+                  if (line.trim() === '') return <div key={index} className="h-2"></div>;
+                  if (line.includes('Score:') || line.includes('Rating:')) {
+                    return <div key={index} className="font-semibold text-blue-600 mt-4">{line}</div>;
+                  }
+                  if (line.includes('Strengths:') || line.includes('Good:')) {
+                    return <div key={index} className="font-medium text-green-700 mt-3">{line}</div>;
+                  }
+                  if (line.includes('Improvements:') || line.includes('Issues:') || line.includes('Missing:')) {
+                    return <div key={index} className="font-medium text-red-600 mt-3">{line}</div>;
+                  }
+                  if (line.includes('Recommendations:') || line.includes('Suggestions:')) {
+                    return <div key={index} className="font-medium text-purple-700 mt-2">{line}</div>;
+                  }
+                  if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
+                    return <div key={index} className="ml-4 text-gray-700">{line}</div>;
+                  }
+                  return <div key={index} className="text-gray-800">{line}</div>;
+                })}
+              </div>
+            ) : (
+              <div className="text-gray-500 italic">Analysis output will appear here.</div>
+            )}
+          </div>
         </div>
         <p className="text-xs text-gray-500 mt-3">Note: You need to be logged in. The extracted resume text is saved for admin review; admin can view/delete in Admin → Resumes.</p>
       </div>
