@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet, useLocation } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -53,6 +53,18 @@ const AdminLayout: React.FC = () => {
       <Footer />
     </div>
   );
+};
+
+// Component to conditionally render footer
+const ConditionalFooter: React.FC = () => {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
+  
+  if (isAdminRoute) {
+    return null; // No footer on admin pages
+  }
+  
+  return <Footer />;
 };
 
 function App() {
@@ -158,7 +170,7 @@ function App() {
               {/* Add more protected routes here */}
             </Routes>
           </main>
-          <Footer />
+          <ConditionalFooter />
           <ChatAssistant />
         </div>
       </Router>
