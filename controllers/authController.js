@@ -14,10 +14,6 @@ const generateOTP = () => {
 // Forgot password via OTP (Step 1: send OTP)
 
 // Reset password using OTP (Step 2: verify OTP and set new password)
-export const resetPasswordByOTP = async (req, res, next) => {
-  return res.status(410).json({ status: 'fail', message: 'OTP-based password reset is disabled' });
-};
-
 // Send OTP for email verification
 export const sendOTP = async (req, res, next) => {
   try {
