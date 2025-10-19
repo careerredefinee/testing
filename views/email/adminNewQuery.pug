@@ -1,0 +1,21 @@
+extends baseEmail
+
+block content
+  p Hello #{adminName},
+  p A new query has been submitted on the careerRedefine platform.
+  p 
+    strong From: 
+    | #{userName} (#{userEmail})
+  p 
+    strong Subject: 
+    | #{subject}
+  p 
+    strong Message:
+    | #{message}
+  p 
+    | Query ID: #{queryId}
+  p 
+    a(href=`${process.env.FRONTEND_URL}/admin/queries/${queryId}`, target='_blank') View and respond to this query
+  p 
+    | Best regards,
+    | careerRedefine System

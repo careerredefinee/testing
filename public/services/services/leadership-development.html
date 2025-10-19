@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeadWise - Leadership Development Programs</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="servicegap.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+        }
+        
+        .intro-section {
+            background-color: #f8f9fa;
+            padding: 80px 0;
+        }
+        
+       
+        .service-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 30px;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .service-icon {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+        
+        .process-step {
+            text-align: center;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background: var(--secondary);
+            color: white;
+            border-radius: 50%;
+            line-height: 50px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--secondary);
+            display: block;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .content-image {
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .feature-list li {
+            margin-bottom: 10px;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .feature-list li:before {
+            content: '\f00c';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            color: var(--success);
+            position: absolute;
+            left: 0;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, var(--secondary), #2980b9);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        .explanation-section {
+            background-color: var(--primary);
+            color: white;
+            padding: 80px 0;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        footer {
+            background-color: #1a252f;
+            color: white;
+            padding: 50px 0 20px;
+        }
+        
+        .footer-links a {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .social-icons a {
+            color: white;
+            font-size: 1.2rem;
+            margin-right: 15px;
+            transition: color 0.3s ease;
+        }
+        
+        .social-icons a:hover {
+            color: var(--secondary);
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--secondary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .back-to-top.show {
+            opacity: 1;
+        }
+        
+        .stats-section {
+            background-color: #f8f9fa;
+            padding: 80px 0;
+        }
+        
+        .image-section {
+            padding: 80px 0;
+        }
+        
+        .testimonial-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+        
+        .testimonial-author {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .testimonial-role {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+   <!-- Navbar -->
+<nav style="background:#ffffff; padding:10px 0; box-shadow:0 2px 8px rgba(0,0,0,0.08); position:sticky; top:0; z-index:999;">
+  <div style="max-width:1200px; margin:0 auto; padding:0 12px; display:flex; align-items:center;">
+    <!-- Logo left -->
+    <a href="/" style="display:flex; align-items:center; text-decoration:none; margin-left:8px;">
+      <img src="/cr_logo.png" alt="Career Redefine" style="height:40px; width:auto;">
+    </a>
+    <!-- Links right -->
+    <div id="nav-menu" style="margin-left:auto; margin-right:8px; display:flex; gap:20px; align-items:center;">
+      <a href="/" style="text-decoration:none; color:#1f2937; font-weight:600;">Home</a>
+      <a href="/services" style="text-decoration:none; color:#1f2937; font-weight:600;">Services</a>
+      <a href="/courses" style="text-decoration:none; color:#1f2937; font-weight:600;">Courses</a>
+      <a href="/tools" style="text-decoration:none; color:#1f2937; font-weight:600;">Tools</a>
+      <a href="/support" style="text-decoration:none; color:#1f2937; font-weight:600;">Support</a>
+      <a href="/jobs" style="text-decoration:none; color:#1f2937; font-weight:600;">Jobs</a>
+      <a href="/reviews" style="text-decoration:none; color:#1f2937; font-weight:600;">Reviews</a>
+      <a href="/about" style="text-decoration:none; color:#1f2937; font-weight:600;">About</a>
+    </div>
+  </div>
+</nav>
+    <script>
+// simple responsive adjustment for links wrapping
+window.addEventListener('load', () => {
+  const menu = document.getElementById('nav-menu');
+  if (!menu) return;
+  const onResize = () => {
+    if (window.innerWidth < 768) {
+      menu.style.flexWrap = 'wrap';
+      menu.style.rowGap = '10px';
+      menu.style.justifyContent = 'flex-end';
+    } else {
+      menu.style.flexWrap = 'nowrap';
+      menu.style.rowGap = '0px';
+      menu.style.justifyContent = 'flex-end';
+    }
+  };
+  window.addEventListener('resize', onResize);
+  onResize();
+});
+</script>
+
+
+    <!-- Introduction Section -->
+    <section class="intro-section" id="intro">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-5 fw-bold mb-4">Leadership Development: Cultivate the Leader Within You</h1>
+                    <p class="lead mb-4">In today's rapidly evolving business landscape, effective leadership is more critical than ever. Our programs focus on communication, decision-making, and team management skills for future leaders.</p>
+                    <p>Whether you're an emerging leader or an experienced manager looking to enhance your skills, our comprehensive development programs are designed to unlock your leadership potential and drive organizational success.</p>
+                    <a href="#programs" class="btn btn-primary btn-lg mt-3">Explore Our Programs</a>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Leadership Development" class="img-fluid rounded" style="max-height: 400px;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Programs Section -->
+    <section id="programs" class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="section-title center-title">Our Leadership Development Programs</h2>
+                    <p class="lead">Comprehensive solutions to cultivate exceptional leaders</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <div class="card service-card">
+                        <div class="card-body">
+                            <div class="service-icon">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <h4 class="card-title">Strategic Communication</h4>
+                            <p class="card-text">Master the art of persuasive communication to inspire teams and drive organizational change.</p>
+                            <ul class="feature-list">
+                                <li>Executive presentation skills</li>
+                                <li>Difficult conversation frameworks</li>
+                                <li>Cross-cultural communication</li>
+                                <li>Influencing without authority</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="card service-card">
+                        <div class="card-body">
+                            <div class="service-icon">
+                                <i class="fas fa-chess"></i>
+                            </div>
+                            <h4 class="card-title">Decision-Making Excellence</h4>
+                            <p class="card-text">Develop frameworks for making sound decisions in complex and ambiguous situations.</p>
+                            <ul class="feature-list">
+                                <li>Data-driven decision making</li>
+                                <li>Risk assessment techniques</li>
+                                <li>Strategic thinking development</li>
+                                <li>Crisis management protocols</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="card service-card">
+                        <div class="card-body">
+                            <div class="service-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h4 class="card-title">Team Management Mastery</h4>
+                            <p class="card-text">Learn to build, motivate, and lead high-performing teams that deliver exceptional results.</p>
+                            <ul class="feature-list">
+                                <li>Team dynamics optimization</li>
+                                <li>Performance management systems</li>
+                                <li>Conflict resolution strategies</li>
+                                <li>Talent development frameworks</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="card service-card">
+                        <div class="card-body">
+                            <div class="service-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <h4 class="card-title">Emotional Intelligence</h4>
+                            <p class="card-text">Develop the self-awareness and interpersonal skills essential for effective leadership.</p>
+                            <ul class="feature-list">
+                                <li>Self-awareness assessment</li>
+                                <li>Empathy development</li>
+                                <li>Relationship management</li>
+                                <li>Stress resilience techniques</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="card service-card">
+                        <div class="card-body">
+                            <div class="service-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h4 class="card-title">Strategic Leadership</h4>
+                            <p class="card-text">Learn to set vision, align organizations, and drive sustainable growth.</p>
+                            <ul class="feature-list">
+                                <li>Vision development</li>
+                                <li>Organizational alignment</li>
+                                <li>Change management</li>
+                                <li>Innovation leadership</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="card service-card">
+                        <div class="card-body">
+                            <div class="service-icon">
+                                <i class="fas fa-handshake"></i>
+                            </div>
+                            <h4 class="card-title">Executive Coaching</h4>
+                            <p class="card-text">One-on-one coaching to address specific leadership challenges and goals.</p>
+                            <ul class="feature-list">
+                                <li>Personalized development plans</li>
+                                <li>360-degree feedback</li>
+                                <li>Accountability partnerships</li>
+                                <li>Career transition support</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="section-title center-title">Our Impact</h2>
+                    <p class="lead">Transformative results for leaders across industries</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number">92%</span>
+                        <h5>Leadership Effectiveness</h5>
+                        <p>Participants report significant improvement in leadership capabilities</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number">3.5x</span>
+                        <h5>Team Performance</h5>
+                        <p>Leaders see dramatic improvements in team productivity and engagement</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number">78%</span>
+                        <h5>Promotion Rate</h5>
+                        <p>Graduates are significantly more likely to advance to senior roles</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number">95%</span>
+                        <h5>Program Satisfaction</h5>
+                        <p>Overwhelming majority of participants rate our programs as excellent</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section id="process" class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="section-title center-title">Our 4-Step Development Process</h2>
+                    <p class="lead">A structured approach to leadership excellence</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="process-step">
+                        <div class="step-number">1</div>
+                        <h4>Leadership Assessment</h4>
+                        <p>We begin with a comprehensive evaluation of your current leadership strengths and development areas.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="process-step">
+                        <div class="step-number">2</div>
+                        <h4>Customized Development Plan</h4>
+                        <p>Based on assessment results, we create a personalized roadmap for your leadership journey.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="process-step">
+                        <div class="step-number">3</div>
+                        <h4>Skill Development & Coaching</h4>
+                        <p>Through workshops, simulations, and one-on-one coaching, we build your leadership capabilities.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="process-step">
+                        <div class="step-number">4</div>
+                        <h4>Application & Integration</h4>
+                        <p>We support you in applying new skills to real-world challenges and integrating leadership practices.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="section-title center-title">Success Stories</h2>
+                    <p class="lead">Hear from leaders who transformed their capabilities</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <div class="testimonial-card">
+                        <div class="testimonial-text">
+                            "The strategic communication program completely transformed how I lead my team. I'm now able to articulate vision with clarity and inspire action."
+                        </div>
+                        <div class="testimonial-author">Sarah Johnson</div>
+                        <div class="testimonial-role">VP of Marketing, TechSolutions Inc.</div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="testimonial-card">
+                        <div class="testimonial-text">
+                            "The decision-making frameworks I learned helped me navigate our company through a major market shift with confidence and clarity."
+                        </div>
+                        <div class="testimonial-author">Michael Chen</div>
+                        <div class="testimonial-role">Director of Operations, Global Retail Corp</div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="testimonial-card">
+                        <div class="testimonial-text">
+                            "The team management program gave me practical tools to build trust and drive performance. My team's engagement scores increased by 40%."
+                        </div>
+                        <div class="testimonial-author">Elena Rodriguez</div>
+                        <div class="testimonial-role">Senior Manager, Financial Services Group</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Image & Content Section -->
+    <section class="image-section bg-light">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Leadership Development" class="content-image">
+                </div>
+                <div class="col-lg-6">
+                    <h2 class="section-title">Why Leadership Development Matters</h2>
+                    <p>In today's complex business environment, technical skills alone are insufficient for organizational success. Research shows that companies with strong leadership development programs are 2.4 times more likely to hit their performance targets.</p>
+                    <p>Our development strategies are designed to address the unique challenges leaders face in the modern workplace, from managing remote teams to driving innovation in uncertain markets.</p>
+                    
+                    <div class="highlight-box">
+                        <h4><i class="fas fa-lightbulb me-2"></i> Key Insight</h4>
+                        <p>Organizations that invest in leadership development see 23% higher revenue growth than those that don't. The ROI extends beyond individual leaders to impact entire organizations through improved decision-making, employee engagement, and strategic alignment.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Explanation Section -->
+    <section class="explanation-section" id="explanation">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="section-title center-title" style="color: white;">How Our Leadership Development Works</h2>
+                    <p class="lead" style="color: #ecf0f1;">A detailed breakdown of our approach to cultivating exceptional leaders</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-6">
+                    <h3 class="mb-4">Understanding Modern Leadership Challenges</h3>
+                    <p>The leadership landscape has evolved dramatically with digital transformation, globalization, and changing workforce expectations. Today's leaders must navigate complexity, foster innovation, and inspire diverse teams.</p>
+                    <p>Our programs are designed to address these contemporary challenges by focusing on three core areas: strategic thinking, emotional intelligence, and adaptive leadership.</p>
+                    
+                    <h4 class="mt-4">Strategic Thinking & Decision Making</h4>
+                    <p>Leaders must make decisions with far-reaching consequences in environments of uncertainty. We develop your ability to think strategically and make informed choices.</p>
+                    <ul class="feature-list" style="color: white;">
+                        <li>Systems thinking and pattern recognition</li>
+                        <li>Scenario planning and risk assessment</li>
+                        <li>Data interpretation and analysis</li>
+                        <li>Strategic communication of decisions</li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-6">
+                    <h3 class="mb-4">Emotional Intelligence & Relationship Building</h3>
+                    <p>Technical expertise alone doesn't make a great leader. The ability to understand, connect with, and inspire people is what separates good leaders from exceptional ones.</p>
+                    <p>We help you develop the self-awareness and interpersonal skills needed to build trust, resolve conflicts, and create inclusive environments where people thrive.</p>
+                    
+                    <h4 class="mt-4">Adaptive Leadership & Change Management</h4>
+                    <p>In times of rapid change, leaders must be agile and resilient. We equip you with frameworks for leading through uncertainty and driving successful transformations.</p>
+                    <ul class="feature-list" style="color: white;">
+                        <li>Change leadership methodologies</li>
+                        <li>Resilience and stress management</li>
+                        <li>Innovation facilitation techniques</li>
+                        <li>Crisis leadership preparedness</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="highlight-box" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
+                        <h4><i class="fas fa-star me-2"></i> Our Commitment to Your Leadership Journey</h4>
+                        <p>We believe that leadership is not a position but a practice—one that can be developed and refined throughout your career. Our team of leadership experts is dedicated to providing personalized guidance and support as you grow into the leader you aspire to be. Whether you're transitioning into your first leadership role or preparing for executive responsibilities, we have the expertise and resources to support your development.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+   <!-- Footer -->
+<!-- Footer -->
+<footer class="bg-primary text-white py-5" style="perspective:1000px;">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 mb-4">
+        <h5 class="fw-bold mb-3" style="transform-style:preserve-3d; transition: transform 0.5s;" onmouseover="this.style.transform='rotateY(15deg)'" onmouseout="this.style.transform='rotateY(0deg)'">
+          <i class="fas fa-rocket me-2"></i>Career Redefine
+        </h5>
+        <p class="mb-3">Transforming careers through innovative learning and professional development.</p>
+        <div class="social-links">
+          <a href="https://www.facebook.com/profile.php?id=61564699643555" class="text-white me-3" style="transition: transform 0.3s;" onmouseover="this.style.transform='rotate(15deg)'" onmouseout="this.style.transform='rotate(0deg)'"><i class="fab fa-facebook"></i></a>
+          <a href="#" class="text-white me-3" style="transition: transform 0.3s;" onmouseover="this.style.transform='rotate(15deg)'" onmouseout="this.style.transform='rotate(0deg)'"><i class="fab fa-twitter"></i></a>
+          <a href="https://www.linkedin.com/company/career-redefine/" class="text-white me-3" style="transition: transform 0.3s;" onmouseover="this.style.transform='rotate(15deg)'" onmouseout="this.style.transform='rotate(0deg)'"><i class="fab fa-linkedin"></i></a>
+          <a href="https://www.instagram.com/career_redefine.ai/" class="text-white" style="transition: transform 0.3s;" onmouseover="this.style.transform='rotate(15deg)'" onmouseout="this.style.transform='rotate(0deg)'"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+
+      <div class="col-lg-2 mb-4">
+        <h6 class="fw-bold mb-3">Quick Links</h6>
+        <ul class="list-unstyled">
+          <li class="nav-item"><a class="nav-link text-white-50" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50" href="/courses">Courses</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50" href="/jobs">Jobs</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50" href="/services">Services</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50" href="/about">About</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-2 mb-4">
+        <h6 class="fw-bold mb-3">Support</h6>
+        <ul class="list-unstyled">
+          <li><a href="/support" class="text-white-50 text-decoration-none">Help Center</a></li>
+          <li><a href="/tools" class="text-white-50 text-decoration-none">Tools</a></li>
+          <li><a href="/reviews" class="text-white-50 text-decoration-none">Reviews</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-4 mb-4">
+        <h6 class="fw-bold mb-3">Contact Info</h6>
+        <p class="mb-1"><i class="fas fa-envelope me-2"></i>info@careerredefine.com</p>
+        <p class="mb-1"><i class="fas fa-phone me-2"></i>+91 9535713363</p>
+        <p class="mb-3"><i class="fas fa-map-marker-alt me-2"></i>22nd Floor, World Trade Center, Unit No 2201A, Rajajinagar, Bengaluru, India</p>
+      </div>
+    </div>
+
+    <hr class="my-4">
+
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <p class="mb-0">&copy; 2023 Career Redefine. All rights reserved.</p>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <a href="#" class="text-white-50 text-decoration-none me-3">Privacy Policy</a>
+        <a href="#" class="text-white-50 text-decoration-none">Terms of Service</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    <!-- Back to Top Button -->
+    <a href="#" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Back to top button functionality
+        const backToTopButton = document.querySelector('.back-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.add('show');
+            } else {
+                backToTopButton.classList.remove('show');
+            }
+        });
+        
+        backToTopButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 70,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Service card animation on scroll
+        const serviceCards = document.querySelectorAll('.service-card');
+        
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = 1;
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        serviceCards.forEach(card => {
+            card.style.opacity = 0;
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

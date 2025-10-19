@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Setup</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: 40px auto; padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; }
+        input { width: 100%; padding: 8px; margin-bottom: 10px; }
+        button { padding: 10px 20px; background: #4CAF50; color: white; border: none; cursor: pointer; }
+        button:hover { background: #45a049; }
+        #message { margin-top: 20px; padding: 10px; border-radius: 4px; }
+        .success { background: #dff0d8; color: #3c763d; }
+        .error { background: #f2dede; color: #a94442; }
+    </style>
+</head>
+<body>
+    <h1>Admin User Setup</h1>
+    <div class="form-group">
+        <label>Email:</label>
+        <input type="email" id="email" value="shannu@admin.com" readonly>
+    </div>
+    <div class="form-group">
+        <label>Password:</label>
+        <input type="password" id="password" value="667700">
+    </div>
+    <button onclick="createAdmin()">Create Admin User</button>
+    <div id="message"></div>
+
+    <script>
+    async function createAdmin() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const messageEl = document.getElementById('message');
+        
+        try {
+            // First try to log in with the provided credentials
+            try {
+                const loginResponse = await axios.post('/api/v1/auth/login', {
+                    email: email,
+                    password: password
+                });
+                
+                // If login successful, redirect to admin panel
+                window.location.href = '/admin';
+                return;
+            } catch (loginError) {
+                // If login fails, try to create the admin user
+                if (loginError.response && loginError.response.status === 401) {
+                    const response = await axios.post('/api/v1/auth/signup', {
+                        name: 'Admin User',
+                        email: email,
+                        password: password,
+                        passwordConfirm: password,
+                        role: 'admin',
+                        phone: '+1234567890',
+                        isVerified: true
+                    });
+                    
+                    messageEl.className = 'success';
+                    messageEl.textContent = '✅ Admin user created successfully! You can now log in.';
+                    
+                    // Auto-login after creation
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 2000);
+                    
+                } else {
+                    throw loginError;
+                }
+            }
+        } catch (error) {
+            messageEl.className = 'error';
+            let errorMessage = 'An error occurred';
+            
+            if (error.response) {
+                // Server responded with error status
+                if (error.response.status === 400) {
+                    errorMessage = 'Bad request. Please check your input.';
+                } else if (error.response.status === 401) {
+                    errorMessage = 'Invalid credentials';
+                } else if (error.response.data && error.response.data.message) {
+                    errorMessage = error.response.data.message;
+                }
+            } else if (error.request) {
+                // Request was made but no response received
+                errorMessage = 'No response from server. Please try again.';
+            } else {
+                // Other errors
+                errorMessage = error.message;
+            }
+            
+            messageEl.textContent = `❌ Error: ${errorMessage}`;
+            console.error('Error:', error);
+        }
+    }
+    </script>
+</body>
+</html>

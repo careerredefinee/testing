@@ -1,0 +1,26 @@
+extends baseEmail
+
+block content
+  p Hello Admin,
+  p A new enrollment has been made for the course "#{courseTitle}".
+  
+  .enrollment-details
+    h3 Enrollment Details
+    p 
+      strong Student: 
+      | #{studentName} (#{studentEmail})
+    p 
+      strong Course: 
+      | #{courseTitle}
+    p 
+      strong Enrollment Date: 
+      | #{enrollmentDate}
+    p 
+      strong Enrollment ID: 
+      | #{enrollmentId}
+  
+  p 
+    a(href=`${process.env.ADMIN_URL}/enrollments/${enrollmentId}`, target='_blank') View Enrollment Details
+  
+  p Best regards,
+  p careerRedefine System

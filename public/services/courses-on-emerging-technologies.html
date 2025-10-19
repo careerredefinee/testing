@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech & Business Courses - SkillUp Academy</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="servicegap.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+        }
+        
+        .section-title {
+            position: relative;
+            margin-bottom: 40px;
+            padding-bottom: 15px;
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--secondary);
+        }
+        
+        .course-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 30px;
+            height: 100%;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .course-icon {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+        
+        .category-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .it-tech {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .engineering {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .business {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .process-step {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: var(--secondary);
+            color: white;
+            border-radius: 50%;
+            line-height: 40px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .career-outcome {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            height: 100%;
+        }
+        
+        .outcome-icon {
+            font-size: 2rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+        
+        footer {
+            background-color: var(--primary);
+            color: white;
+            padding: 50px 0 20px;
+        }
+        
+        .footer-links a {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .social-icons a {
+            color: white;
+            font-size: 1.2rem;
+            margin-right: 15px;
+            transition: color 0.3s ease;
+        }
+        
+        .social-icons a:hover {
+            color: var(--secondary);
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--secondary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .back-to-top.show {
+            opacity: 1;
+        }
+        
+        .course-highlights {
+            background-color: #f8f9fa;
+            padding: 80px 0;
+        }
+        
+        .highlight-item {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .highlight-icon {
+            font-size: 3rem;
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+        
+        .header-section {
+            background-color: var(--primary);
+            color: white;
+            padding: 60px 0 40px;
+        }
+    </style>
+</head>
+<body>
+   <!-- Navbar -->
+<nav style="background:#ffffff; padding:10px 0; box-shadow:0 2px 8px rgba(0,0,0,0.08); position:sticky; top:0; z-index:999;">
+    <div style="max-width:1200px; margin:0 auto; padding:0 12px; display:flex; align-items:center;">
+      <!-- Logo left -->
+      <a href="/" style="display:flex; align-items:center; text-decoration:none; margin-left:8px;">
+        <img src="/cr_logo.png" alt="Career Redefine" style="height:40px; width:auto;">
+      </a>
+      <!-- Links right -->
+      <div id="nav-menu" style="margin-left:auto; margin-right:8px; display:flex; gap:20px; align-items:center;">
+        <a href="/" style="text-decoration:none; color:#1f2937; font-weight:600;">Home</a>
+        <a href="/services" style="text-decoration:none; color:#1f2937; font-weight:600;">Services</a>
+        <a href="/courses" style="text-decoration:none; color:#1f2937; font-weight:600;">Courses</a>
+        <a href="/tools" style="text-decoration:none; color:#1f2937; font-weight:600;">Tools</a>
+        <a href="/support" style="text-decoration:none; color:#1f2937; font-weight:600;">Support</a>
+        <a href="/jobs" style="text-decoration:none; color:#1f2937; font-weight:600;">Jobs</a>
+        <a href="/reviews" style="text-decoration:none; color:#1f2937; font-weight:600;">Reviews</a>
+        <a href="/about" style="text-decoration:none; color:#1f2937; font-weight:600;">About</a>
+      </div>
+    </div>
+  </nav>
+    <script>
+  const menuToggle = document.getElementById("menu-toggle");
+  const navMenu = document.getElementById("nav-menu");
+
+  function handleResize() {
+    if (window.innerWidth <= 768) {
+      menuToggle.style.display = "block"; // show hamburger
+
+      // Left-side drawer (full height, half width)
+      navMenu.style.position = "fixed";
+      navMenu.style.top = "0";
+      navMenu.style.left = "-50%"; // hidden initially
+      navMenu.style.height = "100vh";  // full screen height
+      navMenu.style.width = "50%";     // half screen width
+      navMenu.style.background = "linear-gradient(145deg, #e3f2fd, #c3e0ff)";
+      navMenu.style.flexDirection = "column";
+      navMenu.style.alignItems = "flex-start";
+      navMenu.style.padding = "60px 20px";
+      navMenu.style.gap = "20px";
+      navMenu.style.transition = "left 0.3s ease";
+      navMenu.style.boxShadow = "2px 0 15px rgba(0,0,0,0.3)";
+      navMenu.style.borderRadius = "0 8px 8px 0";
+
+      // style links bigger for mobile
+      Array.from(navMenu.getElementsByTagName("a")).forEach(a => {
+        a.style.display = "block";
+        a.style.fontSize = "18px";
+        a.style.width = "100%";
+        a.style.padding = "8px 0";
+        a.style.color = "#0d47a1";
+      });
+
+    } else {
+      menuToggle.style.display = "none"; // hide hamburger
+      navMenu.style.position = "static";
+      navMenu.style.flexDirection = "row";
+      navMenu.style.height = "auto";
+      navMenu.style.width = "auto";
+      navMenu.style.padding = "0";
+      navMenu.style.background = "transparent";
+      navMenu.style.left = "0";
+      navMenu.style.boxShadow = "none";
+
+      // reset link style for desktop
+      Array.from(navMenu.getElementsByTagName("a")).forEach(a => {
+        a.style.fontSize = "16px";
+        a.style.padding = "0";
+      });
+    }
+  }
+
+  // toggle open/close
+  let isOpen = false;
+  menuToggle.addEventListener("click", () => {
+    if (!isOpen) {
+      navMenu.style.left = "0";   // slide in from left
+      isOpen = true;
+    } else {
+      navMenu.style.left = "-50%"; // slide out
+      isOpen = false;
+    }
+  });
+
+  window.addEventListener("resize", handleResize);
+  window.addEventListener("load", handleResize);
+</script>
+
+
+    <!-- Header Section -->
+    <section class="header-section" id="home">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h1 class="display-5 fw-bold mb-4">Professional Course Services</h1>
+                    <p class="lead">Industry-relevant programs in technology, business, and engineering designed to enhance your professional skills</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section id="courses" class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="section-title">Our Course Services</h2>
+                    <p class="lead">Comprehensive programs designed by industry experts</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <!-- Course 1 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="card course-card">
+                        <div class="card-body position-relative">
+                            <span class="category-badge it-tech">IT & Technology</span>
+                            <div class="course-icon">
+                                <i class="fas fa-laptop-code"></i>
+                            </div>
+                            <h5 class="card-title">Data Science with AI</h5>
+                            <p class="card-text">Master data analysis, machine learning, and AI implementation with hands-on projects and real-world applications.</p>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i> Python & R Programming</li>
+                                <li><i class="fas fa-check text-success me-2"></i> Machine Learning Algorithms</li>
+                                <li><i class="fas fa-check text-success me-2"></i> Data Visualization</li>
+                            </ul>
+                            <div class="mt-3">
+                                <small class="text-muted">Duration: 12 weeks | Level: Intermediate</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Course 2 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="card course-card">
+                        <div class="card-body position-relative">
+                            <span class="category-badge it-tech">IT & Technology</span>
+                            <div class="course-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <h5 class="card-title">Python & Data Science</h5>
+                            <p class="card-text">From Python basics to advanced data analysis techniques, become proficient in one of the most sought-after skills.</p>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i> Python Fundamentals</li>
+                                <li><i class="fas fa-check text-success me-2"></i> Data Analysis with Pandas</li>
+                                <li><i class="fas fa-check text-success me-2"></i> Statistical Modeling</li>
+                            </ul>
+                            <div class="mt-3">
+                                <small class="text-muted">Duration: 10 weeks | Level: Beginner</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Course 3 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="card course-card">
+                        <div class="card-body position-relative">
+                            <span class="category-badge engineering">Engineering</span>
+                            <div class="course-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <h5 class="card-title">Pre-Engineering & IIT Preparation</h5>
+                            <p class="card-text">Comprehensive preparation for engineering entrance exams with expert guidance and proven strategies.</p>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i> Physics, Chemistry, Mathematics</li>
+                                <li><i class="fas fa-check text-success me-2"></i> Problem Solving Techniques</li>
+                                <li><i class="fas fa-check text-success me-2"></i> Mock Tests & Analysis</li>
+                            </ul>
+                            <div class="mt-3">
+                                <small class="text-muted">Duration: 24 weeks | Level: Advanced</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Course 4 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="card course-card">
+                        <div class="card-body position-relative">
+                            <span class="category-badge business">Business & Analytics</span>
+                            <div class="course-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h5 class="card-title">Capital Market & Risk Analysis</h5>
+                            <p class="card-text">Understand financial markets, investment strategies, and risk management techniques used by professionals.</p>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i> Financial Modeling</li>
+                                <li><i class="fas fa-check text-success me-2"></i> Portfolio Management</li>
+                                <li><i class="fas fa-check text-success me-2"></i> Risk Assessment Tools</li>
+                            </ul>
+                            <div class="mt-3">
+                                <small class="text-muted">Duration: 14 weeks | Level: Intermediate</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Course 5 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="card course-card">
+                        <div class="card-body position-relative">
+                            <span class="category-badge business">Business & Management</span>
+                            <div class="course-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h5 class="card-title">HR Excellency Mastery Program</h5>
+                            <p class="card-text">Develop strategic HR skills, talent management expertise, and organizational development capabilities.</p>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i> Talent Acquisition</li>
+                                <li><i class="fas fa-check text-success me-2"></i> Employee Engagement</li>
+                                <li><i class="fas fa-check text-success me-2"></i> HR Analytics</li>
+                            </ul>
+                            <div class="mt-3">
+                                <small class="text-muted">Duration: 16 weeks | Level: Intermediate</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Course 6 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="card course-card">
+                        <div class="card-body position-relative">
+                            <span class="category-badge it-tech">IT & Technology</span>
+                            <div class="course-icon">
+                                <i class="fas fa-paint-brush"></i>
+                            </div>
+                            <h5 class="card-title">Web Design & Development</h5>
+                            <p class="card-text">Learn to create responsive, user-friendly websites using HTML, CSS, JavaScript, and modern frameworks.</p>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i> Frontend Development</li>
+                                <li><i class="fas fa-check text-success me-2"></i> UI/UX Design Principles</li>
+                                <li><i class="fas fa-check text-success me-2"></i> Backend Integration</li>
+                            </ul>
+                            <div class="mt-3">
+                                <small class="text-muted">Duration: 12 weeks | Level: Beginner</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Course 7 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="card course-card">
+                        <div class="card-body position-relative">
+                            <span class="category-badge it-tech">IT & Technology</span>
+                            <div class="course-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <h5 class="card-title">AI & ML</h5>
+                            <p class="card-text">Dive deep into artificial intelligence and machine learning algorithms, neural networks, and AI applications.</p>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i> Neural Networks</li>
+                                <li><i class="fas fa-check text-success me-2"></i> Natural Language Processing</li>
+                                <li><i class="fas fa-check text-success me-2"></i> Computer Vision</li>
+                            </ul>
+                            <div class="mt-3">
+                                <small class="text-muted">Duration: 16 weeks | Level: Advanced</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Course 8 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="card course-card">
+                        <div class="card-body position-relative">
+                            <span class="category-badge it-tech">IT & Technology</span>
+                            <div class="course-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <h5 class="card-title">Courses on Emerging Technologies</h5>
+                            <p class="card-text">Stay ahead with courses on blockchain, IoT, quantum computing, and other cutting-edge technologies.</p>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i> Blockchain & Web3</li>
+                                <li><i class="fas fa-check text-success me-2"></i> Internet of Things</li>
+                                <li><i class="fas fa-check text-success me-2"></i> Cloud Computing</li>
+                            </ul>
+                            <div class="mt-3">
+                                <small class="text-muted">Duration: 8 weeks | Level: Intermediate</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Course 9 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="card course-card">
+                        <div class="card-body position-relative">
+                            <span class="category-badge engineering">Engineering</span>
+                            <div class="course-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <h5 class="card-title">Engineering Fundamentals</h5>
+                            <p class="card-text">Build a strong foundation in engineering principles, mathematics, and problem-solving techniques.</p>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i> Engineering Mathematics</li>
+                                <li><i class="fas fa-check text-success me-2"></i> Core Engineering Concepts</li>
+                                <li><i class="fas fa-check text-success me-2"></i> Practical Applications</li>
+                            </ul>
+                            <div class="mt-3">
+                                <small class="text-muted">Duration: 20 weeks | Level: Beginner</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="process" class="course-highlights">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="section-title">How Our Course Services Work</h2>
+                    <p class="lead">A structured approach to skill development</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="process-step">
+                        <div class="step-number">1</div>
+                        <h4>Needs Assessment</h4>
+                        <p>We evaluate your current skill level and career goals to recommend the most suitable course.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="process-step">
+                        <div class="step-number">2</div>
+                        <h4>Structured Learning</h4>
+                        <p>Follow our carefully designed curriculum with a mix of theory, practical exercises, and projects.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="process-step">
+                        <div class="step-number">3</div>
+                        <h4>Expert Guidance</h4>
+                        <p>Get personalized feedback and support from industry professionals throughout your learning journey.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="process-step">
+                        <div class="step-number">4</div>
+                        <h4>Skill Application</h4>
+                        <p>Apply your newly acquired skills to real-world projects and build a professional portfolio.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Career Outcomes Section -->
+    <section id="outcomes" class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="section-title">Career Outcomes</h2>
+                    <p class="lead">How our course services can advance your career</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <div class="career-outcome">
+                        <div class="outcome-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <h4>Industry Recognition</h4>
+                        <p>Our certificates are valued by employers and can significantly enhance your resume and career prospects.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="career-outcome">
+                        <div class="outcome-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4>Career Advancement</h4>
+                        <p>Gain the skills needed for promotions, career changes, or entry into high-demand fields.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="career-outcome">
+                        <div class="outcome-icon">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                        <h4>Professional Network</h4>
+                        <p>Connect with instructors and peers to build valuable professional relationships.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="career-outcome">
+                        <div class="outcome-icon">
+                            <i class="fas fa-hands-helping"></i>
+                        </div>
+                        <h4>Consultation Services</h4>
+                        <p>Get personalized career guidance and consultation to help you achieve your professional goals.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="career-outcome">
+                        <div class="outcome-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <h4>Skill Validation</h4>
+                        <p>Validate your expertise with industry-recognized credentials that demonstrate your capabilities.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="career-outcome">
+                        <div class="outcome-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <h4>Accelerated Learning</h4>
+                        <p>Our focused approach helps you acquire in-demand skills faster than traditional education paths.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+  <!-- Footer -->
+<footer class="bg-primary text-white py-5" style="perspective:1000px;">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 mb-4">
+        <h5 class="fw-bold mb-3" style="transform-style:preserve-3d; transition: transform 0.5s;" onmouseover="this.style.transform='rotateY(15deg)'" onmouseout="this.style.transform='rotateY(0deg)'">
+          <i class="fas fa-rocket me-2"></i>Career Redefine
+        </h5>
+        <p class="mb-3">Transforming careers through innovative learning and professional development.</p>
+        <div class="social-links">
+          <a href="https://www.facebook.com/profile.php?id=61564699643555" class="text-white me-3" style="transition: transform 0.3s;" onmouseover="this.style.transform='rotate(15deg)'" onmouseout="this.style.transform='rotate(0deg)'"><i class="fab fa-facebook"></i></a>
+          <a href="#" class="text-white me-3" style="transition: transform 0.3s;" onmouseover="this.style.transform='rotate(15deg)'" onmouseout="this.style.transform='rotate(0deg)'"><i class="fab fa-twitter"></i></a>
+          <a href="https://www.linkedin.com/company/career-redefine/" class="text-white me-3" style="transition: transform 0.3s;" onmouseover="this.style.transform='rotate(15deg)'" onmouseout="this.style.transform='rotate(0deg)'"><i class="fab fa-linkedin"></i></a>
+          <a href="https://www.instagram.com/career_redefine.ai/" class="text-white" style="transition: transform 0.3s;" onmouseover="this.style.transform='rotate(15deg)'" onmouseout="this.style.transform='rotate(0deg)'"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+
+      <div class="col-lg-2 mb-4">
+        <h6 class="fw-bold mb-3">Quick Links</h6>
+        <ul class="list-unstyled">
+          <li class="nav-item"><a class="nav-link text-white-50" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50" href="/courses">Courses</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50" href="/jobs">Jobs</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50" href="/services">Services</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50" href="/about">About</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-2 mb-4">
+        <h6 class="fw-bold mb-3">Support</h6>
+        <ul class="list-unstyled">
+          <li><a href="/support" class="text-white-50 text-decoration-none">Help Center</a></li>
+          <li><a href="/tools" class="text-white-50 text-decoration-none">Tools</a></li>
+          <li><a href="/reviews" class="text-white-50 text-decoration-none">Reviews</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-4 mb-4">
+        <h6 class="fw-bold mb-3">Contact Info</h6>
+        <p class="mb-1"><i class="fas fa-envelope me-2"></i>info@careerredefine.com</p>
+        <p class="mb-1"><i class="fas fa-phone me-2"></i>+91 9535713363</p>
+        <p class="mb-3"><i class="fas fa-map-marker-alt me-2"></i>22nd Floor, World Trade Center, Unit No 2201A, Rajajinagar, Bengaluru, India</p>
+      </div>
+    </div>
+
+    <hr class="my-4">
+
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <p class="mb-0">&copy; 2023 Career Redefine. All rights reserved.</p>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <a href="#" class="text-white-50 text-decoration-none me-3">Privacy Policy</a>
+        <a href="#" class="text-white-50 text-decoration-none">Terms of Service</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    <!-- Back to Top Button -->
+    <a href="#" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Back to top button functionality
+        const backToTopButton = document.querySelector('.back-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.add('show');
+            } else {
+                backToTopButton.classList.remove('show');
+            }
+        });
+        
+        backToTopButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 70,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Course card animation on scroll
+        const courseCards = document.querySelectorAll('.course-card');
+        
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = 1;
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        courseCards.forEach(card => {
+            card.style.opacity = 0;
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+extends baseEmail
+
+block content
+  p Hi #{name},
+  p The status of your query (ID: #{queryId}) has been updated to: 
+    strong #{status}
+  if message
+    p 
+      strong Message from our team:
+      | #{message}
+  p You can view the current status of your query by logging into your account.
+  p If you have any questions, please don't hesitate to contact us.
+  p Best regards,
+  p The careerRedefine Team

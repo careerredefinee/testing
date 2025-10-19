@@ -1,0 +1,30 @@
+extends baseEmail
+
+block content
+  p Hello #{adminName},
+  p A new job application has been submitted for the position of "#{jobTitle}".
+  
+  .application-details
+    h3 Application Details
+    p 
+      strong Applicant: 
+      | #{applicantName} (#{applicantEmail})
+    p 
+      strong Position: 
+      | #{jobTitle}
+    p 
+      strong Applied on: 
+      | #{applicationDate}
+    p 
+      strong Application ID: 
+      | #{applicationId}
+  
+  p 
+    strong Cover Letter:
+  p #{coverLetter}
+  
+  p 
+    a(href=`${process.env.ADMIN_URL}/jobs/applications/${applicationId}`, target='_blank') View Full Application
+  
+  p Best regards,
+  p careerRedefine Hiring System

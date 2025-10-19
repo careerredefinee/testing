@@ -1,0 +1,27 @@
+extends baseEmail
+
+block content
+  p Hi #{name},
+  p Thank you for enrolling in "#{courseTitle}"!
+  p Your enrollment has been confirmed. Here are the details:
+  
+  .course-details
+    h3 Course Details
+    p 
+      strong Course: 
+      | #{courseTitle}
+    p 
+      strong Start Date: 
+      | #{startDate}
+    p 
+      strong Access: 
+      | You can now access the course materials in your dashboard.
+  
+  p We're excited to have you in the course! If you have any questions, feel free to reply to this email.
+  p Happy learning!
+  p Best regards,
+  p The careerRedefine Team
+  p 
+    small 
+      | Enrollment ID: #{enrollmentId} | 
+      a(href=`${process.env.FRONTEND_URL}/my-courses`) View My Courses

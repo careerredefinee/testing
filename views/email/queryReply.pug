@@ -1,0 +1,21 @@
+extends baseEmail
+
+block content
+  p Hi #{name},
+  p Thank you for contacting careerRedefine. Here's our response to your query:
+  .email-message
+    h3 Re: #{subject}
+    p 
+      strong Your original message:
+    p #{originalMessage}
+    .divider
+    p 
+      strong #{replyFrom} replied:
+    p #{reply}
+  p If you have any further questions or need additional assistance, please don't hesitate to reply to this email.
+  p Best regards,
+  p The careerRedefine Team
+  p 
+    small 
+      | Query ID: #{queryId} | 
+      a(href=`${process.env.FRONTEND_URL}/support`) Contact Support
