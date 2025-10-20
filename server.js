@@ -255,11 +255,11 @@ const allowedOrigins = [
   'https://test.careerredefine.com',
   'https://www.test.careerredefine.com',
 
-  'https://testing.careerredefine.com',
-  'https://www.testing.careerredefine.com',
+  'https://test5-x7xt.onrender.com',
+  'https://www.test5-x7xt.onrender.com',
 
   // Second testing domain
-  'https://testing.careerredefine.com',
+  'https://test5-x7xt.onrender.com',
 
   'https://test.career-redefine.vercel.app',
   'https://test.career-redefine.com'
