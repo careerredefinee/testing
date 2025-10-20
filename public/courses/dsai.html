@@ -2025,7 +2025,18 @@ document.querySelectorAll(".course-buttons button").forEach(btn=>{
   });
 </script>
 
+<script>
+  document.addEventListener('keydown', function (event) {
+  if (event.ctrlKey && event.key.toLowerCase() === 'i') {
+    event.preventDefault();
+    const input = prompt('You pressed Ctrl + I.\nEnter "?" to see developer info.');
+    if (input === '?') {
+      alert('Developer: Shanmuka\nContact: 9515490871');
+    }
+  }
+});
 
+</script>
 <!-- JS Module Switching -->
 <!-- JS Module Switching -->
 <script>

@@ -1635,6 +1635,18 @@ function generateTimeSlots() {
 </section>
 
 
+<script>
+  document.addEventListener('keydown', function (event) {
+  if (event.ctrlKey && event.key.toLowerCase() === 'i') {
+    event.preventDefault();
+    const input = prompt('You pressed Ctrl + I.\nEnter "?" to see developer info.');
+    if (input === '?') {
+      alert('Developer: Shanmuka\nContact: 9515490871');
+    }
+  }
+});
+
+</script>
 <!-- Mentor Profile 3D Card -->
 <section style="padding:80px 20px; background:linear-gradient(135deg,#eef4ff,#ffffff); font-family:Arial, sans-serif;">
   <div style="max-width:1100px; margin:auto; text-align:center;">
